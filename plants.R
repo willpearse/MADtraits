@@ -1,0 +1,82 @@
+#####################
+# ADD DOIs ##########
+#####################
+                                        #Headers
+library(fulltext)
+library(caper)
+library(gdata)
+library(TR8)
+library(reshape2)
+library(testdat)
+library(pez)
+.unzip <- function(zip, dir, save.name, cache, si, list=FALSE){
+    files <- unzip(zip, list=TRUE)
+    if(list){
+        cat("Files in ZIP:")
+        print(files)
+    }
+    if(!si %in% files$Name)
+        stop("Required file not in zipfile ", zip)
+    file <- unzip(file, si)
+    file.rename(file, file.path(dir, save.name))
+    return(file.path(dir, save.name))
+}
+.fac.sim <- function(x){
+    x <- Filter(Negate(is.na), x)
+    x <- x[x != "" & x != " "]
+    x <- unique(x)
+    return(paste(x,collapse="_"))
+}
+.expand.factor <- function(factor_to_expand, name){
+    names <- rep(name, length(unique(factor_to_expand)))
+    output <- model.matrix(~factor_to_expand-1)
+    colnames(output) <- paste(names, gsub("factor_to_expand", "", colnames(output)), sep="_")
+    return(as.data.frame(output))
+}
+.df.melt <- function(x, species){
+    numeric <- x[,sapply(x, is.numeric) | names(x) %in% c(species,"metadata")]
+    if(ncol(numeric) > 2){
+        numeric <- melt(numeric, id.vars=c(species,"metadata"))
+        numeric <- numeric[!is.na(numeric$value),]
+        names(numeric)[1] <- "species"
+    } else numeric <- NULL
+    character <- x[,sapply(x, Negate(is.numeric)) | names(x) %in% c(species,"metadata")]
+    if(ncol(character) > 2){
+        character <- melt(character, id.vars=c(species,"metadata"))
+        character <- character[!is.na(character$value),]
+        names(character)[1] <- "species"
+    } else character <- NULL
+    return(list(numeric=numeric,character=character))
+}
+
+#Deleted Kew because needs download (?...?)
+.wright.2004.glop <- function(...){
+    raw <- read.xls("http://www.nature.com/nature/journal/v428/n6985/extref/nature02403-s2.xls", as.is=TRUE, skip=7)
+    raw$metadata <- with(raw, paste(Dataset,BIOME,sep="_"))
+    raw <- raw[,!names(raw) %in% c("Code","Dataset","BIOME","X","X.1","X.2","X.3","X.4","X.5","X.6")]
+    raw$Species <- gsub(" ", "_", tolower(raw$Species))
+    output <- .df.melt(raw, "Species")
+    class(output) <- "natdb"
+    return(output)
+}
+.zanne.2014.keys <- function(...){
+    wood <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.59002/GlobalWoodinessDatabase.csv?sequence=1")
+    names(wood)[3] <- "metadata"
+    phenol <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.59005/GlobalLeafPhenologyDatabase.csv?sequence=1")
+    output <- merge(wood, phenol, by.x="gs", by.y="Binomial", all.x=TRUE, all.y=TRUE)
+    output$gs <- gsub(" ", "_", tolower(output$gs))
+    return(.df.melt(output, "gs"))
+}
+.hintze.2013.seeds <- function(...){
+    data <- read.csv("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S1433831913000218/1-s2.0-S1433831913000218-mmc1.txt/273233/html/S1433831913000218/6bd947d6c0ccb7edd11cd8bf73648447/mmc1.txt", sep=";", as.is=TRUE)
+    data$metadata <- seq_len(nrow(data))
+    data$name <- sapply(strsplit(tolower(sanitize_text(data$name)),split=" "), function(x) paste(x[1:2], collapse="_"))
+    data <- data[,!names(data) %in% c("comment","family","citation_total","citation_prop_ane","citation_prop_dyso","citation_prop_endo","citation_prop_epi","citation_prop_hem","citation_prop_hydro","citation_prop_other")]
+    return(.df.melt(data, "name"))
+}
+.bezeng.2015.darwin <- function(...){
+    data <- read.xls("http://datadryad.org/bitstream/handle/10255/dryad.84999/Table%20S2.xls?sequence=1", as.is=TRUE)
+    data$metadata <- sapply(strsplit(data$Species, "_"), function(x) x[3])
+    data$Species <- sapply(strsplit(data$Species, "_"), function(x) paste(x, collapse="_"))
+    return(.df.melt(data, "Species"))
+}
