@@ -1,0 +1,23 @@
+Package: natdb
+Type: Package
+Title: Not A Trait DataBase
+Version: 1.0
+Date: 2017-02-13
+Author: USU Biology Nerd Group
+Maintainer: Will Pearse <will.pearse@usu.edu>
+Description: NATDB automates the download and assembly of species'
+    trait data from published sources. It emphatically is *not* a
+    trait database (the clue is in the name): it assembles data that
+    are already available for the user, but this is a software package
+    that builds a database, not the database itself. Those who have
+    contributed trait data that is downloaded should, of course, be
+    appropriately referenced when their data are used (tools are
+    available within this package to aid that). Some basic data
+    checking, and functions to perform data checking, are included
+    within this package.
+License: MIT
+RoxygenNote: 5.0.1
+Imports:
+    fulltext (>= 0.1.8),
+    testdat (>= 0.2-0),
+    gdata (>= 2.17.0)
