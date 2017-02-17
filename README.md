@@ -1,4 +1,4 @@
-NaTDB - Not a Trait DataBase
+NaTDB - Not a Trait DataBase [![Build Status](https://travis-ci.org/willpearse/natdb.svg?branch=master)](https://travis-ci.org/willpearse/natdb)
 ===============================================================
 Will Pearse (will.pearse@usu.edu)
 
