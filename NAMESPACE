@@ -3,6 +3,7 @@
 export(natdb)
 importFrom(fulltext,ft_get_si)
 importFrom(gdata,read.xls)
+importFrom(reshape2,melt)
 importFrom(stats,model.matrix)
 importFrom(testdat,sanitize_text)
 importFrom(utils,read.csv)
