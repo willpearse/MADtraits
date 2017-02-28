@@ -18,6 +18,7 @@
     class(output) <- "natdb"
     return(output)
 }
+
 .zanne.2014 <- function(...){
     wood <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.59002/GlobalWoodinessDatabase.csv?sequence=1")
     names(wood)[3] <- "metadata"
@@ -26,6 +27,7 @@
     output$gs <- gsub(" ", "_", tolower(output$gs))
     return(.df.melt(output, "gs"))
 }
+
 .hintze.2013 <- function(...){
     data <- read.csv("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S1433831913000218/1-s2.0-S1433831913000218-mmc1.txt/273233/html/S1433831913000218/6bd947d6c0ccb7edd11cd8bf73648447/mmc1.txt", sep=";", as.is=TRUE)
     data$metadata <- seq_len(nrow(data))
@@ -33,9 +35,26 @@
     data <- data[,!names(data) %in% c("comment","family","citation_total","citation_prop_ane","citation_prop_dyso","citation_prop_endo","citation_prop_epi","citation_prop_hem","citation_prop_hydro","citation_prop_other")]
     return(.df.melt(data, "name"))
 }
+
 .bezeng.2015 <- function(...){
     data <- read.xls("http://datadryad.org/bitstream/handle/10255/dryad.84999/Table%20S2.xls?sequence=1", as.is=TRUE)
     data$metadata <- sapply(strsplit(data$Species, "_"), function(x) x[3])
     data$Species <- sapply(strsplit(data$Species, "_"), function(x) paste(x, collapse="_"))
     return(.df.melt(data, "Species"))
 }
+
+# Elton traits
+.wilman.2014  <- function(...){
+    data <- read.csv("~/Desktop/BirdFuncDat.txt", sep = "\t")
+    data <- data[,-c(23,34)]
+    units <- sample(c("SpecID", "PassNonPass", "IOCOrder", "BLFamilyLatin", "BLFamilyEnglish", "BLFamSequID", "Taxo", "Scientific", "English", "Diet.Inv", "Diet.Vend", "Diet.Vect", "Diet.Vfish", "Diet.Vunk", "Diet.Scav", "Diet.Fruit", "Diet.Nect", "Diet.Seed", "Diet.PlantO", "Diet.5Cat", "Diet.Source", "Diet.Certainty", "ForStrat.watbelowsurf", "ForStrat.wataroundsurf", "ForStrat.ground", "ForStrat.understory", "ForStrat.midhigh", "ForStrat.canopy", "ForStrat.aerial", "PelagicSpecialist", "ForStrat.Source", "ForStrat.SpecLevel", "Nocturnal", "BodyMass.Value", "BodyMass.Source", "BodyMass.SpecLevel", "BodyMass.Comment", "Record.Comment"),length(names(data))-1,TRUE)
+    return(.df.melt(data, "Scientific"))
+}
+
+.wilman.2014  <- function(...){
+    data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
+    data <- data[,-c(23,34)]
+    units <- sample(c("SpecID", "PassNonPass", "IOCOrder", "BLFamilyLatin", "BLFamilyEnglish", "BLFamSequID", "Taxo", "Scientific", "English", "Diet.Inv", "Diet.Vend", "Diet.Vect", "Diet.Vfish", "Diet.Vunk", "Diet.Scav", "Diet.Fruit", "Diet.Nect", "Diet.Seed", "Diet.PlantO", "Diet.5Cat", "Diet.Source", "Diet.Certainty", "ForStrat.watbelowsurf", "ForStrat.wataroundsurf", "ForStrat.ground", "ForStrat.understory", "ForStrat.midhigh", "ForStrat.canopy", "ForStrat.aerial", "PelagicSpecialist", "ForStrat.Source", "ForStrat.SpecLevel", "Nocturnal", "BodyMass.Value", "BodyMass.Source", "BodyMass.SpecLevel", "BodyMass.Comment", "Record.Comment"),length(names(data))-1,TRUE)
+    return(.df.melt(data, "Scientific"))
+}
+
