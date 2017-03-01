@@ -1,14 +1,12 @@
-#' @importFrom stats model.matrix
-
-#' Unzips a file from a downloaded zip file
-#' @param file name of file to be extracted from zip
-#' @param zip location and name of zip file (e.g.,
-#'     ~/Downlaods/a_file.zip)
-#' @param to.save.dir directory to save resulting file (DEFAULT: a new
-#'     temporary directory will be used)
-#' @param to.save.name name to save the file as (DEFAULT: it will be
-#'     named paste(zip,file, sep='_'))
-#' @return Complete path to unzipped file
+# Unzips a file from a downloaded zip file
+# param file name of file to be extracted from zip
+# param zip location and name of zip file (e.g.,
+#     ~/Downlaods/a_file.zip)
+# param to.save.dir directory to save resulting file (DEFAULT: a new
+#     temporary directory will be used)
+# param to.save.name name to save the file as (DEFAULT: it will be
+#     named paste(zip,file, sep='_'))
+# return Complete path to unzipped file
 #' @importFrom utils unzip
 #' @importFrom reshape2 melt
 .unzip <- function(file, zip, to.save.dir, to.save.name){
@@ -33,6 +31,7 @@
     return(paste(x,collapse="_"))
 }
 
+#' @importFrom stats model.matrix
 .expand.factor <- function(factor_to_expand, name){
     names <- rep(name, length(unique(factor_to_expand)))
     output <- model.matrix(~factor_to_expand-1)
@@ -56,7 +55,7 @@
         numeric$units <- units[numeric$variable]
     } else numeric <- NULL
     character <- x[,sapply(x, Negate(is.numeric)) | names(x) %in% c(species,"metadata")]
-    if(ncol(character) > 2){
+   if(ncol(character) > 2){
         character <- melt(character, id.vars=c(species,"metadata"))
         character <- character[!is.na(character$value),]
         names(character)[1] <- "species"

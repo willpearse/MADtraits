@@ -32,12 +32,13 @@
 
 natdb <- function(datasets, species, traits){
     #Check datasets
-    datasets <- paste0(".", tolower(datasets))
-    datasets <- gsub("..", ".", datasets, fixed=TRUE)
-    # The following makes debugging easier but must be fixed intelligently before release
-    namespaces <- intersect(search(), c("package:natdb",".GlobalEnv")) #Makes debugging easier
-    functions <- Filter(Negate(is.function), ls(pattern="^\\.", all.names=TRUE, name=namespaces))
-    if(!all(datasets %in% functions)){
+    if(missing(datasets)){
+        datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:natdb", all.names=TRUE))
+    } else {
+        datasets <- paste0(".", tolower(datasets))
+        datasets <- gsub("..", ".", datasets, fixed=TRUE)
+    }
+    if(!all(datasets %in% datasets)){
         missing <- setdiff(datasets, ls.funs())
         stop("Error: ", paste(missing, collapse=", "), "not in natdb")
     }
