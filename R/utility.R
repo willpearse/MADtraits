@@ -30,6 +30,7 @@
     x <- unique(x)
     return(paste(x,collapse="_"))
 }
+
 #' @importFrom stats model.matrix
 .expand.factor <- function(factor_to_expand, name){
     names <- rep(name, length(unique(factor_to_expand)))
@@ -37,6 +38,7 @@
     colnames(output) <- paste(names, gsub("factor_to_expand", "", colnames(output)), sep="_")
     return(as.data.frame(output))
 }
+
 .df.melt <- function(x, species, units){
     if(!"metadata" %in% names(x))
         x$metadata <- NA
@@ -61,6 +63,7 @@
     } else character <- NULL
     return(list(numeric=numeric,character=character))
 }
+
 .download <- function(url, dir, save.name, cache=TRUE){
     destination <- file.path(dir, save.name)
     suffix <- .file.suffix(url, 4)
@@ -79,6 +82,7 @@
         attr(destination, "suffix") <- suffix
     return(destination)
 }
+
 .save.name <- function(doi, save.name, file){
     if(is.na(save.name)){
         save.name <- paste(doi,file, sep="_")
@@ -86,10 +90,12 @@
     }
     return(save.name)
 }
+
 .grep.url <- function(url, regexp, which=1){
     html <- as.character(GET(url))
     return(.grep.text(html, regexp, which))
 }
+
 .grep.text <- function(text, regexp, which=1){
     links <- gregexpr(regexp, text)
     if(which > length(links[[1]]))
@@ -97,6 +103,7 @@
     pos <- as.numeric(links[[1]][which])
     return(substr(text, pos, pos+attr(links[[1]], "match.length")[which]-1))
 }
+
 .file.suffix <- function(text, max.length=4){
     suffix <- .grep.text(text, "[a-zA-Z]+$")
     if(nchar(suffix) <= max.length & nchar(suffix) > 0)
