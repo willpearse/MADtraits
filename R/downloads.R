@@ -44,6 +44,7 @@
 }
 
 # Elton traits
+# written by Sylvia
 .wilman.2014a  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
     data <- data[,-c(23,34)]
@@ -59,7 +60,7 @@
 }
 
 # panTHERIA
-# written by Will during meeting
+# written by Will during meeting, added by Sylvia
 .jones.2009a <- function(...){
     data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR05_Aug2008.txt", "esa_archives"))
     for(i in 1:ncol(data))
@@ -76,4 +77,13 @@
     units <- sample(c("g","m^2"),length(names(data))-1,TRUE)
     data <- .df.melt(data, "MSW05_Binomial", units=units)
     return(data)
+}
+
+# high impact invaders
+# written by Sylvia
+.case.2016 <- function(...){
+    data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.103099/Traits.2Feb2015.csv?sequence=1", sep = ",", header = TRUE)
+    #units <- length(names(data))
+    data <- .df.melt(data, "species")
+    return(data) 
 }
