@@ -58,4 +58,22 @@
     return(.df.melt(data, "Scientific"))
 }
 
+# panTHERIA
+# written by Will during meeting
+.jones.2009a <- function(...){
+    data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR05_Aug2008.txt", "esa_archives"))
+    for(i in 1:ncol(data))
+        data[data[,i]==-999 | data[,i]=="-999",i] <- NA
+    units <- sample(c("g","m^2"),length(names(data))-1,TRUE)
+    data <- .df.melt(data, "MSW05_Binomial", units=units)
+    return(data)
+}
 
+.jones.2009b <- function (...){
+    data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR93_Aug2008.txt", "esa_archives"))
+    for(i in 1:ncol(data))
+        data[data[,i]==-999 | data[,i]=="-999",i] <- NA
+    units <- sample(c("g","m^2"),length(names(data))-1,TRUE)
+    data <- .df.melt(data, "MSW05_Binomial", units=units)
+    return(data)
+}
