@@ -20,6 +20,8 @@
 \newcommand{\natdb}{\texttt{NATDB}\xspace}
 
 \usepackage{pifont}
+\usepackage{minted}
+\usepackage{hologo}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Bibliography%%%%%%%%%%%%%%%%%%%%%%
@@ -58,29 +60,29 @@
 
 \begin{document}
 
-\title{\natdb : An \R package that downloads species' trait data, but
+\title{\natdb : An \R package that downloads species trait data, but
   is Not A Trait DataBase} \author{Order TBD: William D.\ Pearse,
   Konrad Hafen, Mallory Hagadorn,\\ Marley Haupt, Spencer B.\ Hudson,
-  Julie Kelso, Sylvia Kinosian, Ryan McCleary,\\ Alexandre Rego, Katie
-  Welgarz} \date{\today}
+  Sylvia Kinosian, Ryan McCleary,\\ Alexandre Rego, \& Katie Welgarz}
+\date{\today}
 \maketitle
 
 \section{Abstract}
 \begin{enumerate}
 \item Ecologists and evolutionary biologists often wish to make use of
-  species' trait data, either as ancillary data, such as in community
+  species trait data, either as ancillary data, such as in community
   ecology, or as the primary focus of a study, such as
   macro-evolutionary modelling.
 \item Such biologists are often hampered by the difficulties of
   collecting sufficient trait data from published sources. There are
   very few open access databases of species' traits.
 \item We present \natdb, an \R package---not a trait database---that
-  automatically downloads species' trait data from existing sources.
+  automatically downloads species trait data from existing sources.
 \item NATDB collates trait data from over XXX publications across XXX
   species, and at the time of writing downloads over XXX individual
   trait measurements.
 \item NATDB is emphatically \emph{not} a trait database: it
-  circumvents issues over intellectual ownership of species' trait
+  circumvents issues over intellectual ownership of species trait
   data by not distributing data, but rather giving users automated
   tools to build their own data from existing, published datasets. Our
   hope is to establish a user community around this package, adding
@@ -108,7 +110,7 @@ species to find general biodiversity patterns.
 % Blimey this is thin on the ground!
 
 Yet, despite its importance, it is often difficult to find data on
-species' functional traits. We suggest there are three main reaons for
+species' functional traits. We suggest there are three main reasons for
 this: (1) it is difficult to obtain trait data, (2) it is difficult to
 collate trait data, and (3) concerns have been raised about
 intellectual property and the distribution of trait data. (1) Often
@@ -121,7 +123,7 @@ nomenclature for species and traits is not universal
 \autocite{Kattge2011,Hudson2017}, and unifying concepts across
 different datasets takes detailed knowledge of species and their
 traits. (3) Unlike other other kinds of data such as DNA sequences
-\autocite{Benson2013}, the publication of species' trait data has been
+\autocite{Benson2013}, the publication of species trait data has been
 controversial \autocite[\emph{e.g.},][]{Poisot2014,Moles2013}.
 % Are those citations right? I thought Moles was a reply to Poisot...
 The reasons for this are complex and numerous, but perhaps the most
@@ -145,31 +147,109 @@ protects the intellectual contributions of those who collected the
 data in the first place.
 
 \section{Description}
-% How natdb operates. Examples of the code that are run, and how once
-% built the database can be cached so the download process isn't
-% required to happen constantly.
+\natdb consists of a series of internal functions, each of which
+downloads species trait data from a single paper. Typically, a user
+will download a set of data and then subset that down to only the
+species or traits that they require. Note that, by default, \natdb
+waits ten seconds between downloading datasets to minimise impact on
+journals' servers. For example, the following would download all the
+data in \natdb, and then subset that down to only two kinds of traits
+for two species:
 
-% An overview of the internal structure of the main class, and a brief
-% discussion of why numeric and categorical data must be
-% separated. Descriptions of the S3 classes that allow dataframe-like
-% handling of the data.
+\begin{minted}{splus}
+  library(natdb)
+  data <- natdb(taxon)
+  species <- c("Quercus_robur", "Pinus_sylvestris")
+  traits <- c("SLA", "height")
+  subset.data <- data[species, traits]
+\end{minted}
 
-% Discussion of how meta-data is handled. The basic cleaning that has
-% been performed on the data (column name checking). The wrappers for
-% existing taxonomy, but flagging potential problems.
+By default, \natdb caches whatever it has been asked to download
+during an \R session. So, for example, if the user were to realise
+that they wanted data on an additional species or trait after
+executing the code above, they could run the entire script again and
+\natdb would not download any more data. The \texttt{cache} option
+allows the user to override this behaviour if they desire. A user can
+also specify a directory when invoking \natdb so that they can save
+their searches between sessions. The following code, for example,
+would cache results between sessions, and would add additional data to
+that cache as new versions of \natdb were released. This is the
+recommended way to use \natdb, as it saves the user time and reduces
+server load.
+
+\begin{minted}{splus}
+  data <- natdb(cache="~/.natdb_cache/")
+  subset.data <- data[c("Phocoena_phocoena","Tursiops_truncatus"),]
+\end{minted}
+
+\natdb has a single class for dealing with trait data, called
+(unimaginatively) \natdb. This class has \texttt{head},
+\texttt{print}, \texttt{summary}, \texttt{rbind}, \texttt{cbind}, and
+\texttt{as.data.frame} methods to make it easier for the user to work
+with their data. Internally, \natdb distinguishes between, and convert
+all data into, \texttt{numeric} and \texttt{character} types, and
+\emph{melts} \autocite[\emph{sensu}][]{Wickham2007} all data within
+these types. This makes it easy to add new data to an existing \natdb
+object, while keeping reducing memory load. If \natdb were to store
+data in a \texttt{data.frame}-like format, it would require XXX cells
+(XXX species, XXX traits) to store all its data, XXX\% of which would
+be missing.
+
+Ready access to meta-data is important in any database. The databases
+\natdb can build are complex, in that the meta-data that different
+source datasets provide can vary a great deal. We follow the general
+approach of \emph{FigShare} (\url{https://figshare.com/}) and
+\emph{DataDryad} (\url{http://datadryad.org/}) in not enforcing rigid
+meta-data requirements, but placing the meta-data of each source
+dataset within a comparable framework so as to allow users to
+interrogate the meta-data in their own way. Thus while we do
+standardise some aspects of the data (\emph{e.g.}, ensuring all
+latitude and longitude measurements, where present, are termed
+\texttt{latitude} and \texttt{longitude}), users must check whatever
+subset of data they have to see what meta-data are available. For
+example:
+
+\begin{minted}{splus}
+  head(metadata(subset.data))
+  table(metadata(subset.data))
+  plot(subset.data$SLA ~ metadata(subset.data)$latitude)
+\end{minted}
+
+We make no guarantee that the taxonomy or units of the data within
+\natdb are internally compatible: users are responsible for checking
+the validity of the data they have collated. However, we have written
+wrappers for common taxonomic services for cleaning problems with
+species nomenclature using existing \R packages
+\autocite[\texttt{Taxonstand} and others?]{Cayuela2012}.
+
+\begin{minted}{splus}
+  data <- natdb(taxon)[c("Quercus_robur", "Pinus_sylvestris"), c("SLA", "height")]
+  subset.data <- data[units(data) == "mm", "height"]
+  subset.data <- tpl.clean(subset.data)
+\end{minted}
+
+Finally, it is important that those who generated the data \natdb
+downloads are appropriately cited. It is simple to generate
+\hologo{BibTeX}, RIS, and plaintext files to help with citations:
+
+\begin{minted}{splus}
+  citation(subset.data, "bibtex")
+\end{minted}
+
 
 \begin{table}
-  \begin{tabular}{llll}
-    Taxonomic group & \# species & \# traits & \% complete \\ \hline
-    Plants \\
-    Mammals \\
-    Birds \\ \hline
+  \begin{tabular}{lllll}
+    Taxonomic group & \# Species & \# Traits & \% Complete & Citations \\ \hline
+    Plants & & & \textcite{Wright2004}\\
+    Mammals & & & \textcite{Jones2009,Wilman2014}\\
+    Birds & & & \textcite{Wilman2014}\\
+    ...TBC... \\ \hline
   \end{tabular}
-  \label{overview}
   \caption{Overview of data available for download within
     \natdb. Overall, the package downloads XXX data points, covering
     XXX species and XXX separate functional traits. XXX\% of these
     trait values have some form of meta-data associated with them.}
+  \label{overview}
 \end{table}
 
 \section{Comparison with existing tools}
@@ -184,13 +264,16 @@ data to be added. The average length of the functions that load a data
 structure into \natdb is XXX lines of \R code, in part because as part
 of this project we developed code for the \R package \texttt{fulltext}
 \autocite{Chamberlain2015} to automate the download of data from
-published papers. \natdb uses reflective programming to querry itself
+published papers. \natdb uses reflective programming to query itself
 to determine what datasets are available for download, and as such
 extension is trivial. This represents a major advantage to \natdb: it
 is a living package that will, we hope, grow as authors add their own
 publications to it. We provide detailed instructions on how to
 contribute data sources to \natdb in the package's vignette.
 
+% Everyone: this paragraph is important. People work very hard on
+% these databases and we don't want to be glib! Some of these people
+% are also my friends!... :D
 The flexibility and scope of \natdb, however, means it has not been as
 carefully cleaned and checked as datasets typically are. This is by
 design: \natdb is fundamentally different, and we use TRY
@@ -208,35 +291,44 @@ publishers, require co-authorship for use of the package. Basic
 taxonomic and data %...talk about how some basic cleaning, but nothing
                    %fancy
 
-% Explicit comparison with TRY. Explain why TRY is as it is because it
-% requries effort to clean, etc. Explain how we're doing fundamentally
-% different things. 
-% --> explain different citation model: cite every source and (if
-% space) \natdb. This underlies the difference between the two, and
-% makes it all OK...
-
 \begin{table}
-  \begin{tabular}{llllll}
-    Dataset & \R native? & Taxonomic scope & \# species & \# traits & \% complete \\ \hline
-    TRY & \ding{55} & Plants \\
-    D3 & \ding{55} & Plants \\
-    TR8 & \ding{51} & Plants \\ \hline
+  \begin{tabular}{lllllll}
+    Dataset & \R native? & Taxonomic scope & \# Species & \# Traits & \% Complete & Citation \\ \hline
+    TRY & \ding{55} & Plants & & & \textcite{Kattge2011} \\
+    D3 & \ding{55} & Plants & & & \textcite{Hintze2013} \\
+    TR8 & \ding{51} & Plants & & & \textcite{Gionata2015} \\ \hline
     \natdb & \ding{51} & Organisms  \\ \hline
   \end{tabular}
-  \label{comparison}
   \caption{Comparison of \natdb to existing packages or databases. As
     described in the text, we only compare \natdb with open access
     databases and packages.}
+  \label{comparison}
 \end{table}
 
 \section{Future directions}
-% * We encourage pull requests etc. (see above)
-% * Hoping to establish more datasets along this line because it moves
-%   past issues in ecology with authorships and citation (use Amy's
-%   Nature paper as an example of good citing of sources?)
-% * Future directions include automated unit cleaning with some kind
-%   of parser, and encourage others to submit their cleaning scripts
-%   (...some wrappers for plant names...) to improve the package going
-%   forward.
+We actively encourage code contributions, and the package's online
+vignette contains a detailed set of instructions on how to contribute
+functions that download data from new sources. Our intention is to
+make the process as simple as possible, in the hope that authors who
+release the data underlying their publications will contribute to the
+package, in the process making \natdb better and making it easier for
+others to use (and cite) their work. This, in part, is the reason we
+have few formal checks on meta-data and units within \natdb: we
+consider the first hurdle to be getting more data into a useable
+format within \R, and all other issues can be handled later. We hope
+that, using \natdb as a base, others will develop cleaning and
+checking routines that can be applied to the package. Whether these
+will be incorporated into \natdb itself, or released as separate
+companion package(s), remains to be seen.
+
+\natdb is both an experiment in a new way of making data more
+accessible, and a useful resource that we are already making use of in
+our daily working lives. It is our hope that \natdb, and resources
+like it, will continue to grow.
+% This ending is nauseating
 
 \end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
