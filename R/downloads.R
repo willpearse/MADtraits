@@ -43,6 +43,19 @@
     return(.df.melt(data, "Species"))
 }
 
+.cariveau.2016 <- function(...){
+  
+  link = "http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0151482.s003"
+  file = "C:/crap/journal.pone.0151482.s003.XLSX"
+  sheet = "TableS1_v2"
+  data = read.xlsx(ft_get_si("10.1371/journal.pone.0151482", 3), sheetName=sheet)
+
+  data = .df.melt(data, "species", c(NA, NA, NA, NA, NA, "#", "#", "#", "#", "mm","mm","mm","mm",NA,NA))
+  
+  return(data)
+}
+
+
 # Elton traits
 # written by Sylvia
 .wilman.2014a  <- function(...){
