@@ -47,7 +47,7 @@
         units <- setNames(units, setdiff(names(x),c(species,"metadata")))
     }
     if(missing(metadata)){
-        metadata <- apply(sapply(1:2, function(y) paste(names(x)[y],t[,y],sep=":")), 1, paste, collapse=";")
+        metadata <- apply(sapply(1:2, function(y) paste(names(x)[y],x[,y],sep=":")), 1, paste, collapse=";")
     } else metadata <- rep(NA, nrow(x))
 
     # Numeric data

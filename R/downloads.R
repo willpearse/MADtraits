@@ -7,7 +7,6 @@
 #' @importFrom utils read.csv
 #' @importFrom testdat sanitize_text
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
-
 .wright.2004 <- function(...){
     raw <- read.xls("http://www.nature.com/nature/journal/v428/n6985/extref/nature02403-s2.xls", as.is=TRUE, skip=7)
     metadata <- data.frame(raw[,c("Code","Dataset","BIOME")],need_permission=TRUE)
@@ -39,12 +38,15 @@
     data <- read.xls(ft_get_si("10.5061/dryad.6t7t6","Table%20S2.xls"), as.is=TRUE)
     metadata <- data.frame(GenBankAccession=sapply(strsplit(data$Species, "_"), function(x) x[3]))
     data$Species <- sapply(strsplit(data$Species, "_"), function(x) paste(x, collapse="_"))
-    return(.df.melt(data, "Species"))
+    return(.df.melt(data, "Species",c(NA,"?","?",NA,NA,NA,NA,NA,NA),metadata))
 }
 
 .cariveau.2016 <- function(...){ 
-    data = read.xlsx(ft_get_si("10.1371/journal.pone.0151482", 3), sheetName="TableS1_v2")
-    data = .df.melt(data, "species", units=c(NA, NA, NA, NA, NA, "#", "#", "#", "#", "mm","mm","mm","mm",NA,NA))
+    data <- read.xls(ft_get_si("10.1371/journal.pone.0151482", 3), sheet="TableS1_v2")
+    metadata <- data[,c(1:3,6)]
+    data$species <- with(data, tolower(paste(genus, species, sep="_")))
+    data <- data[-c(1:4,6)]
+    data <- .df.melt(data, "species", units=c(NA, NA, NA, NA, NA, "#", "#", "#", "#", "mm","mm","mm","mm",NA,NA), metadata)
     return(data)
 }
 
@@ -59,6 +61,74 @@
     data <- data[,-c(1)]
     units <- sample(c("Scientific","MSWFamilyLatin","Diet.Inv","Diet.Vend","Diet.Vect","Diet.Vfish","Diet.Vunk","Diet.Scav","Diet.Fruit","Diet.Nect","Diet.Seed","Diet.PlantO","Diet.Source","Diet.Certainty","ForStrat.Value","ForStrat.Certainty","ForStrat.Comment","Activity.Nocturnal","Activity.Crepuscular","Activity.Diurnal","Activity.Source","Activity.Certainty","BodyMass.Value","BodyMass.Source","BodyMass.SpecLevel"),length(names(data))-1,TRUE)
     return(.df.melt(data, "Scientific"))
+}
+
+.ingram.2016 <- function(...){
+  color <- read.csv(ft_get_si("10.5061/dryad.9vr0c", "Dewlap_data_archive.csv"))
+  color <- color[,-c(1,3,4,7:11)]
+  units <- c('cm', 'cm^2')
+  return(.df.melt(color, "Species", units=units))
+}
+
+.munoz.2014 <- function(...){
+  data <- read.table(ft_get_si("10.5061/dryad.q39h2", "Munoz_2014_AmNat_Dryad.txt"), header=T)
+  names(data) <- c('species', 'clade', 'island','latitude','longitude','elevation','svl')
+  units <- c('degrees', 'degrees', 'm','mm', rep(NA, 3))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.artacho.2015 <- function(...){
+  data <- read.csv2(ft_get_si("10.5061/dryad.qg062", "phenotypictraits.csv"), sep=';')
+  data <- data[,-c(1:5,10,12:13)]
+  data$species <- 'Z.vivipara'
+  units <- c('mm', 'mm', 'g','C', 'J/h')
+  data$SVL <- as.numeric(data$SVL)
+  data$TTL <- as.numeric(data$TTL)
+  data$weight <- as.numeric(data$weight)
+  data$PBT <- as.numeric(data$PBT)
+  data$RMR <- as.numeric(data$RMR)
+  return(.df.melt(data, "species", units=units))
+}
+
+.kolbe.2011 <- function(...){
+  data <- read.table(ft_get_si("10.5061/dryad.1d24c","21%20species%20means.txt"),header=T,sep = '\t')
+  units <- c(rep('mm',20))
+  data<-.df.melt(data, "Species", units=units)
+  data$character$units <- NA
+  return(data)
+  }
+
+.winchell.2016 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
+  data <- data[,-c(1:2,15:16)]
+  data$species <- 'A.cristatellus'
+  data$perch.diam.cm <- as.numeric(data$perch.diam.cm)
+  units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
+  data<-.df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.kamath.2016 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.9vk07","KamathLososEvol_AnolissagreiMorphAvg.csv"))
+  data <- data[,-c(1)]
+  data$species <- 'A.sagrei'
+  units <- c('mm','NA','mm^2','mm',NA)
+  data<-.df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.husak.2016 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.2d960","HusakFergusonLovern_Anolis_training_diet_alldata.csv"))
+  data <- data[,-c(1)]
+  data$species <- 'A.carolinensis'
+  units <- c('NA',rep('mm',4), rep('g',3),rep('s',2),'mm','%',rep('mg',4),'psi',rep('ng/mL',2),'NA','mg',rep('NA',4))
+  data<-.df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
 }
 
 
