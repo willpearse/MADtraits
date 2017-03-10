@@ -39,28 +39,38 @@
     return(as.data.frame(output))
 }
 
-.df.melt <- function(x, species, units){
-    if(!"metadata" %in% names(x))
-        x$metadata <- NA
+.df.melt <- function(x, species, units, metadata){
+    # Meta-data and units
     if(missing(units)){
         units <- setNames(rep(NA, length(names(x))), names(x))
     } else {
         units <- setNames(units, setdiff(names(x),c(species,"metadata")))
     }
-    numeric <- x[,sapply(x, is.numeric) | names(x) %in% c(species,"metadata")]
-    if(ncol(numeric) > 2){
+    if(missing(metadata)){
+        metadata <- apply(sapply(1:2, function(y) paste(names(x)[y],t[,y],sep=":")), 1, paste, collapse=";")
+    } else metadata <- rep(NA, nrow(x))
+
+    # Numeric data
+    numeric <- x[,sapply(x, is.numeric) | names(x) == species,drop=FALSE]
+    if(ncol(numeric) > 1){
+        numeric$metadata <- metadata
         numeric <- melt(numeric, id.vars=c(species,"metadata"))
         numeric <- numeric[!is.na(numeric$value),]
         names(numeric)[1] <- "species"
         numeric$units <- units[numeric$variable]
     } else numeric <- NULL
-    character <- x[,sapply(x, Negate(is.numeric)) | names(x) %in% c(species,"metadata")]
-   if(ncol(character) > 2){
+
+    # Character data
+    character <- x[,sapply(x, Negate(is.numeric)) | names(x) == species,drop=FALSE]
+    if(ncol(character) > 1){
+        character$metadata <- metadata
         character <- melt(character, id.vars=c(species,"metadata"))
         character <- character[!is.na(character$value),]
         names(character)[1] <- "species"
         character$units <- units[character$variable]
-    } else character <- NULL
+   } else character <- NULL
+
+    #Cleanup and return
     return(list(numeric=numeric,character=character))
 }
 
