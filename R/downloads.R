@@ -50,17 +50,39 @@
     return(data)
 }
 
+# Elton traits
+# written by Sylvia
 .wilman.2014a  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
-    data <- data[,-c(23,34)]
-    units <- sample(c("SpecID", "PassNonPass", "IOCOrder", "BLFamilyLatin", "BLFamilyEnglish", "BLFamSequID", "Taxo", "Scientific", "English", "Diet.Inv", "Diet.Vend", "Diet.Vect", "Diet.Vfish", "Diet.Vunk", "Diet.Scav", "Diet.Fruit", "Diet.Nect", "Diet.Seed", "Diet.PlantO", "Diet.5Cat", "Diet.Source", "Diet.Certainty", "ForStrat.watbelowsurf", "ForStrat.wataroundsurf", "ForStrat.ground", "ForStrat.understory", "ForStrat.midhigh", "ForStrat.canopy", "ForStrat.aerial", "PelagicSpecialist", "ForStrat.Source", "ForStrat.SpecLevel", "Nocturnal", "BodyMass.Value", "BodyMass.Source", "BodyMass.SpecLevel", "BodyMass.Comment", "Record.Comment"),length(names(data))-1,TRUE)
+    data <- data[,-c(1,23,34)]
+    units <- sample(c("NA", "NA", "NA", "NA", "NA", "Taxo", "NA", "NA", "%", "%", "%", "%", "%", "%", "%", "%", "%", "%", "NA", "Diet.Source", "NA", "%", "%", "%", "%", "%", "%", "%", "boolean", "NA", "boolean", "boolean", "NA", "NA", "boolean", "NA", "NA"),length(names(data))-1,TRUE)
     return(.df.melt(data, "Scientific"))
 }
 .wilman.2014b  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "MamFuncDat.txt", "esa_archives"))
     data <- data[,-c(1)]
-    units <- sample(c("Scientific","MSWFamilyLatin","Diet.Inv","Diet.Vend","Diet.Vect","Diet.Vfish","Diet.Vunk","Diet.Scav","Diet.Fruit","Diet.Nect","Diet.Seed","Diet.PlantO","Diet.Source","Diet.Certainty","ForStrat.Value","ForStrat.Certainty","ForStrat.Comment","Activity.Nocturnal","Activity.Crepuscular","Activity.Diurnal","Activity.Source","Activity.Certainty","BodyMass.Value","BodyMass.Source","BodyMass.SpecLevel"),length(names(data))-1,TRUE)
+    units <- sample(c("NA","NA","%","%","%","%","%","%","%","%","%","%","NA","NA","NA","NA","NA","boolean","boolean","boolean","NA","NA","NA","NA","NA"),length(names(data))-1,TRUE)
     return(.df.melt(data, "Scientific"))
+}
+
+# panTHERIA
+# written by Will during meeting, added by Sylvia
+.jones.2009a <- function(...){
+    data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR05_Aug2008.txt", "esa_archives"))
+    for(i in 1:ncol(data))
+        data[data[,i]==-999 | data[,i]=="-999",i] <- NA
+    units <- sample(c("g","m^2"),length(names(data))-1,TRUE)
+    data <- .df.melt(data, "MSW05_Binomial", units=units)
+    return(data)
+}
+
+.jones.2009b <- function (...){
+    data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR93_Aug2008.txt", "esa_archives"))
+    for(i in 1:ncol(data))
+        data[data[,i]==-999 | data[,i]=="-999",i] <- NA
+    units <- sample(c("g","m^2"),length(names(data))-1,TRUE)
+    data <- .df.melt(data, "MSW05_Binomial", units=units)
+    return(data)
 }
 
 .ingram.2016 <- function(...){
@@ -131,4 +153,11 @@
   return(data)
 }
 
-
+# high impact invaders
+# written by Sylvia
+.case.2016 <- function(...){
+    data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.103099/Traits.2Feb2015.csv?sequence=1", sep = ",", header = TRUE)
+    #units <- length(names(data))
+    data <- .df.melt(data, "species")
+    return(data) 
+}
