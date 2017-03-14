@@ -187,6 +187,27 @@
   return(data)
 }
 
+.Simmons.2014 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.42pg7", "Simmons%20%26%20Buzatto%202013.xlsx"), as.is=TRUE)
+  species <- rep(c("Onthophagus_taurus"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,11]
+  data <- data[,-c(10:11)]
+  units <- c("species", rep(NA,2), "mg", "mm", "mg", rep(NA, 5))
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.Barnes.2014 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.62512", "dung%20beetle%20response%20effect%20trait%20data.csv"), as.is=TRUE)
+  species <- rep(c("DB_community"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,c(2:3)]
+  data <- data[,-c(2:3)]
+  units <- c("species", "NA", "mg", "?", "mg", rep(NA, 2), "mm^2", "mm", rep(NA, 3))
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
 
 
 
