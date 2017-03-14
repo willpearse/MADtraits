@@ -1,4 +1,4 @@
 language: r
 cache: packages
 
-r_github_packages: ropensci/testdat
+r_github_packages: ropensci/testdat   

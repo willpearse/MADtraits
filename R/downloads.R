@@ -161,3 +161,41 @@
     data <- .df.melt(data, "species")
     return(data) 
 }
+
+# Will fix me please!!!
+#issue with the setup
+.Tian.2016 <- function(...){
+  data <- read.xls("~/Documents/Programming/NerdClub/Trait_sheets/srep19703-s2.xls", as.is=TRUE, skip=XXX)
+  for(i in 1:ncol(data))
+    data[ifelse(is.na(data[,i]== "—" | data[,i]== "—§"), FALSE, data[,i]== "—" | data[,i]== "—§"),i] <- NA
+  data[,-c(1,5,9,12)]
+  data$Space <- NULL
+  units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "μm", "mm^2", "%", "Space", "μm", "%", "%", "Space", "classification", "Space", "Needle/Broad")
+  data <- .df.melt(data, "plant_spp", units=units)
+  return(data)
+}
+
+#M.A.Hagadorn: First Attempt, needs to be verified by Pearse
+.Pearse.2014 <- function(...){
+  data <- read.csv(ft_get_si("10.6084/m9.figshare.979288", 4), sep = ",", na.strings = c("","NA"))
+  species <- rep(c("Carcinus_maenas"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,c(2:3,8:15)]
+  data <- data[,-c(2:3,8:15)]
+  units <- c("species",rep(NA,7), "min", rep(NA,6))
+  data <- .df.melt(data, "species", units=units, metadata)
+  return(data)
+}
+
+.Simmons.2014 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.42pg7", "Simmons%20%26%20Buzatto%202013.xlsx"), as.is=TRUE)
+  species <- rep(c("Onthophagus_taurus"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,11]
+  data <- data[,-c(10:11)]
+  units <- c("species", rep(NA,2), "mg", "mm", "mg", rep(NA, 5))
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+
