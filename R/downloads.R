@@ -39,3 +39,18 @@
     data$Species <- sapply(strsplit(data$Species, "_"), function(x) paste(x, collapse="_"))
     return(.df.melt(data, "Species"))
 }
+.bellobedoy.2015a <- function(...){
+    data <- read.csv(
+        ft_get_si("10.6084/m9.figshare.1190766.v2","Mating success H americana.csv")
+        )
+    data$species <- "hetaerina_americana"
+    metadata <- data.frame(id=data$id)
+    data$id <- NULL
+    return(.df.melt(data, "species", c(NA, "#", "mm", "mm", "mm"), metadata))
+}
+.bellobedoy.2015b <- function(...){
+    data <- read.xls(
+        ft_get_si("10.6084/m9.figshare.1190766.v2","mating occurrencePzoe_2010.xls")
+        )
+    levels(data$Status) <- c("satellite.male", "territorial.male")
+}
