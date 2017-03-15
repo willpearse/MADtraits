@@ -167,11 +167,11 @@
 #issue with the setup
 .Tian.2016 <- function(...){
   data <- read.xls("~/Documents/Programming/NerdClub/Trait_sheets/srep19703-s2.xls", as.is=TRUE, skip=XXX)
-  for(i in 1:ncol(data))
-    data[ifelse(is.na(data[,i]== "—" | data[,i]== "—§"), FALSE, data[,i]== "—" | data[,i]== "—§"),i] <- NA
+  # for(i in 1:ncol(data))
+  #   data[ifelse(is.na(data[,i]== "â" | data[,i]== "âÂ§"), FALSE, data[,i]== "â" | data[,i]== "âÂ§"),i] <- NA
   data[,-c(1,5,9,12)]
   data$Space <- NULL
-  units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "μm", "mm^2", "%", "Space", "μm", "%", "%", "Space", "classification", "Space", "Needle/Broad")
+  units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "Î¼m", "mm^2", "%", "Space", "Î¼m", "%", "%", "Space", "classification", "Space", "Needle/Broad")
   data <- .df.melt(data, "plant_spp", units=units)
   return(data)
 }
@@ -203,7 +203,7 @@
   data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.99379/Plant%20trait%20data.csv?sequence=1")
   metadata <- data[,c(2:3)]
   data <- data[-c(2:3)]
-  data$Species = gsub(" ","_",data$Species)
+  data$Species <- gsub(" ","_",data$Species)
   data <- .df.melt(data, "Species", units = c(NA, NA, "m", "m", "g", "g", "g/g", "g/cm", "SA/vol", "kJ/g"), metadata)
   return(data)
 }
@@ -213,7 +213,7 @@
   data$species <- rep("Coffea_arabica", nrow(data))
   metadata <- data[,c(1:10,12)]
   data <- data[-c(1:10,12)]
-  units = c("#","cm","cm","mm","mm","#","#","#","m^2","mm","m","mg","g","#","#","#",
+  units <- c("#","cm","cm","mm","mm","#","#","#","m^2","mm","m","mg","g","#","#","#",
             "#","#","#","#","#","#","#","#","g/m^2","#","g/cm^3","#","#","g/cm^2",
             "#","#","#","#","#", NA)
   data <- .df.melt(data, "species", units = units, metadata)
