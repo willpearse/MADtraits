@@ -7,8 +7,10 @@
 # param to.save.name name to save the file as (DEFAULT: it will be
 #     named paste(zip,file, sep='_'))
 # return Complete path to unzipped file
-#' @importFrom utils unzip
+#' @importFrom utils unzip download.file
 #' @importFrom reshape2 melt
+#' @importFrom httr GET
+#' @importFrom stats setNames
 .unzip <- function(file, zip, to.save.dir, to.save.name){
     if(missing(to.save.dir))
         to.save.dir <- tempdir()

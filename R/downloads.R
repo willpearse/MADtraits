@@ -4,7 +4,7 @@
 #Headers
 #' @importFrom fulltext ft_get_si
 #' @importFrom gdata read.xls
-#' @importFrom utils read.csv
+#' @importFrom utils read.csv read.csv2 read.delim read.table
 #' @importFrom testdat sanitize_text
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
 .wright.2004 <- function(...){
@@ -165,16 +165,16 @@
 
 # Will fix me please!!!
 #issue with the setup
-.Tian.2016 <- function(...){
-  data <- read.xls("~/Documents/Programming/NerdClub/Trait_sheets/srep19703-s2.xls", as.is=TRUE, skip=XXX)
-  for(i in 1:ncol(data))
-    data[ifelse(is.na(data[,i]== "â" | data[,i]== "âÂ§"), FALSE, data[,i]== "â" | data[,i]== "âÂ§"),i] <- NA
-  data[,-c(1,5,9,12)]
-  data$Space <- NULL
-  units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "Î¼m", "mm^2", "%", "Space", "Î¼m", "%", "%", "Space", "classification", "Space", "Needle/Broad")
-  data <- .df.melt(data, "plant_spp", units=units)
-  return(data)
-}
+#.Tian.2016 <- function(...){
+#  data <- read.xls("~/Documents/Programming/NerdClub/Trait_sheets/srep19703-s2.xls", as.is=TRUE)
+#  for(i in 1:ncol(data))
+#    data[ifelse(is.na(data[,i]== "â" | data[,i]== "âÂ§"), FALSE, data[,i]== "â" | data[,i]== "âÂ§"),i] <- NA
+#  data[,-c(1,5,9,12)]
+#  data$Space <- NULL
+#  units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "Î¼m", "mm^2", "%", "Space", "Î¼m", "%", "%", "Space", "classification", "Space", "Needle/Broad")
+#  data <- .df.melt(data, "plant_spp", units=units)
+#  return(data)
+#}
 
 #M.A.Hagadorn: First Attempt, needs to be verified by Pearse
 .Pearse.2014 <- function(...){
