@@ -155,6 +155,7 @@
 
 # high impact invaders
 # written by Sylvia
+# Konrad tried to update units, turns out they're not reported with the data or in the paper WTF!
 .case.2016 <- function(...){
     data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.103099/Traits.2Feb2015.csv?sequence=1", sep = ",", header = TRUE)
     #units <- length(names(data))
@@ -198,4 +199,23 @@
   return(data)
 }
 
+.simpson.2015 <- function(...){
+  data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.99379/Plant%20trait%20data.csv?sequence=1")
+  metadata <- data[,c(2:3)]
+  data <- data[-c(2:3)]
+  data$Species = gsub(" ","_",data$Species)
+  data <- .df.melt(data, "Species", units = c(NA, NA, "m", "m", "g", "g", "g/g", "g/cm", "SA/vol", "kJ/g"), metadata)
+  return(data)
+}
 
+.martin.2016 <- function(...){
+  data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.127965/Martin%20et%20al.%20Functional%20Ecology.txt?sequence=1", sep = "\t")
+  data$species <- rep("Coffea_arabica", nrow(data))
+  metadata <- data[,c(1:10,12)]
+  data <- data[-c(1:10,12)]
+  units = c("#","cm","cm","mm","mm","#","#","#","m^2","mm","m","mg","g","#","#","#",
+            "#","#","#","#","#","#","#","#","g/m^2","#","g/cm^3","#","#","g/cm^2",
+            "#","#","#","#","#", NA)
+  data <- .df.melt(data, "species", units = units, metadata)
+  return(data)
+}
