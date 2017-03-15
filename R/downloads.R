@@ -39,3 +39,22 @@
     data$Species <- sapply(strsplit(data$Species, "_"), function(x) paste(x, collapse="_"))
     return(.df.melt(data, "Species"))
 }
+
+.gossner.2015 <- function(...){
+  file<-tempfile()
+  download.file("http://datadryad.org/bitstream/handle/10255/dryad.76638/ArthropodSpeciesTraits.txt?sequence=1",file)
+  data <- read.delim(file)
+  metaData <- data[,c(1:3)]
+  data <- data[,-c(1:3,5,17)]
+  units <- c("mm",rep(NA,10))
+  data <- .df.melt(data,"SpeciesID",units=units, metadata)
+}
+
+.sherratt.2013<-function(...){
+  file<-tempfile()
+  download.file("https://datadryad.org/bitstream/handle/10255/dryad.47130/Ontogenetic%20allometry%20data.csv?sequence=1",file)
+  data<-read.csv(file)
+  data<-data[,-c(2:3,5)]
+  units=c("mm","cm","cm")
+  data<-.df.melt(data,"Species",units=units)
+}
