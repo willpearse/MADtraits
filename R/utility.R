@@ -46,7 +46,8 @@
     } else {
         units <- setNames(units, setdiff(names(x),c(species,"metadata")))
     }
-    if(missing(metadata)){
+
+    if(!missing(metadata)){
         metadata <- apply(sapply(1:2, function(y) paste(names(x)[y],x[,y],sep=":")), 1, paste, collapse=";")
     } else metadata <- rep(NA, nrow(x))
 
@@ -55,16 +56,18 @@
     if(ncol(numeric) > 1){
         numeric$metadata <- metadata
         numeric <- melt(numeric, id.vars=c(species,"metadata"))
+        numeric$variable <- as.character(numeric$variable) # impossible to stop this coercion in melt!
         numeric <- numeric[!is.na(numeric$value),]
         names(numeric)[1] <- "species"
         numeric$units <- units[numeric$variable]
     } else numeric <- NULL
-
+    
     # Character data
     character <- x[,sapply(x, Negate(is.numeric)) | names(x) == species,drop=FALSE]
     if(ncol(character) > 1){
         character$metadata <- metadata
         character <- melt(character, id.vars=c(species,"metadata"))
+        character$variable <- as.character(character$variable) # impossible to stop this coercion in melt!
         character <- character[!is.na(character$value),]
         names(character)[1] <- "species"
         character$units <- units[character$variable]

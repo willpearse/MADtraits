@@ -175,7 +175,6 @@
   return(data)
 }
 
-#M.A.Hagadorn: First Attempt, needs to be verified by Pearse
 .Pearse.2014 <- function(...){
   data <- read.csv(ft_get_si("10.6084/m9.figshare.979288", 4), sep = ",", na.strings = c("","NA"))
   species <- rep(c("Carcinus_maenas"), nrow(data))
@@ -198,7 +197,23 @@
   return(data)
 }
 
+.Grootemaat.2015 <- function(...){
+  data <- read.xls(ft_get_si('10.5061/dryad.m41f1', 'Grootemaat%202015_FE_Dryad.xlsx'), sheet ='RAWdata', as.is = TRUE)
+  data <- data[-c(1),]
+  metadata <- data[,c(1,3)]
+  data <- data[,-c(1,3)]
+  units <- c('species', rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "odw", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
 
-
-
-
+.Arnold.2016 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.t3d52", "Arnold_etal_2016_functecol_dataset.xlsx"), as.is = TRUE, skip = 3)
+  species <- rep(c("Tribolium_castaneum"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,c(2:7,24:25)]
+  data <- data[,-c(2:7,23:25)]
+  units <- c("species", "µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
