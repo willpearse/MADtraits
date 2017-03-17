@@ -653,7 +653,7 @@
 #    data <- data[,1:8]
 #}
 
-.plourde.2015 <- function(..){
+.plourde.2015 <- function(...){
   data <- read.delim(ft_get_si("10.5061/dryad.sv181", "complete.individual.data.txt"))
   data <- unite(data, species, genus, species, remove = FALSE)
   data <-data[,-c(4:5)]
