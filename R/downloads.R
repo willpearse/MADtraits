@@ -890,7 +890,48 @@
   return(data)
 }
 
+.engemann.2016 <- function(...){
+    data <- read.delim(unzip(ft_get_si("10.1002/ecy.1569", 1), "DataS1/GrowthForm_Final.txt"))
+    metadata <- data[,c("FAMILY_STD", "CONSENSUS", "ID", "SOURCES")]
+    data <- data[,!names(data) %in% names(metadata)]
+    data$SPECIES_STD <- tolower(gsub(" ", "_", data$SPECIES_STD))
+    return(.df.melt(data, "SPECIES_STD", rep(NA,2), metadata))
+}
 
+.pfautsch.2016 <- function(...){
+    first <- read.csv(unzip(ft_get_si("10.1890/16-0147.1", 1), "Eucalyptus_vessel_anatomy_800cm.csv"), as.is=TRUE)
+    first$measurement_height <- "800cm"
+    names(first)[19] <- "diameter_at_breast_height"
+    second <- read.csv(unzip(ft_get_si("10.1890/16-0147.1", 1), "Eucalyptus_vessel_anatomy_130cm.csv"), as.is=TRUE)
+    second$measurement_height <- "130cm"
+    names(second)[19] <- "diameter_at_breast_height"
+    data <- rbind(first, second)
+    names(data)[5:6] <- c("latitude", "longitude")
+    metadata <- data[,c("location","country","state","latitude","longitude","elevation","tree","image","measurement_height")]
+    data <- data[,!names(data) %in% names(metadata)]
+    units <- c("#", "#", "µm^2", "µm^2", "µm^2", "# cm^-2", "%", "µm", "µm", "cm", "cm", "cm", "g cm^-3", "g cm^-3", "°C", "°C", "mm", "mm", "mm", "mm", "mm", "mm", "")
+    return(.df.melt(data, "species", units, metadata))
+}
 
+.hebert.2016 <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1890/15-1275.1",1), "zooplankton_traits.csv"), sep=";", as.is=TRUE, dec=",")
+    data$binomial <- tolower(paste(data$Genus, data$Species, sep="_"))
+    metadata <- data[,c("Genus","Species","Replicate.number","Group","Ref.tg","Ref.bl","Ref.dm","Ref.C","Ref.N","Ref.P","Ref.NP","Ref.prot","Ref.lip","Ref.resp","Ref.N.ex","Ref.P.ex","Ref.NPex")]
+    data <- data[,!names(data) %in% names(metadata)]
+    units <- c(NA, NA, "mm", "mm", "mm","mg", "mg", "mg", "%", "%", "%", "mg", "%", "%", "%", "mg", "%","%", "%", "mg", ":", ":", ":", "%", "%", "%", "%", "%", "%", "µl O2 ind-1 h-1", "µl O2 mgDM -1 h-1","µl O2 mgDM -1 h-1", "µl O2 mgDM -1 h-1", "°C", "°C", "°C", "µg N-NH4+ ind-1 h-1", "µg N-NH4+ mgDM-1 h-1", "µg N-NH4+ mgDM-1 h-1", "µg N-NH4+ mgDM-1 h-1", "nmol N-NH4+ mg DM-1 h-1", "nmol N-NH4+ ind-1 h-1", "nmol N-NH4+ ind-1 h-1", "nmol N-NH4+ ind-1 h-1", "°C", "°C", "°C", "µg P-PO43- ind-1 h-1", "ug P-PO43- mg DM-1 h-1", "ug P-PO43- mg DM-1 h-1", "ug P-PO43- mg DM-1 h-1", "nmol P-PO43- mg DM-1 h-1", "nmol P-PO43- ind-1 h-1", "nmol P-PO43- ind-1 h-1", "nmol P-PO43- ind-1 h-1", "°C", "°C", "°C", ":", ":", ":")
+    return(.df.melt(data, "binomial", units, metadata))
+}
 
+#.neuheimer.2016 <- function(...){
+#    data <- read.csv(unzip(ft_get_si("10.1890/15-1261.1", 1), "15-1261_Neuheimer_SizeDatabase.csv"), as.is=TRUE)
+#    data$binomial <- tolower(paste(data$Genus, data$Species, sep="_"))
+#    metadata <- data[,c("Phylum", "Class", "Order", "SubOrder", "Family", "Genus", "Species")]
+#    combined <- cbind(data[,c("AdultSize1", "AdultSizeUnit1")])
+#    units <- c("AdultSize1", "AdultSizeUnit1", "AdultSizeDescription1", "AdultSizeVariation1", "AdultSizeVariationUnit1", "AdultSizeVariationDescription1", "AdultSize2", "AdultSizeUnit2", "AdultSizeDescription2", "AdultSizeVariation2", "AdultSizeVariationUnit2", "AdultSizeVariationDescription2", "ProgenySize1", "ProgenySizeUnit1", "ProgenySizeDescription1", "ProgenySizeVariation1", "ProgenySizeVariationUnit1", "ProgenySizeVariationDescription1", "ProgenySize2", "ProgenySizeUnit2", "ProgenySizeDescription2", "ProgenySizeVariation2", "ProgenySizeVariationUnit2", "ProgenySizeVariationDescription2", "Reference")
+#}
 
+#.ebert.2013 <- function(...){
+#    data <- read.delim(ft_get_si("E094-193","dissections%2054_09.txt", "esa_archives"), as.is=TRUE, fileEncoding="latin1")
+#    metadata <- data[,c()]
+#    data <- data[,!names(data) %in% names(metadata)]    
+#}
