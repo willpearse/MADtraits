@@ -7,6 +7,7 @@
 #' @importFrom utils read.csv read.csv2 read.delim read.table
 #' @importFrom testdat sanitize_text
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
+
 .wright.2004 <- function(...){
     raw <- read.xls("http://www.nature.com/nature/journal/v428/n6985/extref/nature02403-s2.xls", as.is=TRUE, skip=7)
     metadata <- data.frame(raw[,c("Code","Dataset","BIOME")],need_permission=TRUE)
@@ -41,7 +42,7 @@
     return(.df.melt(data, "Species",c(NA,"?","?",NA,NA,NA,NA,NA,NA),metadata))
 }
 
-.cariveau.2016 <- function(...){ 
+.cariveau.2016 <- function(...){
     data <- read.xls(ft_get_si("10.1371/journal.pone.0151482", 3), sheet="TableS1_v2")
     metadata <- data[,c(1:3,6)]
     data$species <- with(data, tolower(paste(genus, species, sep="_")))
@@ -160,7 +161,7 @@
     data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.103099/Traits.2Feb2015.csv?sequence=1", sep = ",", header = TRUE)
     #units <- length(names(data))
     data <- .df.melt(data, "species")
-    return(data) 
+    return(data)
 }
 
 # Will fix me please!!!
@@ -247,4 +248,56 @@
   data$perch.diam.cm <- as.numeric(data$perch.diam.cm)
   units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
   return(.df.melt(data, "species", units=units))
+}
+
+.yin.2015 <- function(...){
+  data <- read.xls(ft_get_si("10255/dryad.86209","Species-XylemAnatomy.xlsx"), fileEncoding="UTF-8")
+  metaData <- data[,2]
+  data <- data[,-c(2,13)]
+  units <- c(NA, NA, rep('um',6), NA, NA, NA)
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+
+.shibata.2015a <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8")
+  metadata <- data[,14]
+  data <- data[,-c(14)]
+  units <- c(rep('%',6), NA, NA, 'cm^2', 'g m^-2', 'MN m-2', '%', 'g cm^-3')
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+
+.shibata.2015b <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8", sheet=2)
+  metadata <- data[,15]
+  data <- data[,-c(15)]
+  units <- c(NA, NA, rep('cm^2',3),'g cm^-3', 'g m^-2', 'MN m^-2', rep('%',5), NA)
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+
+.cavender.2015a <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.855pg","Freezing.vulnerability.csv"), fileEncoding="UTF-8")
+  data <- data[1:758,]
+  metadata <- data[,c(2,3)]
+  data <- data[,-c(2,3)]
+  units <- c('C', 'C', '%', '%')
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+
+.cavender.2015b <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.855pg","Tree.height.csv"))
+  data <- data[1:109,1:8]
+  metadata <- data[,2:6]
+  data <- data[,-c(2:6)]
+  units <- c("m", 'cm')
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+
+#principal components are metadata
+.cavender.2015c <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.855pg","PCA_All_Virentes.csv"))
+  data <- data[1:109,1:8]
+  metadata <- data[,2:6]
+  data <- data[,-c(2:6)]
+  units <- c("m", 'cm')
+  return(.df.melt(data,"Species",units=units, metadata))
 }
