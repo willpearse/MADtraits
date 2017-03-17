@@ -722,7 +722,7 @@
   data <- data[,-c(1:2,13,15,30:34,38)]
   units <- c("g", "cm^3", rep("g",2), "cm^3", rep("g",2), "cm^3", "g", "cm", rep("cm", 7), rep("g/cm^3",3), rep("cm^2", 4),  "?", "?", "%", "NA", "NA", "NA", "Na", "intercept", "y/x", "r^2", "pvalue", "class", "y/x")
   data <- .df.melt(data, "species", units)
-  return(data) 
+  return(data)
 }
 
 .delgado.2016 <- function(...){
@@ -733,7 +733,7 @@
   units <- c("m", 'cm')
   return(.df.melt(data,"Species",units=units, metadata))
 }
- 
+
 .kefi.2016 <- function(...){
   link = "http://datadryad.org/bitstream/handle/10255/dryad.116249/chilean_metadata.xls?sequence=1"
   data <- read.xls(link)
@@ -746,7 +746,7 @@
   data <- data[,-c(1, 6, 9, 12:13)]
   units <- c("?",NA,"?", "?","?","?","?",NA)
   data <- .df.melt(data, "species", units, metadata)
-  
+
   return(data)
 }
 
@@ -758,7 +758,7 @@
   data <- data[,-c(1)]
   units <- c("#","#","#","#","#","#","#","#","#","#","m","m","m","m","m","m")
   data <- .df.melt(data, "species", units, metadata)
-  
+
   return(data)
 }
 
@@ -770,7 +770,7 @@
   #            NA,NA,NA,NA,"mm mm^-1","mm mm^-1","gN m^-2","%","gN kg^-1",NA,"W m^-2","gP m^-2","mgP2O5 kg^-1",
   #            "mm month^-1","mm month-1",NA"%","mm","mm","mm","mm",NA,"km",NA,NA,NA,"W m-2","%","dS m-1","%wt",
   #            "%","%wt",NA,"cm2 g-1","% of ECEC",NA,"%","%","%","%",NA,"cmol kg-1","ºC",NA,"ºC","ºC","ºC","#","ºC")
-  
+
 }
 
 .myhrvold.2015 <- function(...){
@@ -844,4 +844,58 @@
     names(data)[1] <- "height"
     data$Cut_Stem <- as.logical(data$Cut_Stem)
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
+}
+
+.arnold.2016 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.t3d52","Arnold_etal_2016_functecol_dataset.xlsx"),skip=3)
+  data <- data[,1:21]
+  data$Species <- "t_castaneum"
+  metadata <- data[,c(1:6)]
+  data <- data[,-c(1:6)]
+  units <- c('uL CO2/h', 'counts/h', 'mg',rep('mm',7), 'mm/s', 'mm/s','# layers beetle reached in trial', 'number of frames no movement', 'number of frames before reaching final passage')
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+
+.pigot.2015 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), sheet=1)
+  metadata <- data[,c(1,16:29)]
+  data <- data[,-c(1,16:29)]
+  units <- c('meters', 'meters', rep('log',7),rep(NA,4))
+  return(.df.melt(data,"Binomial",units=units, metadata))
+}
+
+.rahman.2013 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.2v68d","Data%20for%20Dryad.xls"))
+  data$Species <- "P_reticulata"
+  metadata <- data[,c(1:7,11,12,15,16,19,20)]
+  data <- data[,-c(1:7,11,12,15,16,19,20)]
+  units <- c('log10','log10','log10',NA,'mm^2',NA,'mm^2','log10','um')
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+
+.visser.2016 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.fm654","final.csv"))
+  data <- data[,2:8]
+  metadata <- data[,c(1,2,3,5,7)]
+  data <- data[,-c(2,3,5,7)]
+  units <- c('cm','cm')
+  return(.df.melt(data,"sp",units=units, metadata))
+}
+
+.friedman.2014 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.489c7","NILs_rawdata.xls"))
+  metadata <- data[,c(1:6,18,19)]
+  data <- data[,-c(1:6,18,19)]
+  units <- c('days',NA,'mm', 'mm',NA,rep('mm',6))
+  data$Species <- 'M_guttatus'
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+
+.martin.2014 <- function(...){
+  data <- read.table(ft_get_si("10.5061/dryad.j4n82","Sexually%20antagonistic%20association%20between%20paternal%20phenotype%20and%20offspring%20viability%20reinforces%20total%20selection%20on%20a%20sexually%20selected%20trait%20-%20id%20data.txt"),sep='\t',header=TRUE)
+  metadata <- data[,c(1:3,7:9)]
+  data <- data[,-c(1:3,7:9)]
+  units <- c('cm','kg','kg')
+  data$Species <- 'O_canadensis'
+  return(.df.melt(data,"Species",units=units, metadata))
 }
