@@ -391,7 +391,7 @@
   return(data)
 }
 
-.anderson.2015(...){
+.anderson.2015 <- function (...){
   file<-tempfile()
   download.file("http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0166714.s002",file)
   data<-read.csv(file)
@@ -401,7 +401,7 @@
   data<-.df.melt(data,"Species",units=units,metadata=metadata)
 }
 
-.plourde.2014(...){
+.plourde.2014 <- function (...){
   file<-tempfile()
   download.file("http://datadryad.org/bitstream/handle/10255/dryad.65737/complete.individual.data.txt?sequence=1",file)
   data<-read.delim(file)
@@ -600,7 +600,7 @@
 }
 
 .pigot.2015 <- function(...){
-    data <- read.xls(ft <- get <- si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
+    data <- read.xls(ft_get_si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
     data <- data[,-c(26:28)]
         for(i in 12:15)
     data[,i] <- as.logical(data[,i])
@@ -656,3 +656,131 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+.deraison.2014 <- function(...){
+    data <- read.xls(ft_get_si("10255/dryad.72345","Plant%20traits.xls"), sheet = 2)
+    name.data <- read.xls(ft_get_si("10255/dryad.72345","Plant%20traits.xls"), sheet = 1)
+    data$Plant.species <- name.data$Species.name[1:22]
+    names(data) <- c("species","leaf_dry_matter", "leaf_nitrogen_content", "leaf_carbon_content", "leaf_carbon_nitrogen_ratio", "leaf_thickness", "leaf_area", "perimeter_leaf_length_ratio")
+    data <- data[,1:8]
+    units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm2", "NA")
+    data <- .df.melt(data, "species", units=units)
+}
+
+#.ameztegui.2016 <- function(...){
+#    data <- read.xls(ft_get_si("10.5061/dryad.12b0h","FunctionalTraits_Dryad.xlsx"))
+#    data <- data[,-c(1,6,7)]
+#    names(data)[4:16] <- c("Phylum","leaf_habit","","leaf_mass_area","photosynthetic_capacitity_per_unit_leaf_mass","N_content_per_unit_mass","P_content_per_unit_mass","leaf_lifespan","leaf_length","seed_mass","wood_density","max_tree_height")
+#
+#}
+
+.kefi.2016 <- function(...){
+  link = "http://datadryad.org/bitstream/handle/10255/dryad.116249/chilean_metadata.xls?sequence=1"
+  data <- read.xls(link)
+  vars <- c("id", "species", "body_mass", "sessile_mobile", "cluster", "shore_height_conservative", "shore_height_C_ordinal",
+            "shore_height_C_breadth", "shore_height_2_restrictive", "shore_height_R_ordinal", "shore_height_r_breadth",
+            "phyllum", "subphyllum", "trophic")
+  colnames(data) <- vars
+  data$species <- tolower(glob(" ","_", data$species))
+  metadata <- data[,c(1, 6, 9, 12:13)]
+  data <- data[,-c(1, 6, 9, 12:13)]
+  units <- c("?",NA,"?", "?","?","?","?",NA)
+  data <- .df.melt(data, "species", units, metadata)
+  
+  return(data)
+}
+
+.petry.2016 <- function(...){
+  link <- "http://datadryad.org/bitstream/handle/10255/dryad.119003/PollenMovement.csv?sequence=1"
+  data <- read.csv(link)
+  data$species = rep("valeriana_edulis", nrow(data))
+  metadata <- data[,c(1)]
+  data <- data[,-c(1)]
+  units <- c("#","#","#","#","#","#","#","#","#","#","m","m","m","m","m","m")
+  data <- .df.melt(data, "species", units, metadata)
+  
+  return(data)
+}
+
+.maire.2016 <- function(...){
+  link <- "http://datadryad.org/bitstream/handle/10255/dryad.119139/globamax_data_160609%20%28for%20GEB%20ms%29.xlsx?sequence=1"
+  data <- read.xls(link, sheet = "Data")
+  # units <- c("µmol m^-2 s^-1","% of ECEC","nmol g^-1 s^-1","mm m^-1","kg dm^-3","g  kg^-1","cmol+ kg^-1",
+  #            "cmolc kg^-1",NA,"%wt","gC gN^-1",NA,"gC kg^-1",NA,NA,"cm","m",NA,NA,NA,NA,"%wt","mmol m^-2 s^-1",
+  #            NA,NA,NA,NA,"mm mm^-1","mm mm^-1","gN m^-2","%","gN kg^-1",NA,"W m^-2","gP m^-2","mgP2O5 kg^-1",
+  #            "mm month^-1","mm month-1",NA"%","mm","mm","mm","mm",NA,"km",NA,NA,NA,"W m-2","%","dS m-1","%wt",
+  #            "%","%wt",NA,"cm2 g-1","% of ECEC",NA,"%","%","%","%",NA,"cmol kg-1","ºC",NA,"ºC","ºC","ºC","#","ºC")
+  
+}
+
+.myhrvold.2015 <- function(...){
+    data <- read.csv("~/Downloads/Amniote_Database_Aug_2015.csv", as.is=TRUE)
+    data <- read.csv(ft_get_si("E096-269","Data_Files/Amniote_Database_Aug_2015.csv", "esa_archives", cache=FALSE))
+    for(i in seq_len(ncol(data)))
+        data[data[,i]==-999 | data[,i]=="-999",i] <- NA
+    metadata <- data[,c("class","order","family","genus","species","subspecies","common_name")]
+    species <- ifelse(is.na(data$subspecies), "", data$subspecies)
+    data$binomial <- tolower(paste(data$genus, data$species, data$subspecies, sep="_"))
+    data <- data[,!names(data) %in% names(metadata)]
+    units <- c("days", "#", "#/year", "g", "years", "days", "days", "g", "g", "g", "days", "days", "years","days", "years", "g", "g", "g", "mm", "mm", "g", "cm", "cm", "cm", "cm", "cm", "g", "cm", "days")
+    return(.df.melt(data, "binomial", units, metadata))
+}
+
+.benesh.2017 <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1002/ecy.1680", 1), "CLC_database_lifehistory.csv"))
+    metadata <- data[,c("Parasite.genus", "Parasite.group", "Development.remarks", "Size.reported.as", "Size.remarks", "Author", "Year", "Journal", "Volume", "Pages")]
+    data <- data[,!names(data) %in% names(metadata)]
+    return(.df.melt(data, "Parasite.species", c(NA, "#", NA, NA, "days", "°C", "mm", "mm", "mm", "mm", "n", NA, NA, NA), metadata))
+}
+
+.lu.2016a <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1002/ecy.1600", 2), "GCReW_Allom_General_Data.csv"))
+    data$binomial <- data$Spp_Orig
+    data$binomial <- gsub("PHAU", "phragmites_australis", data$binomial)
+    data$binomial <- gsub("SCAM", "schoenoplectus_americanus", data$binomial)
+    data$binomial <- gsub("SPAL", "spartina_alterniflora", data$binomial)
+    data$binomial <- gsub("SPCY", "spartina_cynosuroides", data$binomial)
+    data$binomial <- gsub("TYAN", "typha_angustifolia", data$binomial)
+    data$binomial <- gsub("AMCA", "amaranthus_cannabinus", data$binomial)
+    data$binomial <- gsub("ATPA", "atriplex_patula", data$binomial)
+    data$binomial <- gsub("KOVI", "kosteletzkya_virginica", data$binomial)
+    data$binomial <- gsub("POHY", "polygonum_hydropiper", data$binomial)
+    data$binomial <- gsub("SOSE", "solidago_sempervirens", data$binomial)
+    data$binomial <- gsub("IVFR", "iva_frutescens", data$binomial)
+    data$Width[data$Width==-99] <- NA
+    metadata <- data[,c("Species","Spp_Orig","Decile","ID","Year")]
+    data <- data[,!names(data) %in% names(metadata)]
+    names(data)[1] <- "height"
+    return(.df.melt(data, "binomial", c("cm","mm","g"), metadata))
+}
+
+.lu.2016b <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1002/ecy.1600", 2), "GCReW_Allom_Other_Data.csv"))
+    data$binomial <- data$Species
+    data$binomial <- gsub("PHAU", "phragmites_australis", data$binomial)
+    data$binomial <- gsub("SCAM", "schoenoplectus_americanus", data$binomial)
+    data$binomial <- gsub("SPAL", "spartina_alterniflora", data$binomial)
+    data$binomial <- gsub("SPCY", "spartina_cynosuroides", data$binomial)
+    data$binomial <- gsub("TYAN", "typha_angustifolia", data$binomial)
+    data$binomial <- gsub("AMCA", "amaranthus_cannabinus", data$binomial)
+    data$binomial <- gsub("ATPA", "atriplex_patula", data$binomial)
+    data$binomial <- gsub("KOVI", "kosteletzkya_virginica", data$binomial)
+    data$binomial <- gsub("POHY", "polygonum_hydropiper", data$binomial)
+    data$binomial <- gsub("SOSE", "solidago_sempervirens", data$binomial)
+    data$binomial <- gsub("IVFR", "iva_frutescens", data$binomial)
+    data$Width[data$Width==-99] <- NA
+    metadata <- data[,c("Species","ID","Year")]
+    data <- data[,!names(data) %in% names(metadata)]
+    names(data)[1] <- "height"
+    return(.df.melt(data, "binomial", c("cm","mm","g"), metadata))
+}
+
+.lu.2016c <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1002/ecy.1600", 2, cache=FALSE), "GCReW_Allom_SCAM_Data.csv"))
+    data$binomial <- "schoenoplectus_americanus "
+    data$Width[data$Width==-99] <- NA
+    metadata <- data[,c("Species","ID","Expt","ExptAge","Year","Community","Chamber","Quadrat","InOut","CO2","N","Treatment")]
+    data <- data[,!names(data) %in% names(metadata)]
+    names(data)[1] <- "height"
+    data$Cut_Stem <- as.logical(data$Cut_Stem)
+    return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
+}
