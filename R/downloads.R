@@ -652,3 +652,18 @@
 #    data$Plant.species <- #new names
 #    data <- data[,1:8]
 #}
+
+.plourde.2015 <- function(..){
+  data <- read.delim(ft_get_si("10.5061/dryad.sv181", "complete.individual.data.txt"))
+  data <- unite(data, species, genus, species, remove = FALSE)
+  data <-data[,-c(4:5)]
+  data$species <- tolower(data$species)
+  metadata <- data[,c(1:2,13,15,30:34,38)]
+  data <- data[,-c(1:2,13,15,30:34,38)]
+  units <- c("g", "cm^3", rep("g",2), "cm^3", rep("g",2), "cm^3", "g", "cm", rep("cm", 7), rep("g/cm^3",3), rep("cm^2", 4),  "?", "?", "%", "NA", "NA", "NA", "Na", "intercept", "y/x", "r^2", "pvalue", "class", "y/x")
+  data <- .df.melt(data, "species", units)
+  return(data) 
+}
+
+
+
