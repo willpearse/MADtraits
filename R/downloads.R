@@ -280,5 +280,12 @@
   return(data)
 }
 
-
-
+## WIP
+.winchell.2016 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
+  data <- data[,-c(1:2,15:16)]
+  data$species <- 'A.cristatellus'
+  data$perch.diam.cm <- as.numeric(data$perch.diam.cm)
+  units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
+  return(.df.melt(data, "species", units=units))
+}
