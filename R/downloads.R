@@ -399,6 +399,7 @@
   data<-data[,-c(2:4,44:46)]
   units<-c("cm","g","cm^2",rep("?",4),rep("cm^2",7),"?",rep("g",7),rep("mg/g",7),rep("cm^2/g",7),rep("g",4))
   data<-.df.melt(data,"Species",units=units,metadata=metadata)
+  return(data)
 }
 
 .plourde.2014 <- function (...){
@@ -409,6 +410,7 @@
   data<-data[,-c(1:3,14,16,31:39)]
   units<-c("g","cm^3",rep("g",2),"cm^3",rep("g",2),"cm^3","g",rep("cm",8),rep("g/cm^3",3),rep("cm^2",4))
   data<-.df.melt(data,"species",units=units,metadata=metadata)
+  return(data)
 }
 
 .buzzard.2015 <- function(...){
@@ -649,6 +651,7 @@
     units <- c("NA","m","m",rep('mm',7),rep('NA',4),rep('%',10),"NA")
     metadata <- data[,c(1,3:4,26)]
     data <- .df.melt(data, "Binomial", units=units, metadata=metadata)
+    return(data)
 }
 
 .marx.2016 <- function(...){
@@ -657,6 +660,7 @@
     units <- c("native/invasive","mg","m","cm2/g","cm2","specific_leaf_area")
     metadata <- data[,2]
     data <- .df.melt(data, "Species", units=units, metadata=metadata)
+    return(data)
 }
 
 .olli.2015 <- function(...){
@@ -666,6 +670,7 @@
     units <- c(rep('NA',9), "micrometer", "NA")
     data$species <- rownames(data)
     data <- .df.melt(data, "species", units=units)
+    return(data)
 }
 
 #KW
@@ -702,16 +707,20 @@
     data$Plant.species <- name.data$Species.name[1:22]
     names(data) <- c("species","leaf_dry_matter", "leaf_nitrogen_content", "leaf_carbon_content", "leaf_carbon_nitrogen_ratio", "leaf_thickness", "leaf_area", "perimeter_leaf_length_ratio")
     data <- data[,1:8]
-    units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm2", "NA")
+    units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm^2", "NA")
     data <- .df.melt(data, "species", units=units)
+    return(data)
 }
 
-#.ameztegui.2016 <- function(...){
-#    data <- read.xls(ft_get_si("10.5061/dryad.12b0h","FunctionalTraits_Dryad.xlsx"))
-#    data <- data[,-c(1,6,7)]
-#    names(data)[4:16] <- c("Phylum","leaf_habit","","leaf_mass_area","photosynthetic_capacitity_per_unit_leaf_mass","N_content_per_unit_mass","P_content_per_unit_mass","leaf_lifespan","leaf_length","seed_mass","wood_density","max_tree_height")
-#
-#}
+.ameztegui.2016 <- function(...){
+    data <- read.xls(ft_get_si("10.5061/dryad.12b0h/2","FunctionalTraits_Dryad.xlsx"))
+    data <- data[,-c(1,7,8)]
+    names(data)[4:14] <- c("Phylum","leaf_habit","specific_leaf_area","photosynthetic_capacitity_per_unit_leaf_mass","N_content_per_unit_mass","P_content_per_unit_mass","leaf_lifespan","leaf_length","seed_mass","wood_density","max_tree_height")
+    units <- c(rep("NA",3),"deciduous/evergreen","m/kg","mmol CO2/g s","%","%","months","mm","mg/seed","g cm^3","m")
+    metadata <- data[,2:4]
+    data <- .df.melt(data, "SpName", units=units, metadata=metadata)
+    return(data)
+}
 
 .plourde.2015 <- function(...){
   data <- read.delim(ft_get_si("10.5061/dryad.sv181", "complete.individual.data.txt"))
@@ -854,6 +863,40 @@
     names(data)[1] <- "height"
     data$Cut_Stem <- as.logical(data$Cut_Stem)
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
+}
+
+.carmona.2014 <- function(...){
+    data <- read.csv(ft_get_si("10.5061/dryad.53550", "Traits%20per%20species%20and%20quadrat.csv"), sep = ";", as.is=TRUE)
+    names.data <- read.csv(ft_get_si("10.5061/dryad.53550", "Species%20key.csv"), sep = ";", as.is=TRUE)
+    data$binomial <- names.data[,2][match(data$Species, names.data[,1])]
+    data <- data[,-c(1,3)]
+    names(data)[23:32] <- c("specific_leaf_area_1","specific_leaf_area_2","specific_leaf_area_3","specific_leaf_area_4","specific_leaf_area_5","specific_leaf_area_6","specific_leaf_area_7","specific_leaf_area_8","specific_leaf_area_9","specific_leaf_area_10") 
+    units <- c("NA", rep("cm",10), rep("mm^2",10), rep("mm^2/mg",10))
+    metadata <- data[,1]
+    return(.df.melt(data, "binomial", units, metadata))
+}
+
+.brown.2015 <- function(...){
+    data <- read.xls(ft_get_si("10.5061/dryad.m3d4d/1", "BrownGrahamTraitsData.xlsx"))
+    data <- data[,-c(4,16)]
+    units <- c(rep("NA",12),"g")
+    metadata <- data[,1]
+    return(.df.melt(data, "Latin.Name", units, metadata))
+}
+
+.gossner.2015 <- function(...){
+    data <- read.table(ft_get_si("10.5061/dryad.53ds2", "ArthropodSpeciesTraits.txt"), header = T, sep = '\t')
+    units <- c(rep("NA",4),"mm",rep("NA",11))
+    metadata <- data[,c(1:3,5,17)]
+    return(.df.melt(data, "SpeciesID", units, metadata))
+}
+
+.price.2014 <- function(...){
+    data <- read.xls(ft_get_si("10.5061/dryad.r3n45", "Price%20et%20al%20Data%20for%20Dryad.xlsx"))
+    names(data)[7:18] <- c("growth_form","specific_leaf_area","leaf_mass_area","leaf_life_span","N_content_per_unit_mass","N_content_per_unit_area","P_content_per_unit_mass","P_content_per_unit_area","phototsynthetic_capacity_per_mass","phototsynthetic_capacity_per_area","leaf_size","height") 
+    units <- c(rep("NA",6), "mm^2/mg ", "g/m^2", "months", "%", "g/m^2", "%", "g/m^2", "nmol/g s", "micromol/m^2 s", "cm^2", "m")
+    metadata <- data[,c(1:2,4:7)]
+    return(.df.melt(data, "genus.species", units, metadata))
 }
 
 .augspurger.2016a<-function(...){
