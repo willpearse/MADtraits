@@ -235,6 +235,37 @@
   download.file("https://datadryad.org/bitstream/handle/10255/dryad.47130/Ontogenetic%20allometry%20data.csv?sequence=1",file)
   data<-read.csv(file)
   data<-data[,-c(2:3,5)]
-  units=c("mm","cm","cm")
+  units <- c("mm","cm","cm")
   data<-.df.melt(data,"Species",units=units)
 }
+
+.McCullough.2015<-function(...){
+  file<-tempfile()
+  download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file)
+  data<-read.xls(xls=file)
+  
+  data<-read.xls(xls="C:/Users/water/Downloads/mmc1.xlsx")
+  units<-c("mm","mm")
+  data<-.df.melt(data,"Species",units=units)
+}
+
+.anderson.2015(...){
+  file<-tempfile()
+  download.file("http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0166714.s002",file)
+  data<-read.csv(file)
+  metadata<-data[,c(2:4,44:46)]
+  data<-data[,-c(2:4,44:46)]
+  units<-c("cm","g","cm^2",rep("?",4),rep("cm^2",7),"?",rep("g",7),rep("mg/g",7),rep("cm^2/g",7),rep("g",4))
+  data<-.df.melt(data,"Species",units=units,metadata=metadata)
+}
+
+.plourde.2014(...){
+  file<-tempfile()
+  download.file("http://datadryad.org/bitstream/handle/10255/dryad.65737/complete.individual.data.txt?sequence=1",file)
+  data<-read.delim(file)
+  metadata<-data[,c(1:3,14,16)]
+  data<-data[,-c(1:3,14,16,31:39)]
+  units<-c("g","cm^3",rep("g",2),"cm^3",rep("g",2),"cm^3","g",rep("cm",8),rep("g/cm^3",3),rep("cm^2",4))
+  data<-.df.melt(data,"species",units=units,metadata=metadata)
+}
+
