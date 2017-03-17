@@ -713,7 +713,7 @@
 #
 #}
 
-.plourde.2015 <- function(..){
+.plourde.2015 <- function(...){
   data <- read.delim(ft_get_si("10.5061/dryad.sv181", "complete.individual.data.txt"))
   data <- unite(data, species, genus, species, remove = FALSE)
   data <-data[,-c(4:5)]
@@ -721,7 +721,7 @@
   metadata <- data[,c(1:2,13,15,30:34,38)]
   data <- data[,-c(1:2,13,15,30:34,38)]
   units <- c("g", "cm^3", rep("g",2), "cm^3", rep("g",2), "cm^3", "g", "cm", rep("cm", 7), rep("g/cm^3",3), rep("cm^2", 4),  "?", "?", "%", "NA", "NA", "NA", "Na", "intercept", "y/x", "r^2", "pvalue", "class", "y/x")
-  data <- .df.melt(data, "species", units)
+  data <- .df.melt(data, "species", units, metadata)
   return(data) 
 }
 
@@ -844,6 +844,59 @@
     names(data)[1] <- "height"
     data$Cut_Stem <- as.logical(data$Cut_Stem)
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
+}
+
+.lessard.2016 <- function(...){
+  data <- read.delim(ft_get_si("10.5061/dryad.t897q", "hummer_traits_Lessard.txt"), sep = " ", row.names = NULL)
+  species <- tolower(data[,1])
+  data <- data.frame(species, data[,-c(1)])
+  units <- c("g", "mm", "annual_mean_temperature", "annual_precipitation", "range")
+  data <- .df.melt(data, "species", units)
+  return(data) 
+}
+
+.jennings.2016a <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.m23g6", "spiders.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
+  species <- rep(c("sosippus_floridanus"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,c(2:6)]
+  data <- data[,-c(2:6)]
+  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.jennings.2016b <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.m23g6", "sundews.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
+  species <- rep(c("drosera_capillaris"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,c(2:6)]
+  data <- data[,-c(2:6)]
+  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.jennings.2016c <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.m23g6", "toads.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
+  species <- rep(c("anaxyrus_quercicus"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,c(2:6)]
+  data <- data[,-c(2:6)]
+  units <- c("cm^2", "cm", "abundance", "sqrt_abundance", "g",  "proportion_initial_mass(g)", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.vanier.2013 <- function(...){
+  data <- read.delim(ft_get_si("E094-246", "Mass_volume_data.txt", "esa_archives"), sep = "", as.is = TRUE, na.strings = c("","NA"))
+  data$Individual_Species <- tolower(data$Individual_Species)
+  data$Species_Groups <- tolower(data$Species_Groups)
+  metadata <- data[,c(1:2,4:5)]
+  data <- data[,-c(1:2,4:5)]
+  units <- c("g", "m^3", "Status", "survivor_status", "life_form_type", "?", "NA", "NA", "treatmet_group")
+  data <- .df.melt(data, "Individual_Species", units, metadata)
+  return(data)
 }
 
 .castillo.2016 <- function(...){
