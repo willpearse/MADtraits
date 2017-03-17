@@ -444,25 +444,6 @@
   return(.df.melt(data, "species", units, metadata))
 }
 
-#KW
-#.Aubret.2012b <- function(...){
-#  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=2)
-#  data$X <- data$X.1 <- data$X.2 <- data$X.3 <- NA <- NA <- NA <- NA <- NA <- NA <- NA <- NA  NA <- NULL
-#  data$species <- "notechis_scutatus"
-#  metadata <- data[,c("POPULATION", "MOTHER", "BIRTH.DATE")]
-#  data <- data[,!names(data) %in% names(metadata)]
-#  names(data) <- c("total_litter_body_mass", "total_litter_body_mass", "total_litter_snout_vent_length", "total_litter_snout_vent_length", "total_litter_jaw_length", "total_litter_jaw_length")
-#  units <- c("mean(g)", "log10(mean(g))", "mean(cm)", "log10(mean(cm))", "mean(cm)", "log10(mean(cm))")
-#  return(.df.melt(data, "species", units, metadata))
-#}
-
-#.Aubret.2012c <- function(...){
-#  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=3)
-#  names(data) <- c("genus_species", )
-#  units <- c(NA, "g", "log10(g)", "cm", "log10(cm)")
-#  return(.df.melt(data, "species", units, metadata))
-#}
-
 # Elton traits
 .wilman.2014a  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
@@ -645,6 +626,34 @@
     units <- c(rep('NA',9), "micrometer", "NA")
     data$species <- rownames(data)
     data <- .df.melt(data, "species", units=units)
+}
+
+#KW
+.Aubret.2012b <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=2)
+  data$X <- data$X.1 <- data$X.2 <- data$X.3 <- data$BCI <- NULL
+  data$species <- "notechis_scutatus"
+  metadata <- data[,c("POPULATION", "MOTHER", "BIRTH.DATE")]
+  data <- data[,!names(data) %in% names(metadata)]
+  names(data) <- c("snout_vent_length", "body_mass_pre", "body_mass_pre", "body_mass_post", "body_mass_post", "bm_body_mass_post", "rcm", "total_litter_body_mass", "total_litter_body_mass", "total_litter_snout_vent_length", "total_litter_snout_vent_length", "total_litter_jaw_length", "total_litter_jaw_length","species")
+  units <- c("log10(cm)", "g", "log10(g)", "log10(mean(cm))", "g", "log10(g)", "?", "?", "mean(g)", "log10(mean(g))", "mean(cm)", "log10(mean(cm))", "mean(cm)", "log10(mean(cm))", NA)
+  return(.df.melt(data, "species", units, metadata))
+}
+
+.Aubret.2012c <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=3)
+  names(data) <- c("genus_species", "body_mass", "max_circumference")
+  units <- c("g", "cm")
+  return(.df.melt(data, "genus_species", units))
+}
+
+#KW
+.Jennings.2015 <- function(...){
+  data <- read.csv(ft_get_si("E096-226", "SIA_N_C_Atlantic_marine_fishes_squids_20150105_v1.csv", "esa_archives"))
+    metadata <- data[,c("record", "year", "DOY", "latitude", "longitude", "sea")]
+    data <- data[,!names(data) %in% names(metadata)]
+    units <- c(NA, "g", "%", "%", "?", "?")
+    return(.df.melt(data, "species", units, metadata))
 }
 
 .deraison.2014 <- function(...){
