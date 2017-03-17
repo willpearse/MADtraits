@@ -7,8 +7,10 @@
 # param to.save.name name to save the file as (DEFAULT: it will be
 #     named paste(zip,file, sep='_'))
 # return Complete path to unzipped file
-#' @importFrom utils unzip
+#' @importFrom utils unzip download.file
 #' @importFrom reshape2 melt
+#' @importFrom httr GET
+#' @importFrom stats setNames
 .unzip <- function(file, zip, to.save.dir, to.save.name){
     if(missing(to.save.dir))
         to.save.dir <- tempdir()
@@ -18,7 +20,7 @@
     files <- unzip(zip, list=TRUE)
     if(!file %in% files$Name)
         stop("Required file not in zipfile ", zip)
-    
+
     file <- unzip(zip, file)
     file.rename(file, file.path(to.save.dir, to.save.name))
     return(file.path(to.save.dir, to.save.name))
@@ -39,45 +41,58 @@
     return(as.data.frame(output))
 }
 
-.df.melt <- function(x, species, units){
-    if(!"metadata" %in% names(x))
-        x$metadata <- NA
+.df.melt <- function(x, species, units, metadata){
+    # Meta-data and units
     if(missing(units)){
         units <- setNames(rep(NA, length(names(x))), names(x))
     } else {
         units <- setNames(units, setdiff(names(x),c(species,"metadata")))
     }
-    numeric <- x[,sapply(x, is.numeric) | names(x) %in% c(species,"metadata")]
-    if(ncol(numeric) > 2){
+
+    if(!missing(metadata)){
+        metadata <- apply(sapply(1:2, function(y) paste(names(x)[y],x[,y],sep=":")), 1, paste, collapse=";")
+    } else metadata <- rep(NA, nrow(x))
+
+    # Numeric data
+    numeric <- x[,sapply(x, is.numeric) | names(x) == species,drop=FALSE]
+    if(ncol(numeric) > 1){
+        numeric$metadata <- metadata
         numeric <- melt(numeric, id.vars=c(species,"metadata"))
+        numeric$variable <- as.character(numeric$variable) # impossible to stop this coercion in melt!
         numeric <- numeric[!is.na(numeric$value),]
         names(numeric)[1] <- "species"
         numeric$units <- units[numeric$variable]
     } else numeric <- NULL
-    character <- x[,sapply(x, Negate(is.numeric)) | names(x) %in% c(species,"metadata")]
-   if(ncol(character) > 2){
+    
+    # Character data
+    character <- x[,sapply(x, Negate(is.numeric)) | names(x) == species,drop=FALSE]
+    if(ncol(character) > 1){
+        character$metadata <- metadata
         character <- melt(character, id.vars=c(species,"metadata"))
+        character$variable <- as.character(character$variable) # impossible to stop this coercion in melt!
         character <- character[!is.na(character$value),]
         names(character)[1] <- "species"
         character$units <- units[character$variable]
-    } else character <- NULL
+   } else character <- NULL
+
+    #Cleanup and return
     return(list(numeric=numeric,character=character))
 }
 
 .download <- function(url, dir, save.name, cache=TRUE){
     destination <- file.path(dir, save.name)
     suffix <- .file.suffix(url, 4)
-    
+
     if(cache==TRUE & file.exists(destination)){
         if(!is.na(suffix))
             attr(destination, "suffix") <- suffix
         return(destination)
     }
-    
+
     result <- download.file(url, destination, quiet=TRUE)
     if(result != 0)
         stop("Error code", result, " downloading file; file may not exist")
-    
+
     if(!is.na(suffix))
         attr(destination, "suffix") <- suffix
     return(destination)
