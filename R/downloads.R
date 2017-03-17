@@ -55,7 +55,7 @@
 # .klomp.2016 <- function(...){
 #   data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.117914/draco_comparative%20data.csv?sequence=1')
 #   names(data) <- tolower(gsub("\\.", "_", names(data)))
-#   
+#
 #   colnames(data) <- c('species', 'female_dewlap_area', 'male_dewlap_area_', sexual_dimorphism_in_dewlap_area__natural_logged_ sexual_size_dimorphism__svl_ sexual_dichromatism__chromatic_contrast_
 #   data <- data[,-c(1:4,16)]
 #   colnames(data) <- c('diet','svl','latency','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
@@ -299,7 +299,7 @@
 }
 
 .cariveau.2016 <- function(...){
-  
+
   link = "http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0151482.s003"
   file = "C:/crap/journal.pone.0151482.s003.XLSX"
   sheet = "TableS1_v2"
@@ -350,7 +350,7 @@
   file<-tempfile()
   download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file)
   data<-read.xls(xls=file)
-  
+
   data<-read.xls(xls="C:/Users/water/Downloads/mmc1.xlsx")
   units<-c("mm","mm")
   data<-.df.melt(data,"Species",units=units)
@@ -444,25 +444,6 @@
   return(.df.melt(data, "species", units, metadata))
 }
 
-#KW
-#.Aubret.2012b <- function(...){
-#  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=2)
-#  data$X <- data$X.1 <- data$X.2 <- data$X.3 <- NA <- NA <- NA <- NA <- NA <- NA <- NA <- NA  NA <- NULL
-#  data$species <- "notechis_scutatus"
-#  metadata <- data[,c("POPULATION", "MOTHER", "BIRTH.DATE")]
-#  data <- data[,!names(data) %in% names(metadata)]
-#  names(data) <- c("total_litter_body_mass", "total_litter_body_mass", "total_litter_snout_vent_length", "total_litter_snout_vent_length", "total_litter_jaw_length", "total_litter_jaw_length")
-#  units <- c("mean(g)", "log10(mean(g))", "mean(cm)", "log10(mean(cm))", "mean(cm)", "log10(mean(cm))")
-#  return(.df.melt(data, "species", units, metadata))
-#}
-
-#.Aubret.2012c <- function(...){
-#  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=3)
-#  names(data) <- c("genus_species", )
-#  units <- c(NA, "g", "log10(g)", "cm", "log10(cm)")
-#  return(.df.melt(data, "species", units, metadata))
-#}
-
 # Elton traits
 .wilman.2014a  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
@@ -470,7 +451,7 @@
     units <- sample(c("SpecID", "PassNonPass", "IOCOrder", "BLFamilyLatin", "BLFamilyEnglish", "BLFamSequID", "Taxo", "Scientific", "English", "Diet.Inv", "Diet.Vend", "Diet.Vect", "Diet.Vfish", "Diet.Vunk", "Diet.Scav", "Diet.Fruit", "Diet.Nect", "Diet.Seed", "Diet.PlantO", "Diet.5Cat", "Diet.Source", "Diet.Certainty", "ForStrat.watbelowsurf", "ForStrat.wataroundsurf", "ForStrat.ground", "ForStrat.understory", "ForStrat.midhigh", "ForStrat.canopy", "ForStrat.aerial", "PelagicSpecialist", "ForStrat.Source", "ForStrat.SpecLevel", "Nocturnal", "BodyMass.Value", "BodyMass.Source", "BodyMass.SpecLevel", "BodyMass.Comment", "Record.Comment"),length(names(data))-1,TRUE)
     return(.df.melt(data, "Scientific"))
 }
-  
+
   ## WIP
 .winchell.2016 <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
@@ -546,6 +527,41 @@
   return(.df.melt(data,"Species",units=units, metadata))
 }
 
+.klomp.2016 <- function(...){
+  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.117914/draco_comparative%20data.csv?sequence=1')
+  names(data) <- tolower(gsub("\\.", "_", names(data)))
+  colnames(data) <- c('species', 'female_dewlap_area', 'male_dewlap_area', "sexual_dimorphism_in_dewlap_area", "sexual_size_dimorphism_svl", "sexual_dichromatism_chromatic_contrast",'sexual_dichromatism_achromatic_contrast', 'female_dewlap_chromatic_contrast', 'male_dewlap_chromatic_contrast','female_dewlap_achromatic_contrast', 'male_dewlap_achromatic_contrast', 'light_level_auc','predation_category')
+  data$species <- tolower(gsub(" ", "_", (data$species)))
+  data$species <- gsub("\\(", "", (data$species))
+  data$species <- gsub("\\)", "", (data$species))
+  units <- c(rep('cm^2',2), 'cm^2 (nl)', 'cm', rep('JND', 6), 'nl', NA)
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.dmitriew.2014 <- function(...){
+  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.72954/DataDmitriew%26BlanckenhornJEB12488%202014.csv?sequence=1',sep=';')
+  data$species <- 'sepsis_punctum'
+  data <- data[,-c(4)]
+  colnames(data) <- c('population', 'food', 'sex', 'family', "sire",'dam','development_time','fore_femur_width','mittibial_length', 'species')
+  units <- c(rep(NA, 3), 'days', 'mm','mm',rep(NA,4))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.zhang.2014 <- function(...){
+  data <- read.xls('http://datadryad.org/bitstream/handle/10255/dryad.73881/data_traits.xlsx?sequence=1')
+  data <- data[,-c(1:2,5:6,8:11,16)]
+  data$species <- 'sterna_hirundo'
+  colnames(data) <- c('age', 'sex', 'lifespan', 'egg_volume', 'clutch_size', 'brood_size', 'no_fledglings', 'species')
+  units <- c('years',NA,'years', rep(NA,3))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
 .shibata.2015a <- function(...){
   data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8")
   metadata <- data[,14]
@@ -583,10 +599,15 @@
 #principal components are metadata
 .cavender.2015c <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.855pg","PCA_All_Virentes.csv"))
-  data <- data[1:109,1:8]
-  metadata <- data[,2:6]
-  data <- data[,-c(2:6)]
-  units <- c("m", 'cm')
+  metadata <- data[,c(1,2,4:9,11:18)]
+  data <- data[,-c(1,2,4:9,11:18)]
+  names <- data['Species']
+  for(i in 1:17){
+    p <- c('BR', 'FU', 'GE', 'MN', 'OL', 'SA','VI','FU2', 'OL2', 'SA2', 'VI2', 'VI3', 'MN2', 'VI4', 'GE1', 'GE3', 'HY')
+    r <- c("q_brandegeei","q_fusiformis", "q_geminata", "q_minima", "q_oleoides", "q_sagraena", "q_virginiana", "q_fusiformis2", "q_oleoides2", "q_sagraena2", "q_virginiana2", "q_virginiana3","q_minima2", "q_virginiana4", "q_geminata1", "q_geminata3", "hybrid")
+    names[,1] <- gsub(p[i], r[i], names[,1])
+  }
+  units <- c("mm^2", 'mm^2','C','C','%','%',rep('C',7),rep('mm',3),'NA',rep('mm',4), 'C', 'C', '%', 'NA', rep('C',7), rep('mm',3), 'NA', rep('mm',4))
   return(.df.melt(data,"Species",units=units, metadata))
 }
 
@@ -619,7 +640,7 @@
 }
 
 .pigot.2015 <- function(...){
-    data <- read.xls(ft <- get <- si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
+    data <- read.xls(ft_get_si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
     data <- data[,-c(26:28)]
         for(i in 12:15)
     data[,i] <- as.logical(data[,i])
@@ -647,11 +668,110 @@
     data <- .df.melt(data, "species", units=units)
 }
 
-#.deraison.2014 <- function(...){
-#    data <- read.xls("~/Downloads/Plant20traits.xls", sheet = 2)
-#    data$Plant.species <- #new names
-#    data <- data[,1:8]
+#KW
+.Aubret.2012b <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=2)
+  data$X <- data$X.1 <- data$X.2 <- data$X.3 <- data$BCI <- NULL
+  data$species <- "notechis_scutatus"
+  metadata <- data[,c("POPULATION", "MOTHER", "BIRTH.DATE")]
+  data <- data[,!names(data) %in% names(metadata)]
+  names(data) <- c("snout_vent_length", "body_mass_pre", "body_mass_pre", "body_mass_post", "body_mass_post", "bm_body_mass_post", "rcm", "total_litter_body_mass", "total_litter_body_mass", "total_litter_snout_vent_length", "total_litter_snout_vent_length", "total_litter_jaw_length", "total_litter_jaw_length","species")
+  units <- c("log10(cm)", "g", "log10(g)", "log10(mean(cm))", "g", "log10(g)", "?", "?", "mean(g)", "log10(mean(g))", "mean(cm)", "log10(mean(cm))", "mean(cm)", "log10(mean(cm))", NA)
+  return(.df.melt(data, "species", units, metadata))
+}
+
+.Aubret.2012c <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=3)
+  names(data) <- c("genus_species", "body_mass", "max_circumference")
+  units <- c("g", "cm")
+  return(.df.melt(data, "genus_species", units))
+}
+
+#KW
+.Jennings.2015 <- function(...){
+  data <- read.csv(ft_get_si("E096-226", "SIA_N_C_Atlantic_marine_fishes_squids_20150105_v1.csv", "esa_archives"))
+    metadata <- data[,c("record", "year", "DOY", "latitude", "longitude", "sea")]
+    data <- data[,!names(data) %in% names(metadata)]
+    units <- c(NA, "g", "%", "%", "?", "?")
+    return(.df.melt(data, "species", units, metadata))
+}
+
+.deraison.2014 <- function(...){
+    data <- read.xls(ft_get_si("10255/dryad.72345","Plant%20traits.xls"), sheet = 2)
+    name.data <- read.xls(ft_get_si("10255/dryad.72345","Plant%20traits.xls"), sheet = 1)
+    data$Plant.species <- name.data$Species.name[1:22]
+    names(data) <- c("species","leaf_dry_matter", "leaf_nitrogen_content", "leaf_carbon_content", "leaf_carbon_nitrogen_ratio", "leaf_thickness", "leaf_area", "perimeter_leaf_length_ratio")
+    data <- data[,1:8]
+    units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm2", "NA")
+    data <- .df.melt(data, "species", units=units)
+}
+
+#.ameztegui.2016 <- function(...){
+#    data <- read.xls(ft_get_si("10.5061/dryad.12b0h","FunctionalTraits_Dryad.xlsx"))
+#    data <- data[,-c(1,6,7)]
+#    names(data)[4:16] <- c("Phylum","leaf_habit","","leaf_mass_area","photosynthetic_capacitity_per_unit_leaf_mass","N_content_per_unit_mass","P_content_per_unit_mass","leaf_lifespan","leaf_length","seed_mass","wood_density","max_tree_height")
+#
 #}
+
+.plourde.2015 <- function(..){
+  data <- read.delim(ft_get_si("10.5061/dryad.sv181", "complete.individual.data.txt"))
+  data <- unite(data, species, genus, species, remove = FALSE)
+  data <-data[,-c(4:5)]
+  data$species <- tolower(data$species)
+  metadata <- data[,c(1:2,13,15,30:34,38)]
+  data <- data[,-c(1:2,13,15,30:34,38)]
+  units <- c("g", "cm^3", rep("g",2), "cm^3", rep("g",2), "cm^3", "g", "cm", rep("cm", 7), rep("g/cm^3",3), rep("cm^2", 4),  "?", "?", "%", "NA", "NA", "NA", "Na", "intercept", "y/x", "r^2", "pvalue", "class", "y/x")
+  data <- .df.melt(data, "species", units)
+  return(data) 
+}
+
+.delgado.2016 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.1tj60","Delagado_etal_2016_Appendix2.xlsx"), fileEncoding='UTF-8',sheet=1)
+  data <- data[1:109,1:8]
+  metadata <- data[,2:6]
+  data <- data[,-c(2:6)]
+  units <- c("m", 'cm')
+  return(.df.melt(data,"Species",units=units, metadata))
+}
+ 
+.kefi.2016 <- function(...){
+  link = "http://datadryad.org/bitstream/handle/10255/dryad.116249/chilean_metadata.xls?sequence=1"
+  data <- read.xls(link)
+  vars <- c("id", "species", "body_mass", "sessile_mobile", "cluster", "shore_height_conservative", "shore_height_C_ordinal",
+            "shore_height_C_breadth", "shore_height_2_restrictive", "shore_height_R_ordinal", "shore_height_r_breadth",
+            "phyllum", "subphyllum", "trophic")
+  colnames(data) <- vars
+  data$species <- tolower(glob(" ","_", data$species))
+  metadata <- data[,c(1, 6, 9, 12:13)]
+  data <- data[,-c(1, 6, 9, 12:13)]
+  units <- c("?",NA,"?", "?","?","?","?",NA)
+  data <- .df.melt(data, "species", units, metadata)
+  
+  return(data)
+}
+
+.petry.2016 <- function(...){
+  link <- "http://datadryad.org/bitstream/handle/10255/dryad.119003/PollenMovement.csv?sequence=1"
+  data <- read.csv(link)
+  data$species = rep("valeriana_edulis", nrow(data))
+  metadata <- data[,c(1)]
+  data <- data[,-c(1)]
+  units <- c("#","#","#","#","#","#","#","#","#","#","m","m","m","m","m","m")
+  data <- .df.melt(data, "species", units, metadata)
+  
+  return(data)
+}
+
+.maire.2016 <- function(...){
+  link <- "http://datadryad.org/bitstream/handle/10255/dryad.119139/globamax_data_160609%20%28for%20GEB%20ms%29.xlsx?sequence=1"
+  data <- read.xls(link, sheet = "Data")
+  # units <- c("µmol m^-2 s^-1","% of ECEC","nmol g^-1 s^-1","mm m^-1","kg dm^-3","g  kg^-1","cmol+ kg^-1",
+  #            "cmolc kg^-1",NA,"%wt","gC gN^-1",NA,"gC kg^-1",NA,NA,"cm","m",NA,NA,NA,NA,"%wt","mmol m^-2 s^-1",
+  #            NA,NA,NA,NA,"mm mm^-1","mm mm^-1","gN m^-2","%","gN kg^-1",NA,"W m^-2","gP m^-2","mgP2O5 kg^-1",
+  #            "mm month^-1","mm month-1",NA"%","mm","mm","mm","mm",NA,"km",NA,NA,NA,"W m-2","%","dS m-1","%wt",
+  #            "%","%wt",NA,"cm2 g-1","% of ECEC",NA,"%","%","%","%",NA,"cmol kg-1","ºC",NA,"ºC","ºC","ºC","#","ºC")
+  
+}
 
 .myhrvold.2015 <- function(...){
     data <- read.csv("~/Downloads/Amniote_Database_Aug_2015.csv", as.is=TRUE)
