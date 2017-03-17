@@ -765,12 +765,22 @@
 .maire.2016 <- function(...){
   link <- "http://datadryad.org/bitstream/handle/10255/dryad.119139/globamax_data_160609%20%28for%20GEB%20ms%29.xlsx?sequence=1"
   data <- read.xls(link, sheet = "Data")
-  # units <- c("µmol m^-2 s^-1","% of ECEC","nmol g^-1 s^-1","mm m^-1","kg dm^-3","g  kg^-1","cmol+ kg^-1",
-  #            "cmolc kg^-1",NA,"%wt","gC gN^-1",NA,"gC kg^-1",NA,NA,"cm","m",NA,NA,NA,NA,"%wt","mmol m^-2 s^-1",
-  #            NA,NA,NA,NA,"mm mm^-1","mm mm^-1","gN m^-2","%","gN kg^-1",NA,"W m^-2","gP m^-2","mgP2O5 kg^-1",
-  #            "mm month^-1","mm month-1",NA"%","mm","mm","mm","mm",NA,"km",NA,NA,NA,"W m-2","%","dS m-1","%wt",
-  #            "%","%wt",NA,"cm2 g-1","% of ECEC",NA,"%","%","%","%",NA,"cmol kg-1","ºC",NA,"ºC","ºC","ºC","#","ºC")
+  legend <- read.xls(link, sheet ="Legend")
+  data <- data[legend$Variable]
+  data <- data[,order(names(data))]
+  units <- c("µmol m^-2 s^-1","% of ECEC","nmol g^-1 s^-1","mm m^-1","kg dm^-3","g  kg^-1","cmol+ kg^-1",
+             "cmolc kg^-1",NA,"%wt","gC gN^-1",NA,"gC kg^-1",NA,NA,"cm","m",NA,NA,NA,NA,"%wt","mmol m^-2 s^-1",
+             NA,NA,NA,NA,"mm mm^-1","mm mm^-1","gN m^-2","%","gN kg^-1",NA,"W m^-2","gP m^-2","mgP2O5 kg^-1",
+             "mm month^-1","mm month^-1",NA,"%","mm","mm","mm","mm",NA,"km",NA,NA,NA,"W m-2","%","dS m^-1","%wt",
+             "%","%wt",NA,"cm2 g^-1","% of ECEC",NA,"%","%","%","%",NA,"cmol kg^-1","ºC",NA,"ºC","ºC","ºC","#","ºC")
   
+  metadata = data[,c("Country","Latitude","Longitude","Cite", "Continent", "Dataset", "Expt_Remark", "Family","Genus","Location", "P.Method","P.retention.class", "P.Source", "Seeding_Sapling","SITECODE")]
+  units <- units[!names(data) %in% c("Genus.spp",names(metadata))]
+  data <- data[,!names(data) %in% names(metadata)]
+  data$Genus.spp <- tolower(gsub(" ","_",data$Genus.spp))
+  data <- .df.melt(data, "Genus.spp",units,metadata)
+
+  return(data)
 }
 
 .myhrvold.2015 <- function(...){
@@ -846,6 +856,31 @@
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
 }
 
+.valido.2011 <- function(...){
+  link = "http://datadryad.org/bitstream/handle/10255/dryad.89498/Dryad_database.xls?sequence=1"
+  data = read.xls(link,sheet="Traits")
+  metadata = data[,c(2:7)]
+  data = data[,-c(2:7)]
+  vars = c("species","height","cover","leaf_size","LDMC","specific_leaf_area","lchl","lnc","C13","SDMC","WD", "RDMC", "SRL")
+  colnames(data) = vars
+  units = c("m","m^2","cm^2","g g^-1","m^2 Kg^-1", "µg g^-1", "%","%","g g^-1","g cm^-3","g g^-1","m g^-1")
+  data$species = tolower(gsub(" ","_", data$species))
+  data = .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.jennings.2016a <- function(...){
+  link = "http://datadryad.org/bitstream/handle/10255/dryad.112638/spiders.csv?sequence=1"
+  data = read.csv(link)
+  data$species = rep("sosippus_floridanus", nrow(data))
+  vars = c("web_area","web_height","diff_trich","diff_trap","sum_trap", "species")
+  units = c("cm^2","cm","#/cm^2","cm^2","cm^2")
+  metadata = data[,c(1:7,10)]
+  data = data[,-c(1:7,10)]
+  colnames(data) = vars
+  data = .df.melt(data, "species", units, metadata)
+}
+  
 .lessard.2016 <- function(...){
   data <- read.delim(ft_get_si("10.5061/dryad.t897q", "hummer_traits_Lessard.txt"), sep = " ", row.names = NULL)
   species <- tolower(data[,1])
