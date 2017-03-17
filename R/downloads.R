@@ -527,6 +527,41 @@
   return(.df.melt(data,"Species",units=units, metadata))
 }
 
+.klomp.2016 <- function(...){
+  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.117914/draco_comparative%20data.csv?sequence=1')
+  names(data) <- tolower(gsub("\\.", "_", names(data)))
+  colnames(data) <- c('species', 'female_dewlap_area', 'male_dewlap_area', "sexual_dimorphism_in_dewlap_area", "sexual_size_dimorphism_svl", "sexual_dichromatism_chromatic_contrast",'sexual_dichromatism_achromatic_contrast', 'female_dewlap_chromatic_contrast', 'male_dewlap_chromatic_contrast','female_dewlap_achromatic_contrast', 'male_dewlap_achromatic_contrast', 'light_level_auc','predation_category')
+  data$species <- tolower(gsub(" ", "_", (data$species)))
+  data$species <- gsub("\\(", "", (data$species))
+  data$species <- gsub("\\)", "", (data$species))
+  units <- c(rep('cm^2',2), 'cm^2 (nl)', 'cm', rep('JND', 6), 'nl', NA)
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.dmitriew.2014 <- function(...){
+  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.72954/DataDmitriew%26BlanckenhornJEB12488%202014.csv?sequence=1',sep=';')
+  data$species <- 'sepsis_punctum'
+  data <- data[,-c(4)]
+  colnames(data) <- c('population', 'food', 'sex', 'family', "sire",'dam','development_time','fore_femur_width','mittibial_length', 'species')
+  units <- c(rep(NA, 3), 'days', 'mm','mm',rep(NA,4))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.zhang.2014 <- function(...){
+  data <- read.xls('http://datadryad.org/bitstream/handle/10255/dryad.73881/data_traits.xlsx?sequence=1')
+  data <- data[,-c(1:2,5:6,8:11,16)]
+  data$species <- 'sterna_hirundo'
+  colnames(data) <- c('age', 'sex', 'lifespan', 'egg_volume', 'clutch_size', 'brood_size', 'no_fledglings', 'species')
+  units <- c('years',NA,'years', rep(NA,3))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
 .shibata.2015a <- function(...){
   data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8")
   metadata <- data[,14]
