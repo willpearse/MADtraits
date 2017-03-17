@@ -8,6 +8,67 @@
 #' @importFrom testdat sanitize_text
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
 
+.mesquita.2016 <- function(...){
+  data <- read.table('http://datadryad.org/bitstream/handle/10255/dryad.108670/Data%20%28revised%29.txt?sequence=1', header=T, sep='\t')
+  data <- data[,-c(2:4,7,9:10,12:13,17,25)]
+  data$Species <- tolower(gsub(" ", "_", (data$Species)))
+  colnames(data) <- c('species','longitude','latitude','average_female_adult_weight','mean_female_svl_adults','female_svl_at_maturity','offspring_svl','mean_clutch_size','mode_of_reproduction','clutch_per_year','clutch_frequency','relative_clutch_mass','foraging_mode','distribution','prefered_habitat_type')
+  units <- c(rep(NA,2),'g', rep('mm',3),rep(NA,3),'g',rep(NA,5))
+  test <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.Broeckhoven.2016 <- function(...){
+  data <- read.xls('http://datadryad.org/bitstream/handle/10255/dryad.124881/Data%20for%20Dryad.xlsx?sequence=1', skip=1)
+  data <- data[,-c(23:102)]
+  data$Species <- tolower(gsub(" ", "_", (data$Species)))
+  names(data) <- tolower(gsub("\\.", "_", names(data)))
+  units <- c(rep('mm',21))
+  test <- .df.melt(data, "species", units=units)
+  return(data)
+}
+
+.rutschmann.2016 <- function(...){
+  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.102425/Rutschmann_AdaptationofPhenologyacrossPopulations_dataset.csv?sequence=1',sep=';')
+  names(data) <- tolower(gsub("X\\.", "", names(data)))
+  data <- data[,-c(1:3)]
+  data$species <- 'zootoca_vivipara'
+  colnames(data) <- c('altitude','svl','weight','parturition_year', 'parturition_day', 'mid_gestation_temperatures', 'forest_cover_coefficient','mountain_chain','species')
+  units <- c('m','mm','g',NA,NA,'°',NA,NA)
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.kuo.2014 <- function(...){
+  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.70378/personality_date1.csv?sequence=1')
+  data <- data[,-c(1:4,16)]
+  colnames(data) <- c('diet','svl','latency','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
+  data$species <- 'anolis_sagrei'
+  units <- c('cm','min',NA,rep('%',2), 'N','cm',rep(NA,4))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+# .klomp.2016 <- function(...){
+#   data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.117914/draco_comparative%20data.csv?sequence=1')
+#   names(data) <- tolower(gsub("\\.", "_", names(data)))
+#   
+#   colnames(data) <- c('species', 'female_dewlap_area', 'male_dewlap_area_', sexual_dimorphism_in_dewlap_area__natural_logged_ sexual_size_dimorphism__svl_ sexual_dichromatism__chromatic_contrast_
+#   data <- data[,-c(1:4,16)]
+#   colnames(data) <- c('diet','svl','latency','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
+#   data$species <- 'anolis_sagrei'
+#   units <- c('cm','min',NA,rep('%',2), 'N','cm',rep(NA,4))
+#   data <- .df.melt(data, "species", units=units)
+#   data$character$units <- NA
+#   return(data)
+# }
+
+
+
+
 .ingram.2016 <- function(...){
   color <- read.csv('https://datadryad.org/bitstream/handle/10255/dryad.131337/Dewlap_data_archive.csv?sequence=1')
   color <- color[,-c(1,3,4,7:11)]
@@ -27,7 +88,7 @@
 .artacho.2015 <- function(...){
   data <- read.csv2('https://datadryad.org/bitstream/handle/10255/dryad.86947/phenotypictraits.csv?sequence=1', sep=';')
   data <- data[,-c(1:5,10,12:13)]
-  data$species <- 'Z.vivipara'
+  data$species <- 'zootoca_vivipara'
   units <- c('mm', 'mm', 'g','C', 'J/h')
   data$SVL <- as.numeric(data$SVL)
   data$TTL <- as.numeric(data$TTL)
@@ -48,7 +109,7 @@
 .winchell.2016 <- function(...){
   data <- read.csv('https://datadryad.org/bitstream/handle/10255/dryad.115900/winchell_evol_phenshifts.csv?sequence=1')
   data <- data[,-c(1:2,15:16)]
-  data$species <- 'A.cristatellus'
+  data$species <- 'anolis_cristatellus'
   data$perch.diam.cm <- as.numeric(data$perch.diam.cm)
   units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
   data<-.df.melt(data, "species", units=units)
@@ -59,7 +120,7 @@
 .kamath.2016 <- function(...){
   data <- read.csv('https://datadryad.org/bitstream/handle/10255/dryad.133489/KamathLososEvol_AnolissagreiMorphAvg.csv?sequence=1')
   data <- data[,-c(1)]
-  data$species <- 'A.sagrei'
+  data$species <- 'anolis_sagrei'
   units <- c('mm','NA','mm^2','mm',NA)
   data<-.df.melt(data, "species", units=units)
   data$character$units <- NA
@@ -69,7 +130,7 @@
 .husak.2016 <- function(...){
   data <- read.csv('https://datadryad.org/bitstream/handle/10255/dryad.109876/HusakFergusonLovern_Anolis_training_diet_alldata.csv?sequence=1')
   data <- data[,-c(1)]
-  data$species <- 'A.carolinensis'
+  data$species <- 'anolis_carolinensis'
   units <- c('NA',rep('mm',4), rep('g',3),rep('s',2),'mm','%',rep('mg',4),'psi',rep('ng/mL',2),'NA','mg',rep('NA',4))
   data<-.df.melt(data, "species", units=units)
   data$character$units <- NA
@@ -111,6 +172,8 @@
     return(.df.melt(data, "Species"))
 }
 
+
+
 .cariveau.2016 <- function(...){
   
   link = "http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0151482.s003"
@@ -122,7 +185,6 @@
   
   return(data)
 }
-
 
 # Elton traits
 .wilman.2014a  <- function(...){
