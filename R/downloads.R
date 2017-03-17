@@ -861,12 +861,32 @@
   data <- data.frame(species, data)
   metadata <- data[,c(2:6)]
   data <- data[,-c(2:6)]
-  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "Na", "abundance", "condition", "condition")
+  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
 
+.jennings.2016b <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.m23g6", "sundews.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
+  species <- rep(c("drosera_capillaris"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,c(2:6)]
+  data <- data[,-c(2:6)]
+  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
 
+.jennings.2016c <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.m23g6", "toads.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
+  species <- rep(c("anaxyrus_quercicus"), nrow(data))
+  data <- data.frame(species, data)
+  metadata <- data[,c(2:6)]
+  data <- data[,-c(2:6)]
+  units <- c("cm^2", "cm", "abundance", "sqrt_abundance", "g",  "proportion_initial_mass(g)", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
 
 
 
