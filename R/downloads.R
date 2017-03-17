@@ -254,11 +254,9 @@
   data <- data[,-c(2:6,8)]
   units <- c("mg g^-1 d^-1","mg g^-1 d^-1","percent_dry_weight", "percent_dry_weight",
             "percent_dry_weight", "g g^-1", "mg g^-1", "mol mol^-1","mol mol^-1","mol mol^-1", "mg g^-1 (mg g^-1)^-1")
-  
   for(i in 2:ncol(data)){
     data[,i] = as.numeric(data[,i])
   }
-  
   data <- .df.melt(data, species="species",units=units, metadata = metadata)
   return(data)
 }
@@ -275,3 +273,5 @@
   data = .df.melt(data, "species",units,metadata)
   return(data)
 }
+
+
