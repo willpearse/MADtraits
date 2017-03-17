@@ -289,3 +289,23 @@
   units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
   return(.df.melt(data, "species", units=units))
 }
+
+.limpens.2013a <- function(...){
+  data <- read.xls(ft_get_si("doi:10.5061/dryad.926nd", "Motherfile.xls"), as.is = TRUE)
+  species <- gsub("gla", "picea_glauca", data$Species)
+  species <- gsub("mar", "picea_mariana", species)
+  species <- gsub("rub", "picea_rubens", species)
+  species <- gsub("sit", "picea_sitchensis", species)
+  species <- gsub("ban", "pinus_banksiana", species)
+  species <- gsub("nig", "pinus_nigra", species)
+  species <- gsub("syl", "pinus_slyvestris", species)
+  data <- data.frame(species, data[,-3])
+  metadata <- data[,c(2:4)]
+  data <- data[,-c(2:4)]
+  units <- c("species", rep("cm",2), "mm day^-1", "mg", rep("cm",2), "mm day^-1", "mg", "cm/cm", "mg/mg", "mg", rep("NA",3))
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+
+
