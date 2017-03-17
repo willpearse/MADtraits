@@ -20,7 +20,7 @@
     files <- unzip(zip, list=TRUE)
     if(!file %in% files$Name)
         stop("Required file not in zipfile ", zip)
-    
+
     file <- unzip(zip, file)
     file.rename(file, file.path(to.save.dir, to.save.name))
     return(file.path(to.save.dir, to.save.name))
@@ -65,17 +65,17 @@
 .download <- function(url, dir, save.name, cache=TRUE){
     destination <- file.path(dir, save.name)
     suffix <- .file.suffix(url, 4)
-    
+
     if(cache==TRUE & file.exists(destination)){
         if(!is.na(suffix))
             attr(destination, "suffix") <- suffix
         return(destination)
     }
-    
+
     result <- download.file(url, destination, quiet=TRUE)
     if(result != 0)
         stop("Error code", result, " downloading file; file may not exist")
-    
+
     if(!is.na(suffix))
         attr(destination, "suffix") <- suffix
     return(destination)
