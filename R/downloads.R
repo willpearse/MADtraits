@@ -619,7 +619,7 @@
 }
 
 .pigot.2015 <- function(...){
-    data <- read.xls(ft <- get <- si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
+    data <- read.xls(ft_get_si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
     data <- data[,-c(26:28)]
         for(i in 12:15)
     data[,i] <- as.logical(data[,i])
@@ -647,8 +647,12 @@
     data <- .df.melt(data, "species", units=units)
 }
 
-#.deraison.2014 <- function(...){
-#    data <- read.xls("~/Downloads/Plant20traits.xls", sheet = 2)
-#    data$Plant.species <- #new names
-#    data <- data[,1:8]
-#}
+.deraison.2014 <- function(...){
+    data <- read.xls(ft_get_si("10255/dryad.72345","Plant%20traits.xls"), sheet = 2)
+    name.data <- read.xls(ft_get_si("10255/dryad.72345","Plant%20traits.xls"), sheet = 1)
+    data$Plant.species <- name.data$Species.name[1:22]
+    names(data) <- c("species","leaf_dry_matter", "leaf_nitrogen_content", "leaf_carbon_content", "leaf_carbon_nitrogen_ratio", "leaf_thickness", "leaf_area", "perimeter_leaf_length_ratio")
+    data <- data[,1:8]
+    units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm2", "NA")
+    data <- .df.melt(data, "species", units=units)
+}
