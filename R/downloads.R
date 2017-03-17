@@ -268,3 +268,64 @@
   units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
   return(.df.melt(data, "species", units=units))
 }
+
+.mesquita.2015 <- function(...){
+    data <- read.delim(unzip(ft_get_si("E096-058-D1","Life_history_data_of_lizards_of_the_world.txt.zip"), "Data files/Data (revised).txt"))
+    metadata <- data[,c("Species","Genus","Family","Population","Longitude","Latitude","Source","Sample.Size.Female.adult.weight","Sample.size.Mean.F.SVL.adults","Sample.size.Clutch.Size.")]
+    data <- data[,!names(data) %in% names(metadata)]
+    data$Species.1 <- tolower(gsub(" ", "_", data$Species.1))
+    return(.df.melt(data, "Species.1", c("g", "g", "mm", "mm", "mm", "mm", "#", NA, "#", NA, "cc/g", NA, NA, NA), metadata))
+}
+
+#gossner.2015 <- function(...){
+#    data <- read.delim(ft_get_si("E096-102", "HeteropteraMorphometricTraitsRAW.txt", "esa_archives"), as.is=TRUE, fileEncoding="UTF-8")
+#}
+
+.falster.2015 <- function(...){
+    data <- read.csv(unzip(ft_get_si("E096-128","baad_data.zip", "esa_archives"), "baad_data/baad_data.csv"))
+    # Note: units "m^2/m^2 are taken from the meta-data
+    units <- c("NA","mm","deg","NA","m^2/m^2","NA","NA","NA","NA","yr","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m","m","m","m","m","m","m","kg","kg","kg","kg","kg","kg","kg","kg","kg","kg","kg","m^2","kg/m^2","kg/m^3","kg/m^3","kg/m^3","kg/m^3","kg/kg","kg/kg","kg/kg","kg/kg","kg/kg","kg/kg")
+    metadata <- data[,c(c("studyName","location","latitude","longitude","species","family"))]
+    data$speciesMatched <- tolower(gsub(" ", "_", data$speciesMatched))
+    data <- data[,!names(data) %in% names(metadata)]
+    return(.df.melt(data, "speciesMatched", units, metadata))
+}
+
+.kelt.2015 <- function(...){
+    data <- read.delim(ft_get_si("E096-155","Mammal_Home_Ranges.txt", "esa_archives"))
+    names(data) <- c("taxon","order","family","trophic_group","body_mass","home_range","references","notes")
+    data$taxon <- tolower(gsub(" ", "_", data$taxon))
+    metadata <- data[,c("order","family","references","notes")]
+    data <- data[,!names(data) %in% names(metadata)]
+    return(.df.melt(data, "taxon", c(NA,"log10(g)","log10(ha)"), metadata))
+}
+
+.edwards.2015a <- function(...){
+    data <- read.csv(ft_get_si("E096-202", "Table1.csv", "esa_archives"))
+    metadata <- data[,c("isolate","taxon","synonym", "c_citation")]
+    data <- data[,!names(data) %in% names(metadata)]
+    units <- c(NA, "°C", "µmol photons m-2 s-1", "hr", "µm^3", "µm^3", "µmol cell-1", "day^-1", "day^-1", "µmol L-1", "µmol L-1", "µmol N cell-1 day-1", "µmol N µmol C-1 day -1", "µmol N cell-1", "µmol N µmol C-1", "µmol N cell-1", "µmol N µmol C-1", "day-1", "day-1", "µmol L-1", "µmol L-1", "µmol N cell-1 day-1", "µmol N µmol C-1 day-1", "µmol N cell-1", "µmol N µmol C-1", "µmol N cell-1", "µmol N µmol C-1", "day-1", "day-1", "µmol L-1", "µmol L-1", "µmol P cell-1 day-1", "µmol P µmol C-1 day-1", "µmol P cell-1", "µmol P µmol C-1", "µmol P cell-1", "µmol P µmol C-1", "citation")
+    return(.df.melt(data, "species", units, metadata))
+}
+.edwards.2015b <- function(...){
+    data <- read.csv(ft_get_si("E096-202", "Table3.csv", "esa_archives"))
+    metadata <- data[,c("isolate","volume_citation")]
+    data$isolate <- data$volume_citation <- NULL
+    data$species <- tolower(gsub(" ", "_", data$species))
+    return(.df.melt(data, "species", "µm3", metadata))
+}
+
+.albouy.2015 <- function(...){
+    data <- read.csv(unzip(ft_get_si("E096-203","Functional_data.zip", "esa_archives"), "Functional_data.csv"), sep=";")
+    for(i in 11:17)
+        data[,i] <- as.logical(data[,i])
+    names(data)[18:19] <- c("minimum_depth", "maximum_depth")
+    metadata <- data[,c("id","Super_class","Order","Family","Genus")]
+    data <- data[,!names(data) %in% names(metadata)]
+    data$Species <- tolower(gsub("_", " ", data$Species))
+    return(.df.melt(data, "Species", c(NA,"cm","cm",rep(NA,8),"m","m",rep(NA,9)), metadata))
+}
+
+
+
+
