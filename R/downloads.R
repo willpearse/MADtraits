@@ -664,6 +664,45 @@
 #
 #}
 
+.kefi.2016 <- function(...){
+  link = "http://datadryad.org/bitstream/handle/10255/dryad.116249/chilean_metadata.xls?sequence=1"
+  data <- read.xls(link)
+  vars <- c("id", "species", "body_mass", "sessile_mobile", "cluster", "shore_height_conservative", "shore_height_C_ordinal",
+            "shore_height_C_breadth", "shore_height_2_restrictive", "shore_height_R_ordinal", "shore_height_r_breadth",
+            "phyllum", "subphyllum", "trophic")
+  colnames(data) <- vars
+  data$species <- tolower(glob(" ","_", data$species))
+  metadata <- data[,c(1, 6, 9, 12:13)]
+  data <- data[,-c(1, 6, 9, 12:13)]
+  units <- c("?",NA,"?", "?","?","?","?",NA)
+  data <- .df.melt(data, "species", units, metadata)
+  
+  return(data)
+}
+
+.petry.2016 <- function(...){
+  link <- "http://datadryad.org/bitstream/handle/10255/dryad.119003/PollenMovement.csv?sequence=1"
+  data <- read.csv(link)
+  data$species = rep("valeriana_edulis", nrow(data))
+  metadata <- data[,c(1)]
+  data <- data[,-c(1)]
+  units <- c("#","#","#","#","#","#","#","#","#","#","m","m","m","m","m","m")
+  data <- .df.melt(data, "species", units, metadata)
+  
+  return(data)
+}
+
+.maire.2016 <- function(...){
+  link <- "http://datadryad.org/bitstream/handle/10255/dryad.119139/globamax_data_160609%20%28for%20GEB%20ms%29.xlsx?sequence=1"
+  data <- read.xls(link, sheet = "Data")
+  # units <- c("µmol m^-2 s^-1","% of ECEC","nmol g^-1 s^-1","mm m^-1","kg dm^-3","g  kg^-1","cmol+ kg^-1",
+  #            "cmolc kg^-1",NA,"%wt","gC gN^-1",NA,"gC kg^-1",NA,NA,"cm","m",NA,NA,NA,NA,"%wt","mmol m^-2 s^-1",
+  #            NA,NA,NA,NA,"mm mm^-1","mm mm^-1","gN m^-2","%","gN kg^-1",NA,"W m^-2","gP m^-2","mgP2O5 kg^-1",
+  #            "mm month^-1","mm month-1",NA"%","mm","mm","mm","mm",NA,"km",NA,NA,NA,"W m-2","%","dS m-1","%wt",
+  #            "%","%wt",NA,"cm2 g-1","% of ECEC",NA,"%","%","%","%",NA,"cmol kg-1","ºC",NA,"ºC","ºC","ºC","#","ºC")
+  
+}
+
 .myhrvold.2015 <- function(...){
     data <- read.csv("~/Downloads/Amniote_Database_Aug_2015.csv", as.is=TRUE)
     data <- read.csv(ft_get_si("E096-269","Data_Files/Amniote_Database_Aug_2015.csv", "esa_archives", cache=FALSE))
