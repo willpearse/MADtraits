@@ -873,3 +873,10 @@
     metadata <- data[,1]
     return(.df.melt(data, "Latin.Name", units, metadata))
 }
+
+.gossner.2015 <- function(...){
+    data <- read.table(ft_get_si("10.5061/dryad.53ds2", "ArthropodSpeciesTraits.txt"), header = T, sep = '\t')
+    units <- c(rep("NA",4),"mm",rep("NA",11))
+    metadata <- data[,c(1:3,5,17)]
+    return(.df.melt(data, "SpeciesID", units, metadata))
+}
