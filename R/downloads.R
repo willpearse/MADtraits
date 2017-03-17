@@ -65,6 +65,7 @@
     return(.df.melt(data, "Scientific"))
 }
 
+#KW first attempt to be verified
 .bellobedoy.2015a <- function(...){
     data <- read.csv(
         ft_get_si("10.6084/m9.figshare.1190766.v2","Mating success H americana.csv")
@@ -72,15 +73,18 @@
     data$species <- "hetaerina_americana"
     metadata <- data.frame(id=data$id)
     data$id <- NULL
-    return(.df.melt(data, "species", c(NA, "#", "mm", "mm", "mm"), metadata))
+    return(.df.melt(data, "species", c(NA, "#", "mm^2 ", "mm^2", "mm"), metadata))
 }
 .bellobedoy.2015b <- function(...){
     data <- read.xls(
         ft_get_si("10.6084/m9.figshare.1190766.v2","mating occurrencePzoe_2010.xls")
         )
+    data$species <- "paraphlebia zoe"
+    metadata <- data.frame(data$Individual)
+    data$Individual <- NULL
     levels(data$Status) <- c("satellite.male", "territorial.male")
+    return(.df.melt(data, "species", c(NA, NA, "mm", "mm", "?", "?", "log10(?)"), metadata))
 }
-
 # panTHERIA
 # written by Will during meeting, added by Sylvia
 .jones.2009a <- function(...){
@@ -213,3 +217,34 @@
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
+
+#KW attempt 2
+.Aubret.2012a <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=1)
+  data$species <- "notechis_scutatus"
+  metadata <- data.frame(data$POPULATION, data$DATE)
+  data$POPULATION <- NULL
+  data$DATE <- NULL
+  names(data) <- c("sex", "body_mass", "body_mass", "snout_vent_length", "snout_vent_length", "species")
+  units <- c(NA, "g", "log10(g)", "cm", "log10(cm)")
+  return(.df.melt(data, "species", units, metadata))
+}
+
+#KW
+#.Aubret.2012b <- function(...){
+#  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=2)
+#  data$X <- data$X.1 <- data$X.2 <- data$X.3 <- NA <- NA <- NA <- NA <- NA <- NA <- NA <- NA  NA <- NULL
+#  data$species <- "notechis_scutatus"
+#  metadata <- data[,c("POPULATION", "MOTHER", "BIRTH.DATE")]
+#  data <- data[,!names(data) %in% names(metadata)]
+#  names(data) <- c("total_litter_body_mass", "total_litter_body_mass", "total_litter_snout_vent_length", "total_litter_snout_vent_length", "total_litter_jaw_length", "total_litter_jaw_length")
+#  units <- c("mean(g)", "log10(mean(g))", "mean(cm)", "log10(mean(cm))", "mean(cm)", "log10(mean(cm))")
+#  return(.df.melt(data, "species", units, metadata))
+#}
+
+#.Aubret.2012c <- function(...){
+#  data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=3)
+#  names(data) <- c("genus_species", )
+#  units <- c(NA, "g", "log10(g)", "cm", "log10(cm)")
+#  return(.df.melt(data, "species", units, metadata))
+#}
