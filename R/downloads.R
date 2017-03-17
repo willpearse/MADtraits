@@ -356,7 +356,7 @@
   data<-.df.melt(data,"Species",units=units)
 }
 
-.anderson.2015(...){
+.anderson.2015 <- function (...){
   file<-tempfile()
   download.file("http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0166714.s002",file)
   data<-read.csv(file)
@@ -366,7 +366,7 @@
   data<-.df.melt(data,"Species",units=units,metadata=metadata)
 }
 
-.plourde.2014(...){
+.plourde.2014 <- function (...){
   file<-tempfile()
   download.file("http://datadryad.org/bitstream/handle/10255/dryad.65737/complete.individual.data.txt?sequence=1",file)
   data<-read.delim(file)
@@ -618,3 +618,75 @@
 #    data <- data[,1:8]
 #}
 
+.myhrvold.2015 <- function(...){
+    data <- read.csv("~/Downloads/Amniote_Database_Aug_2015.csv", as.is=TRUE)
+    data <- read.csv(ft_get_si("E096-269","Data_Files/Amniote_Database_Aug_2015.csv", "esa_archives", cache=FALSE))
+    for(i in seq_len(ncol(data)))
+        data[data[,i]==-999 | data[,i]=="-999",i] <- NA
+    metadata <- data[,c("class","order","family","genus","species","subspecies","common_name")]
+    species <- ifelse(is.na(data$subspecies), "", data$subspecies)
+    data$binomial <- tolower(paste(data$genus, data$species, data$subspecies, sep="_"))
+    data <- data[,!names(data) %in% names(metadata)]
+    units <- c("days", "#", "#/year", "g", "years", "days", "days", "g", "g", "g", "days", "days", "years","days", "years", "g", "g", "g", "mm", "mm", "g", "cm", "cm", "cm", "cm", "cm", "g", "cm", "days")
+    return(.df.melt(data, "binomial", units, metadata))
+}
+
+.benesh.2017 <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1002/ecy.1680", 1), "CLC_database_lifehistory.csv"))
+    metadata <- data[,c("Parasite.genus", "Parasite.group", "Development.remarks", "Size.reported.as", "Size.remarks", "Author", "Year", "Journal", "Volume", "Pages")]
+    data <- data[,!names(data) %in% names(metadata)]
+    return(.df.melt(data, "Parasite.species", c(NA, "#", NA, NA, "days", "°C", "mm", "mm", "mm", "mm", "n", NA, NA, NA), metadata))
+}
+
+.lu.2016a <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1002/ecy.1600", 2), "GCReW_Allom_General_Data.csv"))
+    data$binomial <- data$Spp_Orig
+    data$binomial <- gsub("PHAU", "phragmites_australis", data$binomial)
+    data$binomial <- gsub("SCAM", "schoenoplectus_americanus", data$binomial)
+    data$binomial <- gsub("SPAL", "spartina_alterniflora", data$binomial)
+    data$binomial <- gsub("SPCY", "spartina_cynosuroides", data$binomial)
+    data$binomial <- gsub("TYAN", "typha_angustifolia", data$binomial)
+    data$binomial <- gsub("AMCA", "amaranthus_cannabinus", data$binomial)
+    data$binomial <- gsub("ATPA", "atriplex_patula", data$binomial)
+    data$binomial <- gsub("KOVI", "kosteletzkya_virginica", data$binomial)
+    data$binomial <- gsub("POHY", "polygonum_hydropiper", data$binomial)
+    data$binomial <- gsub("SOSE", "solidago_sempervirens", data$binomial)
+    data$binomial <- gsub("IVFR", "iva_frutescens", data$binomial)
+    data$Width[data$Width==-99] <- NA
+    metadata <- data[,c("Species","Spp_Orig","Decile","ID","Year")]
+    data <- data[,!names(data) %in% names(metadata)]
+    names(data)[1] <- "height"
+    return(.df.melt(data, "binomial", c("cm","mm","g"), metadata))
+}
+
+.lu.2016b <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1002/ecy.1600", 2), "GCReW_Allom_Other_Data.csv"))
+    data$binomial <- data$Species
+    data$binomial <- gsub("PHAU", "phragmites_australis", data$binomial)
+    data$binomial <- gsub("SCAM", "schoenoplectus_americanus", data$binomial)
+    data$binomial <- gsub("SPAL", "spartina_alterniflora", data$binomial)
+    data$binomial <- gsub("SPCY", "spartina_cynosuroides", data$binomial)
+    data$binomial <- gsub("TYAN", "typha_angustifolia", data$binomial)
+    data$binomial <- gsub("AMCA", "amaranthus_cannabinus", data$binomial)
+    data$binomial <- gsub("ATPA", "atriplex_patula", data$binomial)
+    data$binomial <- gsub("KOVI", "kosteletzkya_virginica", data$binomial)
+    data$binomial <- gsub("POHY", "polygonum_hydropiper", data$binomial)
+    data$binomial <- gsub("SOSE", "solidago_sempervirens", data$binomial)
+    data$binomial <- gsub("IVFR", "iva_frutescens", data$binomial)
+    data$Width[data$Width==-99] <- NA
+    metadata <- data[,c("Species","ID","Year")]
+    data <- data[,!names(data) %in% names(metadata)]
+    names(data)[1] <- "height"
+    return(.df.melt(data, "binomial", c("cm","mm","g"), metadata))
+}
+
+.lu.2016c <- function(...){
+    data <- read.csv(unzip(ft_get_si("10.1002/ecy.1600", 2, cache=FALSE), "GCReW_Allom_SCAM_Data.csv"))
+    data$binomial <- "schoenoplectus_americanus "
+    data$Width[data$Width==-99] <- NA
+    metadata <- data[,c("Species","ID","Expt","ExptAge","Year","Community","Chamber","Quadrat","InOut","CO2","N","Treatment")]
+    data <- data[,!names(data) %in% names(metadata)]
+    names(data)[1] <- "height"
+    data$Cut_Stem <- as.logical(data$Cut_Stem)
+    return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
+}
