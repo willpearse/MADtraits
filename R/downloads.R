@@ -356,6 +356,41 @@
   data<-.df.melt(data,"Species",units=units)
 }
 
+.grutters.2017<-function(...){
+  link <- "http://datadryad.org/bitstream/handle/10255/dryad.128398/FE-2016-00091-Data-plant-traits-and-consumption.xlsx?sequence=1"
+  data<-read.xls(link, na.strings=c(""," ","NA"))
+  vars <- c("species", "native", "clade", "latitude_origin", "acquisition", "shared_pomacea", "consumption_rate_lymnaea", "shared_lymnaea",
+           "consumption_rate_pomacea","c","n","p","dmc","total_phenolics","cn","cp","np","n_total_pheno")
+  data <- data[-c(1),] #remove row with unit names
+  data$plantScientificName = gsub(" ","_",data$plantScientificName) #replace spaces with underscore
+  data$plantScientificName = gsub("-","_",data$plantScientificName) #replace hyphens with underscore
+  data$plantScientificName <- sapply(strsplit(data$plantScientificName, "_"), function(x) paste(x[1:2], collapse="_"))
+  data$plantScientificName = tolower(data$plantScientificName)
+  colnames(data)<-vars
+  metadata <- data[,c(2:6,8)]
+  data <- data[,-c(2:6,8)]
+  units <- c("mg g^-1 d^-1","mg g^-1 d^-1","percent_dry_weight", "percent_dry_weight",
+            "percent_dry_weight", "g g^-1", "mg g^-1", "mol mol^-1","mol mol^-1","mol mol^-1", "mg g^-1 (mg g^-1)^-1")
+  for(i in 2:ncol(data)){
+    data[,i] = as.numeric(data[,i])
+  }
+  data <- .df.melt(data, species="species",units=units, metadata = metadata)
+  return(data)
+}
+
+.molinari.2014<-function(...){
+  link <- "http://datadryad.org/bitstream/handle/10255/dryad.55089/Dryad_Final.xlsx?sequence=1"
+  data <- read.xls(link)
+  vars = c("species", "native", "life_form","abundance_2007","abundance_2008", "peak_flowering", "height", "seed_mass", "specific_leaf_area")
+  colnames(data) = vars
+  data$species = tolower(gsub(" ","_",data$species))
+  metadata = data[,c(4:5)]
+  data = data[,-c(4:5)]
+  units = c(NA,NA,"month","m","mg","cm^2/g")
+  data = .df.melt(data, "species",units,metadata)
+  return(data)
+}
+
 .anderson.2015 <- function (...){
   file<-tempfile()
   download.file("http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0166714.s002",file)
