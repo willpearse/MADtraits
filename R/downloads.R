@@ -702,16 +702,18 @@
     data$Plant.species <- name.data$Species.name[1:22]
     names(data) <- c("species","leaf_dry_matter", "leaf_nitrogen_content", "leaf_carbon_content", "leaf_carbon_nitrogen_ratio", "leaf_thickness", "leaf_area", "perimeter_leaf_length_ratio")
     data <- data[,1:8]
-    units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm2", "NA")
+    units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm^2", "NA")
     data <- .df.melt(data, "species", units=units)
 }
 
-#.ameztegui.2016 <- function(...){
-#    data <- read.xls(ft_get_si("10.5061/dryad.12b0h","FunctionalTraits_Dryad.xlsx"))
-#    data <- data[,-c(1,6,7)]
-#    names(data)[4:16] <- c("Phylum","leaf_habit","","leaf_mass_area","photosynthetic_capacitity_per_unit_leaf_mass","N_content_per_unit_mass","P_content_per_unit_mass","leaf_lifespan","leaf_length","seed_mass","wood_density","max_tree_height")
-#
-#}
+.ameztegui.2016 <- function(...){
+    data <- read.xls(ft_get_si("10.5061/dryad.12b0h/2","FunctionalTraits_Dryad.xlsx"))
+    data <- data[,-c(1,7,8)]
+    names(data)[4:14] <- c("Phylum","leaf_habit","specific_leaf_area","photosynthetic_capacitity_per_unit_leaf_mass","N_content_per_unit_mass","P_content_per_unit_mass","leaf_lifespan","leaf_length","seed_mass","wood_density","max_tree_height")
+    units <- c(rep("NA",3),"deciduous/evergreen","m/kg","mmol CO2/g s","%","%","months","mm","mg/seed","g cm^3","m")
+    metadata <- data[,2:4]
+    data <- .df.melt(data, "SpName", units=units, metadata=metadata)
+}
 
 .plourde.2015 <- function(..){
   data <- read.delim(ft_get_si("10.5061/dryad.sv181", "complete.individual.data.txt"))
