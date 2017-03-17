@@ -866,4 +866,10 @@
     return(.df.melt(data, "binomial", units, metadata))
 }
 
-
+.brown.2015 <- function(...){
+    data <- read.xls(ft_get_si("10.5061/dryad.m3d4d/1", "BrownGrahamTraitsData.xlsx"))
+    data <- data[,-c(4,16)]
+    units <- c(rep("NA",12),"g")
+    metadata <- data[,1]
+    return(.df.melt(data, "Latin.Name", units, metadata))
+}
