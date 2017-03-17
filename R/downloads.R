@@ -898,5 +898,3 @@
   data <- .df.melt(data, "Individual_Species", units, metadata)
   return(data)
 }
-
-
