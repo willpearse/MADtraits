@@ -656,3 +656,10 @@
     units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm2", "NA")
     data <- .df.melt(data, "species", units=units)
 }
+
+#.ameztegui.2016 <- function(...){
+#    data <- read.xls(ft_get_si("10.5061/dryad.12b0h","FunctionalTraits_Dryad.xlsx"))
+#    data <- data[,-c(1,6,7)]
+#    names(data)[4:16] <- c("Phylum","leaf_habit","","leaf_mass_area","photosynthetic_capacitity_per_unit_leaf_mass","N_content_per_unit_mass","P_content_per_unit_mass","leaf_lifespan","leaf_length","seed_mass","wood_density","max_tree_height")
+#
+#}
