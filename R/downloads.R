@@ -713,6 +713,18 @@
 #
 #}
 
+.plourde.2015 <- function(..){
+  data <- read.delim(ft_get_si("10.5061/dryad.sv181", "complete.individual.data.txt"))
+  data <- unite(data, species, genus, species, remove = FALSE)
+  data <-data[,-c(4:5)]
+  data$species <- tolower(data$species)
+  metadata <- data[,c(1:2,13,15,30:34,38)]
+  data <- data[,-c(1:2,13,15,30:34,38)]
+  units <- c("g", "cm^3", rep("g",2), "cm^3", rep("g",2), "cm^3", "g", "cm", rep("cm", 7), rep("g/cm^3",3), rep("cm^2", 4),  "?", "?", "%", "NA", "NA", "NA", "Na", "intercept", "y/x", "r^2", "pvalue", "class", "y/x")
+  data <- .df.melt(data, "species", units)
+  return(data) 
+}
+
 .delgado.2016 <- function(...){
   data <- read.xls(ft_get_si("10.5061/dryad.1tj60","Delagado_etal_2016_Appendix2.xlsx"), fileEncoding='UTF-8',sheet=1)
   data <- data[1:109,1:8]
