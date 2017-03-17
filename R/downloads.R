@@ -4,7 +4,7 @@
 #Headers
 #' @importFrom fulltext ft_get_si
 #' @importFrom gdata read.xls
-#' @importFrom utils read.csv
+#' @importFrom utils read.csv read.csv2 read.delim read.table
 #' @importFrom testdat sanitize_text
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
 .wright.2004 <- function(...){
@@ -155,6 +155,7 @@
 
 # high impact invaders
 # written by Sylvia
+# Konrad tried to update units, turns out they're not reported with the data or in the paper WTF!
 .case.2016 <- function(...){
     data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.103099/Traits.2Feb2015.csv?sequence=1", sep = ",", header = TRUE)
     #units <- length(names(data))
@@ -164,16 +165,16 @@
 
 # Will fix me please!!!
 #issue with the setup
-.Tian.2016 <- function(...){
-  data <- read.xls("~/Documents/Programming/NerdClub/Trait_sheets/srep19703-s2.xls", as.is=TRUE, skip=XXX)
-  for(i in 1:ncol(data))
-    data[ifelse(is.na(data[,i]== "—" | data[,i]== "—§"), FALSE, data[,i]== "—" | data[,i]== "—§"),i] <- NA
-  data[,-c(1,5,9,12)]
-  data$Space <- NULL
-  units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "μm", "mm^2", "%", "Space", "μm", "%", "%", "Space", "classification", "Space", "Needle/Broad")
-  data <- .df.melt(data, "plant_spp", units=units)
-  return(data)
-}
+#.Tian.2016 <- function(...){
+#  data <- read.xls("~/Documents/Programming/NerdClub/Trait_sheets/srep19703-s2.xls", as.is=TRUE)
+#  for(i in 1:ncol(data))
+#    data[ifelse(is.na(data[,i]== "â" | data[,i]== "âÂ§"), FALSE, data[,i]== "â" | data[,i]== "âÂ§"),i] <- NA
+#  data[,-c(1,5,9,12)]
+#  data$Space <- NULL
+#  units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "Î¼m", "mm^2", "%", "Space", "Î¼m", "%", "%", "Space", "classification", "Space", "Needle/Broad")
+#  data <- .df.melt(data, "plant_spp", units=units)
+#  return(data)
+#}
 
 .Pearse.2014 <- function(...){
   data <- read.csv(ft_get_si("10.6084/m9.figshare.979288", 4), sep = ",", na.strings = c("","NA"))
@@ -216,4 +217,54 @@
   units <- c("species", "µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
+}
+
+.simpson.2015 <- function(...){
+  data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.99379/Plant%20trait%20data.csv?sequence=1")
+  metadata <- data[,c(2:3)]
+  data <- data[-c(2:3)]
+  data$Species <- gsub(" ","_",data$Species)
+  data <- .df.melt(data, "Species", units = c(NA, NA, "m", "m", "g", "g", "g/g", "g/cm", "SA/vol", "kJ/g"), metadata)
+  return(data)
+}
+
+.martin.2016 <- function(...){
+  data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.127965/Martin%20et%20al.%20Functional%20Ecology.txt?sequence=1", sep = "\t")
+  data$species <- rep("Coffea_arabica", nrow(data))
+  metadata <- data[,c(1:10,12)]
+  data <- data[-c(1:10,12)]
+  units <- c("#","cm","cm","mm","mm","#","#","#","m^2","mm","m","mg","g","#","#","#",
+            "#","#","#","#","#","#","#","#","g/m^2","#","g/cm^3","#","#","g/cm^2",
+            "#","#","#","#","#", NA)
+  data <- .df.melt(data, "species", units = units, metadata)
+  return(data)
+}
+
+.gossner.2015 <- function(...){
+  file<-tempfile()
+  download.file("http://datadryad.org/bitstream/handle/10255/dryad.76638/ArthropodSpeciesTraits.txt?sequence=1",file)
+  data <- read.delim(file)
+  metaData <- data[,c(1:3)]
+  data <- data[,-c(1:3,5,17)]
+  units <- c("mm",rep(NA,10))
+  data <- .df.melt(data,"SpeciesID",units=units, metadata)
+}
+
+.sherratt.2013<-function(...){
+  file<-tempfile()
+  download.file("https://datadryad.org/bitstream/handle/10255/dryad.47130/Ontogenetic%20allometry%20data.csv?sequence=1",file)
+  data<-read.csv(file)
+  data<-data[,-c(2:3,5)]
+  units=c("mm","cm","cm")
+  data<-.df.melt(data,"Species",units=units)
+}
+
+## WIP
+.winchell.2016 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
+  data <- data[,-c(1:2,15:16)]
+  data$species <- 'A.cristatellus'
+  data$perch.diam.cm <- as.numeric(data$perch.diam.cm)
+  units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
+  return(.df.melt(data, "species", units=units))
 }

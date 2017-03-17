@@ -7,8 +7,10 @@
 # param to.save.name name to save the file as (DEFAULT: it will be
 #     named paste(zip,file, sep='_'))
 # return Complete path to unzipped file
-#' @importFrom utils unzip
+#' @importFrom utils unzip download.file
 #' @importFrom reshape2 melt
+#' @importFrom httr GET
+#' @importFrom stats setNames
 .unzip <- function(file, zip, to.save.dir, to.save.name){
     if(missing(to.save.dir))
         to.save.dir <- tempdir()
@@ -18,7 +20,7 @@
     files <- unzip(zip, list=TRUE)
     if(!file %in% files$Name)
         stop("Required file not in zipfile ", zip)
-    
+
     file <- unzip(zip, file)
     file.rename(file, file.path(to.save.dir, to.save.name))
     return(file.path(to.save.dir, to.save.name))
@@ -80,17 +82,17 @@
 .download <- function(url, dir, save.name, cache=TRUE){
     destination <- file.path(dir, save.name)
     suffix <- .file.suffix(url, 4)
-    
+
     if(cache==TRUE & file.exists(destination)){
         if(!is.na(suffix))
             attr(destination, "suffix") <- suffix
         return(destination)
     }
-    
+
     result <- download.file(url, destination, quiet=TRUE)
     if(result != 0)
         stop("Error code", result, " downloading file; file may not exist")
-    
+
     if(!is.na(suffix))
         attr(destination, "suffix") <- suffix
     return(destination)
