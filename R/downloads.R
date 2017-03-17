@@ -880,3 +880,14 @@
     metadata <- data[,c(1:3,5,17)]
     return(.df.melt(data, "SpeciesID", units, metadata))
 }
+
+.price.2014 <- function(...){
+    data <- read.xls(ft_get_si("10.5061/dryad.r3n45", "Price%20et%20al%20Data%20for%20Dryad.xlsx"))
+    names(data)[7:18] <- c("growth_form","specific_leaf_area","leaf_mass_area","leaf_life_span","N_content_per_unit_mass","N_content_per_unit_area","P_content_per_unit_mass","P_content_per_unit_area","phototsynthetic_capacity_per_mass","phototsynthetic_capacity_per_area","leaf_size","height") 
+    units <- c(rep("NA",6), "mm^2/mg ", "g/m^2", "months", "%", "g/m^2", "%", "g/m^2", "nmol/g s", "micromol/m^2 s", "cm^2", "m")
+    metadata <- data[,c(1:2,4:7)]
+    return(.df.melt(data, "genus.species", units, metadata))
+}
+
+
+
