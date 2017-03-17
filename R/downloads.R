@@ -888,5 +888,15 @@
   return(data)
 }
 
+.vanier.2013 <- function(...){
+  data <- read.delim(ft_get_si("E094-246", "Mass_volume_data.txt", "esa_archives"), sep = "", as.is = TRUE, na.strings = c("","NA"))
+  data$Individual_Species <- tolower(data$Individual_Species)
+  data$Species_Groups <- tolower(data$Species_Groups)
+  metadata <- data[,c(1:2,4:5)]
+  data <- data[,-c(1:2,4:5)]
+  units <- c("g", "m^3", "Status", "survivor_status", "life_form_type", "?", "NA", "NA", "treatmet_group")
+  data <- .df.melt(data, "Individual_Species", units, metadata)
+  return(data)
+}
 
 
