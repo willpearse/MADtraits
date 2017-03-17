@@ -182,7 +182,7 @@
   data <- data.frame(species, data)
   metadata <- data[,c(2:3,8:15)]
   data <- data[,-c(2:3,8:15)]
-  units <- c("species",rep(NA,7), "min", rep(NA,6))
+  units <- c(rep(NA,7), "min", rep(NA,6))
   data <- .df.melt(data, "species", units=units, metadata)
   return(data)
 }
@@ -193,7 +193,7 @@
   data <- data.frame(species, data)
   metadata <- data[,11]
   data <- data[,-c(10:11)]
-  units <- c("species", rep(NA,2), "mg", "mm", "mg", rep(NA, 5))
+  units <- c(rep(NA,2), "mg", "mm", "mg", rep(NA, 5))
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -203,7 +203,7 @@
   data <- data[-c(1),]
   metadata <- data[,c(1,3)]
   data <- data[,-c(1,3)]
-  units <- c('species', rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "odw", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
+  units <- c(rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "odw", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -214,7 +214,7 @@
   data <- data.frame(species, data)
   metadata <- data[,c(2:7,24:25)]
   data <- data[,-c(2:7,23:25)]
-  units <- c("species", "µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
+  units <- c("µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -275,7 +275,7 @@
   data <- data.frame(species, data[,-1])
   metadata <- data[,c(2, 9:12)]
   data <- data[,-c(2, 9:12)]
-  units <- c("species", "%", "mm", "mm", "cm", "day_since_transplant", "survival_since_transplant", rep("NA", 4), "categorical_measure_occasion")
+  units <- c("%", "mm", "mm", "cm", "day_since_transplant", "survival_since_transplant", rep("NA", 4), "categorical_measure_occasion")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -302,10 +302,20 @@
   data <- data.frame(species, data[,-3])
   metadata <- data[,c(2:4)]
   data <- data[,-c(2:4)]
-  units <- c("species", rep("cm",2), "mm day^-1", "mg", rep("cm",2), "mm day^-1", "mg", "cm/cm", "mg/mg", "mg", rep("NA",3))
+  units <- c(rep("cm",2), "mm day^-1", "mg", rep("cm",2), "mm day^-1", "mg", "cm/cm", "mg/mg", "mg", rep("NA",3))
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
 
+.fitzgerald.2017 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.67140", "traits.csv"), sep = ",", as.is = TRUE)
+  species <- tolower(gsub(".", "_", data$species, fixed = TRUE))
+  species <- gsub("sp_", "sp.", species)
+  data <- data.frame(species, data[,-1])
+  data <- data[,-c(2, 9:12)]
+  units <- c(rep("log_mm", 5), "sqrt_mm", "cubert_mm", "mm", "sqrt_mm", "mm", "sqrt_mm", "mm", "inverse_mm", "log_mm", "mm", "mm", "log_mm", rep("mm", 3), "log_mm", rep("mm", 4), "inverse_mm", "log_mm", "cubert_mm", rep("sqrt_mm",2), "cubert_mm", rep("mm",2), "inverse_mm", rep("sqrt_mm",2), "mm", "sqrt_mm", rep("fourthroot_mm",2), "mm", "log_mm", rep("mm",3))
+  data <- .df.melt(data, "species", units)
+  return(data)
+}
 
 
