@@ -176,45 +176,45 @@
 #  return(data)
 #}
 
-.Pearse.2014 <- function(...){
+.pearse.2014 <- function(...){
   data <- read.csv(ft_get_si("10.6084/m9.figshare.979288", 4), sep = ",", na.strings = c("","NA"))
   species <- rep(c("Carcinus_maenas"), nrow(data))
   data <- data.frame(species, data)
   metadata <- data[,c(2:3,8:15)]
   data <- data[,-c(2:3,8:15)]
-  units <- c("species",rep(NA,7), "min", rep(NA,6))
+  units <- c(rep(NA,7), "min", rep(NA,6))
   data <- .df.melt(data, "species", units=units, metadata)
   return(data)
 }
 
-.Simmons.2014 <- function(...){
+.simmons.2014 <- function(...){
   data <- read.xls(ft_get_si("10.5061/dryad.42pg7", "Simmons%20%26%20Buzatto%202013.xlsx"), as.is=TRUE)
   species <- rep(c("Onthophagus_taurus"), nrow(data))
   data <- data.frame(species, data)
   metadata <- data[,11]
   data <- data[,-c(10:11)]
-  units <- c("species", rep(NA,2), "mg", "mm", "mg", rep(NA, 5))
+  units <- c(rep(NA,2), "mg", "mm", "mg", rep(NA, 5))
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
 
-.Grootemaat.2015 <- function(...){
+.grootemaat.2015 <- function(...){
   data <- read.xls(ft_get_si('10.5061/dryad.m41f1', 'Grootemaat%202015_FE_Dryad.xlsx'), sheet ='RAWdata', as.is = TRUE)
   data <- data[-c(1),]
   metadata <- data[,c(1,3)]
   data <- data[,-c(1,3)]
-  units <- c('species', rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "odw", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
+  units <- c(rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "odw", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
 
-.Arnold.2016 <- function(...){
+.arnold.2016 <- function(...){
   data <- read.xls(ft_get_si("10.5061/dryad.t3d52", "Arnold_etal_2016_functecol_dataset.xlsx"), as.is = TRUE, skip = 3)
   species <- rep(c("Tribolium_castaneum"), nrow(data))
   data <- data.frame(species, data)
   metadata <- data[,c(2:7,24:25)]
   data <- data[,-c(2:7,23:25)]
-  units <- c("species", "µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
+  units <- c("µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -259,6 +259,27 @@
   data<-.df.melt(data,"Species",units=units)
 }
 
+.buzzard.2015 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.s8f38", "FEBuzzardSpTraits.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
+  data <- unite(data, species, genus, species, remove = FALSE)
+  metadata <- data[,c(1:2,4:9,16:18)]
+  data <- data[,-c(1:2,4:9,16:18)]
+  units <- c("NA", "cm^2 g^-1", "NA", "mg g-1", rep("NA",3),"years", rep("NA", 5), "mg ha^–1", "?", rep("NA",3))
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.philipson.2014 <- function(...){
+  data <- read.delim(ft_get_si("10.5061/dryad.qn814", "EcologyEvolution_IntensivePlotsData_forDryad.txt"), sep = ",", as.is = TRUE)
+  species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
+  data <- data.frame(species, data[,-1])
+  metadata <- data[,c(2, 9:12)]
+  data <- data[,-c(2, 9:12)]
+  units <- c("%", "mm", "mm", "cm", "day_since_transplant", "survival_since_transplant", rep("NA", 4), "categorical_measure_occasion")
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
 ## WIP
 .winchell.2016 <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
@@ -268,3 +289,42 @@
   units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
   return(.df.melt(data, "species", units=units))
 }
+
+.limpens.2013a <- function(...){
+  data <- read.xls(ft_get_si("doi:10.5061/dryad.926nd", "Motherfile.xls"), as.is = TRUE)
+  species <- gsub("gla", "picea_glauca", data$Species)
+  species <- gsub("mar", "picea_mariana", species)
+  species <- gsub("rub", "picea_rubens", species)
+  species <- gsub("sit", "picea_sitchensis", species)
+  species <- gsub("ban", "pinus_banksiana", species)
+  species <- gsub("nig", "pinus_nigra", species)
+  species <- gsub("syl", "pinus_slyvestris", species)
+  data <- data.frame(species, data[,-3])
+  metadata <- data[,c(2:4)]
+  data <- data[,-c(2:4)]
+  units <- c(rep("cm",2), "mm day^-1", "mg", rep("cm",2), "mm day^-1", "mg", "cm/cm", "mg/mg", "mg", rep("NA",3))
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.fitzgerald.2017 <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.67140", "traits.csv"), sep = ",", as.is = TRUE)
+  species <- tolower(gsub(".", "_", data$species, fixed = TRUE))
+  species <- gsub("sp_", "sp.", species)
+  data <- data.frame(species, data[,-1])
+  data <- data[,-c(2, 9:12)]
+  units <- c(rep("log_mm", 5), "sqrt_mm", "cubert_mm", "mm", "sqrt_mm", "mm", "sqrt_mm", "mm", "inverse_mm", "log_mm", "mm", "mm", "log_mm", rep("mm", 3), "log_mm", rep("mm", 4), "inverse_mm", "log_mm", "cubert_mm", rep("sqrt_mm",2), "cubert_mm", rep("mm",2), "inverse_mm", rep("sqrt_mm",2), "mm", "sqrt_mm", rep("fourthroot_mm",2), "mm", "log_mm", rep("mm",3))
+  data <- .df.melt(data, "species", units)
+  return(data)
+}
+
+
+
+
+
+
+
+
+
+
+
