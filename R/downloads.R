@@ -845,3 +845,53 @@
     data$Cut_Stem <- as.logical(data$Cut_Stem)
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
 }
+
+.augspurger.2016a<-function(...){
+  file<-tempfile()
+  download.file("http://datadryad.org/bitstream/handle/10255/dryad.128418/Data%20File%201.%20Diaspore%20traits.csv?sequence=1",file)
+  data<-read.csv(file)
+  units<-c("mg","cm^2","mg/cm^2","cm/s")
+  data<-.df.melt(data,"Species",units=units)
+}
+
+.augspurger.2016b<-function(...){
+  file<-tempfile()
+  download.file("http://datadryad.org/bitstream/handle/10255/dryad.128420/Data%20File%203.%20Parent%20tree%20information.csv?sequence=1",file)
+  data<-read.csv(file)
+  metadata<-data[,2]
+  data<-data[,-2]
+  units<-c("cm","m","m","m^2",NA,"m^2")
+  data<-.df.melt(data,"Species",units=units,metadata=metadata)
+}
+
+.philipson.2016<-function(...){
+  file<-tempfile()
+  download.file("http://datadryad.org/bitstream/handle/10255/dryad.109340/EcologyEvolution_IntensivePlotsData_forDryad.txt?sequence=1",file)
+  data<-read.delim(file,sep = ",")
+  metadata<-data[,c(2,7:12)]
+  data<-data[,c(1,3:6)]
+  units<-c("%","mm","mm","cm")
+  data<-.df.melt(data,"Species",units=units,metadata=metadata)
+}
+
+.abakumova.2016<-function(...){
+  file<-tempfile()
+  download.file("http://datadryad.org/bitstream/handle/10255/dryad.109534/Abakumova_etal_NEWPHY2016_morphology_data.txt?sequence=1",file)
+  data<-read.delim(file)
+  metadata<-data[,c(1,3:9)]
+  data<-data[,-c(1,3:9)]
+  units<-c("cm","cm^2","g","%","cm^2/g","g","g")
+  data<-.df.melt(data,"Focal_species",units=units,metadata=metadata)
+}
+
+.lawson.2015<-function(...){
+  file<-tempfile()
+  download.file("http://datadryad.org/bitstream/handle/10255/dryad.84713/riparian%20wood%20density%20data.csv?sequence=1",file)
+  data<-read.csv(file)
+  metadata<-data[,c(1,3,5,7,9)]
+  data<-data[,-c(1,3,5,7,9)]
+  units<-rep("g/cm^3",3)
+  data<-.df.melt(data,"species",units=units,metadata=metadata)
+}
+
+
