@@ -869,7 +869,7 @@
   return(data)
 }
 
-.jennings.2016 <- function(...){
+.jennings.2016a <- function(...){
   link = "http://datadryad.org/bitstream/handle/10255/dryad.112638/spiders.csv?sequence=1"
   data = read.csv(link)
   data$species = rep("sosippus_floridanus", nrow(data))
@@ -881,3 +881,30 @@
   data = .df.melt(data, "species", units, metadata)
   return(data)
 }
+
+.jennings.2016b <- function(...){
+  link = "http://datadryad.org/bitstream/handle/10255/dryad.112639/sundews.csv?sequence=1"
+  data = read.csv(link)
+  data$species = rep("drosera_capillaris", nrow(data))
+  vars = c("web_area","web_height","diff_trich","diff_trap","sum_trap", "species")
+  units = c("cm^2","cm","#/cm^2","cm^2","cm^2")
+  metadata = data[,c(1:7,10)]
+  data = data[,-c(1:7,10)]
+  colnames(data) = vars
+  data = .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.jennings.2016c <- function(...){
+  link = "http://datadryad.org/bitstream/handle/10255/dryad.112640/toads.csv?sequence=1"
+  data = read.csv(link)
+  data$species = rep("anaxyrus_quercicus", nrow(data))
+  vars = c("web_area","web_height", "toad_growth","diff_trich","diff_trap","sum_trap", "species")
+  units = c("cm^2","cm","g","#/cm^2","cm^2","cm^2")
+  metadata = data[,c(1:5,8:9,11:12)]
+  data = data[,-c(1:5,8:9,11:12)]
+  colnames(data) = vars
+  data = .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
