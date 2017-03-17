@@ -161,3 +161,39 @@
     data <- .df.melt(data, "species")
     return(data) 
 }
+
+.pigot.2015 <- function(...){
+    data <- read.xls(ft <- get <- si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
+    data <- data[,-c(26:28)]
+        for(i in 12:15)
+    data[,i] <- as.logical(data[,i])
+    names(data)[3:11] <- c("Min.Elevation","Max.Elevation","log.Bill.Length","log.Bill.Width","log.Bill.Depth","log.Tarsus.Length","log.Kipps.Distance","log.Wing.Length","log.Tail.Length")
+    names(data)[26] <- "Museum.Institution.codes"
+    units <- c("NA","m","m",rep('mm',7),rep('NA',4),rep('%',10),"NA")
+    metadata <- data[,c(1,3:4,26)]
+    data <- .df.melt(data, "Binomial", units=units, metadata=metadata)
+}
+
+.marx.2016 <- function(...){
+    data <- read.csv("https://ndownloader.figshare.com/files/6854532")
+    names(data)[3:7] <- c("Seed.Mass","Maximum.Height","","Leaf.Size","Leaf.Nitrogen")
+    units <- c("native/invasive","mg","m","cm2/g","cm2","specific_leaf_area")
+    metadata <- data[,2]
+    data <- .df.melt(data, "Species", units=units, metadata=metadata)
+}
+
+.olli.2015 <- function(...){
+    data <- read.table("https://datadryad.org/bitstream/handle/10255/dryad.90019/fd.txt?sequence=1", header = T, sep = '\t')
+    for(i in c(1:9,11))
+        data[,i] <- as.logical(data[,i])
+    units <- c(rep('NA',9), "micrometer", "NA")
+    data$species <- rownames(data)
+    data <- .df.melt(data, "species", units=units)
+}
+
+#.deraison.2014 <- function(...){
+#    data <- read.xls("~/Downloads/Plant20traits.xls", sheet = 2)
+#    data$Plant.species <- #new names
+#    data <- data[,1:8]
+#}
+
