@@ -556,7 +556,7 @@
   data <- data[,-c(1:2,5:6,8:11,16)]
   data$species <- 'sterna_hirundo'
   colnames(data) <- c('age', 'sex', 'lifespan', 'egg_volume', 'clutch_size', 'brood_size', 'no_fledglings', 'species')
-  units <- c('years',NA,'years', rep(NA,3))
+  units <- c('years',NA,'years', rep(NA,4))
   data <- .df.melt(data, "species", units=units)
   data$character$units <- NA
   return(data)
@@ -845,3 +845,52 @@
     data$Cut_Stem <- as.logical(data$Cut_Stem)
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
 }
+
+.castillo.2016 <- function(...){
+  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.116802/Castillo%20and%20Delph%20isofemale%20data.csv?sequence=1')
+  names(data) <- tolower(names(data))
+  data$species <- 'caenorhabditis_remanei'
+  units <- c('μm','μm','sec','sec','sec', rep(NA,3))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.nandy.2013 <- function(...){
+  data <- read.xls('http://datadryad.org/bitstream/handle/10255/dryad.53849/Nandy%20et%20al.%2013-0268.R2_data.xlsx?sequence=1')
+  colnames(data) <- c('selection_regime', 'block', 'total_mass_dry')
+  names(data) <- tolower(names(data))
+  data$species <- 'drosophila_melanogaster'
+  units <- c(NA,'mg',NA)
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.comeault.2013 <- function(...){
+  data <- read.table('http://datadryad.org/bitstream/handle/10255/dryad.54681/Tcris_FHA_phenotypes.txt?sequence=1',header=TRUE)
+  data <- data[,-c(1,4)]
+  colnames(data) <- c('sex','phenotype','hue_green_color_chip', 'saturation_green_color_chip', 'brightness_green_color_chip', 'lateral_hue_average', 'lateral_saturation_average', 'lateral_brightness_average', 'midsaggital_hue_average', 'midsaggital_saturation_average', 'midsaggital_brightness_average','body_length','body_width','head_width','proportion_striped')
+  data$species <- 'timema_cristinae'
+  units <- c(rep(NA,9),rep('cm',4),rep(NA,2))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+.fargevieille.2017 <- function(...){
+  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.138322/ColorTraitValuesECE3-2822.csv?sequence=1',sep=';')
+  data <- data[,-c(3,4)]
+  levels(data$pop)<- c('d_muro','e_muro','e_pirio','d_rouviere')
+  colnames(data) <- c('year','population','male_blue_brightness','female_blue_brightness','male_blue_hue','female_blue_hue','male_blue_uv_chroma','female_blue_uv_chroma','male_yellow_brightness','female_yellow_brightness','male_yellow_contrast','female_yellow_contrast')
+  data$species <- 'cyanistes_caeruleus'
+  units <- c(rep(NA,12))
+  data <- .df.melt(data, "species", units=units)
+  data$character$units <- NA
+  return(data)
+}
+
+
+
+
+
