@@ -55,7 +55,7 @@
 # .klomp.2016 <- function(...){
 #   data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.117914/draco_comparative%20data.csv?sequence=1')
 #   names(data) <- tolower(gsub("\\.", "_", names(data)))
-#   
+#
 #   colnames(data) <- c('species', 'female_dewlap_area', 'male_dewlap_area_', sexual_dimorphism_in_dewlap_area__natural_logged_ sexual_size_dimorphism__svl_ sexual_dichromatism__chromatic_contrast_
 #   data <- data[,-c(1:4,16)]
 #   colnames(data) <- c('diet','svl','latency','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
@@ -299,7 +299,7 @@
 }
 
 .cariveau.2016 <- function(...){
-  
+
   link = "http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0151482.s003"
   file = "C:/crap/journal.pone.0151482.s003.XLSX"
   sheet = "TableS1_v2"
@@ -350,7 +350,7 @@
   file<-tempfile()
   download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file)
   data<-read.xls(xls=file)
-  
+
   data<-read.xls(xls="C:/Users/water/Downloads/mmc1.xlsx")
   units<-c("mm","mm")
   data<-.df.melt(data,"Species",units=units)
@@ -470,7 +470,7 @@
     units <- sample(c("SpecID", "PassNonPass", "IOCOrder", "BLFamilyLatin", "BLFamilyEnglish", "BLFamSequID", "Taxo", "Scientific", "English", "Diet.Inv", "Diet.Vend", "Diet.Vect", "Diet.Vfish", "Diet.Vunk", "Diet.Scav", "Diet.Fruit", "Diet.Nect", "Diet.Seed", "Diet.PlantO", "Diet.5Cat", "Diet.Source", "Diet.Certainty", "ForStrat.watbelowsurf", "ForStrat.wataroundsurf", "ForStrat.ground", "ForStrat.understory", "ForStrat.midhigh", "ForStrat.canopy", "ForStrat.aerial", "PelagicSpecialist", "ForStrat.Source", "ForStrat.SpecLevel", "Nocturnal", "BodyMass.Value", "BodyMass.Source", "BodyMass.SpecLevel", "BodyMass.Comment", "Record.Comment"),length(names(data))-1,TRUE)
     return(.df.melt(data, "Scientific"))
 }
-  
+
   ## WIP
 .winchell.2016 <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
@@ -583,10 +583,15 @@
 #principal components are metadata
 .cavender.2015c <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.855pg","PCA_All_Virentes.csv"))
-  data <- data[1:109,1:8]
-  metadata <- data[,2:6]
-  data <- data[,-c(2:6)]
-  units <- c("m", 'cm')
+  metadata <- data[,c(1,2,4:9,11:18)]
+  data <- data[,-c(1,2,4:9,11:18)]
+  names <- data['Species']
+  for(i in 1:17){
+    p <- c('BR', 'FU', 'GE', 'MN', 'OL', 'SA','VI','FU2', 'OL2', 'SA2', 'VI2', 'VI3', 'MN2', 'VI4', 'GE1', 'GE3', 'HY')
+    r <- c("q_brandegeei","q_fusiformis", "q_geminata", "q_minima", "q_oleoides", "q_sagraena", "q_virginiana", "q_fusiformis2", "q_oleoides2", "q_sagraena2", "q_virginiana2", "q_virginiana3","q_minima2", "q_virginiana4", "q_geminata1", "q_geminata3", "hybrid")
+    names[,1] <- gsub(p[i], r[i], names[,1])
+  }
+  units <- c("mm^2", 'mm^2','C','C','%','%',rep('C',7),rep('mm',3),'NA',rep('mm',4), 'C', 'C', '%', 'NA', rep('C',7), rep('mm',3), 'NA', rep('mm',4))
   return(.df.melt(data,"Species",units=units, metadata))
 }
 
@@ -652,3 +657,12 @@
 #    data$Plant.species <- #new names
 #    data <- data[,1:8]
 #}
+
+.delgado.2016 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.1tj60","Delagado_etal_2016_Appendix2.xlsx"), fileEncoding='UTF-8',sheet=1)
+  data <- data[1:109,1:8]
+  metadata <- data[,2:6]
+  data <- data[,-c(2:6)]
+  units <- c("m", 'cm')
+  return(.df.melt(data,"Species",units=units, metadata))
+}
