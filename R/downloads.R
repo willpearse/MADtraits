@@ -1191,6 +1191,16 @@
   return(data)
 }
 
+.bengtsson.2016 <- function(...){
+  data <- read.csv(ft_get_si('10.5061/dryad.62054', 'bengtsson_etal_2016_traits.csv'), as.is=TRUE)
+  data$species.name <- tolower(data$species.name)
+  metadata <- data[,c(1:4,6:10)]
+  data <- data[,-c(1:4,6:10)]
+  units <- c("NA", rep("%",4), "g", "g cm^-2", "g", "g cm^-2", "g", "g cm^-2", "mm", "mm", "cm^-2", "mg cm^-3", "mm", "cm^-2", "mg cm^-3", "mg cm-^2 h^-1", "mg g^-1 h^-1", "mg h^-1", "%", "%", "C/N", "cm^-2", "mg cm^-3", "mm", "NA", "NA", "latitude", "longitude", "NA", "NA", "NA", "NA", "NA")
+  data <- .df.melt(data, "species.name", units, metadata)
+  return(data)
+}
+
 #WILL THERE IS AN UPLOADING ERROR THAT SAYS: EOF within quoted string.  I THINK IT IS AN ISSUE WITH THE QUOTES IN LAT AND LON BUT I DO NOT KNOW HOW TO FIX IT.
 #PUT IT IN HERE BECAUSE EVERYTHING ELSE IS READY TO GO WITH IT, JUST CAN'T FIGURE OUT HOW TO FIX THE UPLOAD.
 .perez.2014 <- function(...){
@@ -1203,17 +1213,16 @@
   return(data)
 }
 
-.bengtsson.2016 <- function(...){
-  data <- read.csv(ft_get_si('10.5061/dryad.62054', 'bengtsson_etal_2016_traits.csv'), as.is=TRUE)
-  data$species.name <- tolower(data$species.name)
-  metadata <- data[,c(1:4,6:10)]
-  data <- data[,-c(1:4,6:10)]
-  units <- c("NA", rep("%",4), "g", "g cm^-2", "g", "g cm^-2", "g", "g cm^-2", "mm", "mm", "cm^-2", "mg cm^-3", "mm", "cm^-2", "mg cm^-3", "mg cm-^2 h^-1", "mg g^-1 h^-1", "mg h^-1", "%", "%", "C/N", "cm^-2", "mg cm^-3", "mm", "NA", "NA", "latitude", "longitude", "NA", "NA", "NA", "NA", "NA")
-  data <- .df.melt(data, "species.name", units, metadata)
+#similar issue for this as above.  I think it is the quotes in lat and long
+.delaRiva.2015 <- function(...){
+  data <- read.xls(ft_get_si('10.5061/dryad.dr275.2', 'Dryad_database.xls'), as.is=TRUE, sheet='Traits')  
+  data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
+  metadata <- data[,c(2:7)]
+  data <- data[,-c(2:7)]
+  units <- c("m", "m^2", "cm^2", "g^-1", "m^2 Kg^-1", "μg g^-1", "%", "%", "g^-1", "g cm^-3", "g g^-1", "m g^-1", rep("NA", 4), "Latitude", "Longitude")
+  data <- .df.melt(data, "Species", units, metadata)
   return(data)
 }
-
-
 
 
 
