@@ -1164,3 +1164,60 @@
 #    metadata <- data[,c()]
 #    data <- data[,!names(data) %in% names(metadata)]    
 #}
+
+.kraft.2015a <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.69ph0", "BCI%20data.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
+  data$genus_species <- tolower(data$genus_species)
+  metadata <- data[,c(2:4)]
+  data <- data[,-c(2:4)]
+  units <- c(rep("J m^-2",4), "g", "μm", "μm", "abundance", "m", "density", "abundance", "NA", "NA", "NA")
+  data <- .df.melt(data, "genus_species", units, metadata)
+  return(data)
+}
+
+.kraft.2015b <- function(...){
+  data <- read.csv(ft_get_si("10.5061/dryad.69ph0", "Kraft_et_al%20data.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
+  data <-  data[1:166,-19]
+  data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
+  metadata <- data[,c(2:3)]
+  data <- data[,-c(2:3)]
+  units <- c(rep("mm",3), "mm^3", rep("mm",3), rep("J m^-2",2), "concentration_%equivalence_to_4ptStdCurve_ofgallicacid", "concentration_%equivalence_to_8ptStdCurve_ofcrudequebrachotannin", "abundance", "m", "abundance", "density", "NA", "NA")
+  data <- .df.melt(data, "Species", units, metadata)
+  return(data)
+}
+
+.bengtsson.2016 <- function(...){
+  data <- read.csv(ft_get_si('10.5061/dryad.62054', 'bengtsson_etal_2016_traits.csv'), as.is=TRUE)
+  data$species.name <- tolower(data$species.name)
+  metadata <- data[,c(1:4,6:10)]
+  data <- data[,-c(1:4,6:10)]
+  units <- c("NA", rep("%",4), "g", "g cm^-2", "g", "g cm^-2", "g", "g cm^-2", "mm", "mm", "cm^-2", "mg cm^-3", "mm", "cm^-2", "mg cm^-3", "mg cm-^2 h^-1", "mg g^-1 h^-1", "mg h^-1", "%", "%", "C/N", "cm^-2", "mg cm^-3", "mm", "NA", "NA", "latitude", "longitude", "NA", "NA", "NA", "NA", "NA")
+  data <- .df.melt(data, "species.name", units, metadata)
+  return(data)
+}
+
+#WILL THERE IS AN UPLOADING ERROR THAT SAYS: EOF within quoted string.  I THINK IT IS AN ISSUE WITH THE QUOTES IN LAT AND LON BUT I DO NOT KNOW HOW TO FIX IT.
+#PUT IT IN HERE BECAUSE EVERYTHING ELSE IS READY TO GO WITH IT, JUST CAN'T FIGURE OUT HOW TO FIX THE UPLOAD.
+.perez.2014 <- function(...){
+  data <- read.xls(ft_get_si('10.5061/dryad.d61jk/1', 'leaf%20traits%2c%20foliar%20freezing%20resistance%2c%20climatic%20niche.xlsx'), as.is=TRUE, sheet=1)
+  data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
+  metadata <- data[,c(2:4)]
+  data <- data[,-c(2:4)]
+  units <- c("cm^2", "gr/m^2", rep("N/mm^2",2), "NA", "latitude", "longitude")
+  data <- .df.melt(data, "Species", units, metadata)
+  return(data)
+}
+
+#similar issue for this as above.  I think it is the quotes in lat and long
+.delaRiva.2015 <- function(...){
+  data <- read.xls(ft_get_si('10.5061/dryad.dr275.2', 'Dryad_database.xls'), as.is=TRUE, sheet='Traits')  
+  data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
+  metadata <- data[,c(2:7)]
+  data <- data[,-c(2:7)]
+  units <- c("m", "m^2", "cm^2", "g^-1", "m^2 Kg^-1", "μg g^-1", "%", "%", "g^-1", "g cm^-3", "g g^-1", "m g^-1", rep("NA", 4), "Latitude", "Longitude")
+  data <- .df.melt(data, "Species", units, metadata)
+  return(data)
+}
+
+
+
