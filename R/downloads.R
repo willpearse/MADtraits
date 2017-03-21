@@ -34,8 +34,8 @@
   names(data) <- tolower(gsub("X\\.", "", names(data)))
   data <- data[,-c(1:3)]
   data$species <- 'zootoca_vivipara'
-  colnames(data) <- c('altitude','svl','weight','parturition_year', 'parturition_day', 'mid_gestation_temperatures', 'forest_cover_coefficient','mountain_chain','species')
-  units <- c('m','mm','g',NA,NA,'Â°',NA,NA)
+  colnames(data) <- c('altitude','snout_vent_length','total_mass','parturition_year', 'parturition_day', 'mid_gestation_temperatures', 'forest_cover_coefficient','mountain_chain','species')
+  units <- c('m','mm','g',NA,NA,'°C',NA,NA)
   data <- .df.melt(data, "species", units=units)
   data$character$units <- NA
   return(data)
@@ -44,7 +44,7 @@
 .kuo.2014 <- function(...){
   data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.70378/personality_date1.csv?sequence=1')
   data <- data[,-c(1:4,16)]
-  colnames(data) <- c('diet','svl','latency','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
+  colnames(data) <- c('diet','snout_vent_length','latency_to_e','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
   data$species <- 'anolis_sagrei'
   units <- c('cm','min',NA,rep('%',2), 'N','cm',rep(NA,4))
   data <- .df.melt(data, "species", units=units)
@@ -76,28 +76,12 @@
     return(output)
 }
 
-.zanne.2014 <- function(...){
-    wood <- read.csv(ft_get_si("10.5061/dryad.63q27.2", "GlobalWoodinessDatabase.csv"))
-    phenol <- read.csv(ft_get_si("10.5061/dryad.63q27.2", "GlobalLeafPhenologyDatabase.csv"))
-    output <- merge(wood, phenol, by.x="gs", by.y="Binomial", all.x=TRUE, all.y=TRUE)
-    output$gs <- gsub(" ", "_", tolower(output$gs))
-    metadata <- data.frame(output$woodiness.count); output <- output[,-3]
-    return(.df.melt(output, "gs", metadata=metadata))
-}
-
 .hintze.2013 <- function(...){
     data <- read.csv("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S1433831913000218/1-s2.0-S1433831913000218-mmc1.txt/273233/html/S1433831913000218/6bd947d6c0ccb7edd11cd8bf73648447/mmc1.txt", sep=";", as.is=TRUE)
     data$metadata <- seq_len(nrow(data))
     data$name <- sapply(strsplit(tolower(sanitize_text(data$name)),split=" "), function(x) paste(x[1:2], collapse="_"))
     data <- data[,!names(data) %in% c("comment","family","citation_total","citation_prop_ane","citation_prop_dyso","citation_prop_endo","citation_prop_epi","citation_prop_hem","citation_prop_hydro","citation_prop_other")]
     return(.df.melt(data, "name"))
-}
-
-.bezeng.2015 <- function(...){
-    data <- read.xls(ft_get_si("10.5061/dryad.6t7t6","Table%20S2.xls"), as.is=TRUE)
-    metadata <- data.frame(GenBankAccession=sapply(strsplit(data$Species, "_"), function(x) x[3]))
-    data$Species <- sapply(strsplit(data$Species, "_"), function(x) paste(x, collapse="_"))
-    return(.df.melt(data, "Species",c(NA,"?","?",NA,NA,NA,NA,NA,NA),metadata))
 }
 
 .cariveau.2016 <- function(...){
@@ -115,13 +99,24 @@
     data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
     data <- data[,-c(1,23,34)]
     units <- sample(c("NA", "NA", "NA", "NA", "NA", "Taxo", "NA", "NA", "%", "%", "%", "%", "%", "%", "%", "%", "%", "%", "NA", "Diet.Source", "NA", "%", "%", "%", "%", "%", "%", "%", "boolean", "NA", "boolean", "boolean", "NA", "NA", "boolean", "NA", "NA"),length(names(data))-1,TRUE)
-    return(.df.melt(data, "Scientific"))
+    data <- .df.melt(data, "Scientific")
+    data$numeric$species <- tolower(gsub(" ", "_", data$numeric$species))
+    data$character$species <- tolower(gsub(" ", "_", data$character$species))
+    data$numeric$variable <- gsub("BodyMass.SpecLevel", "total_mass", data$numeric$variable, fixed=TRUE)
+    data$numeric$variable <- gsub("BodyMass.Value", "total_mass.Value", data$numeric$variable, fixed=TRUE)
+    return(data)
 }
+
 .wilman.2014b  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "MamFuncDat.txt", "esa_archives"))
     data <- data[,-c(1)]
     units <- sample(c("NA","NA","%","%","%","%","%","%","%","%","%","%","NA","NA","NA","NA","NA","boolean","boolean","boolean","NA","NA","NA","NA","NA"),length(names(data))-1,TRUE)
-    return(.df.melt(data, "Scientific"))
+    data <- .df.melt(data, "Scientific")
+    data$numeric$species <- tolower(gsub(" ", "_", data$numeric$species))
+    data$character$species <- tolower(gsub(" ", "_", data$character$species))
+    data$numeric$variable <- gsub("BodyMass.SpecLevel", "total_mass", data$numeric$variable, fixed=TRUE)
+    data$numeric$variable <- gsub("BodyMass.Value", "total_mass.Value", data$numeric$variable, fixed=TRUE)
+    return(data)
 }
 
 #KW first attempt to be verified
@@ -132,7 +127,12 @@
     data$species <- "hetaerina_americana"
     metadata <- data.frame(id=data$id)
     data$id <- NULL
-    return(.df.melt(data, "species", c(NA, "#", "mm^2 ", "mm^2", "mm"), metadata))
+    data <- .df.melt(data, "species", c(NA, "#", "mm^2 ", "mm^2", "mm"), metadata)
+    data$numeric$variable <- gsub("aspot", "wing_spot_area", data$numeric$variable, fixed=TRUE)
+    data$numeric$variable <- gsub("awing", "wing_area", data$numeric$variable, fixed=TRUE)
+    data$numeric$variable <- gsub("matings", "mating_events", data$numeric$variable, fixed=TRUE)
+    data$numeric$variable <- gsub("lwing", "wing_length", data$numeric$variable, fixed=TRUE)
+    return(data)
 }
 .bellobedoy.2015b <- function(...){
     data <- read.xls(
@@ -152,15 +152,8 @@
         data[data[,i]==-999 | data[,i]=="-999",i] <- NA
     units <- sample(c("g","m^2"),length(names(data))-1,TRUE)
     data <- .df.melt(data, "MSW05_Binomial", units=units)
-    return(data)
-}
-
-.jones.2009b <- function (...){
-    data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR93_Aug2008.txt", "esa_archives"))
-    for(i in 1:ncol(data))
-        data[data[,i]==-999 | data[,i]=="-999",i] <- NA
-    units <- sample(c("g","m^2"),length(names(data))-1,TRUE)
-    data <- .df.melt(data, "MSW05_Binomial", units=units)
+    data$character$species <- tolower(gsub(" ","_", data$character$species))
+    data$numeric$species <- tolower(gsub(" ","_", data$numeric$species))
     return(data)
 }
 
@@ -168,12 +161,14 @@
   color <- read.csv(ft_get_si("10.5061/dryad.9vr0c", "Dewlap_data_archive.csv"))
   color <- color[,-c(1,3,4,7:11)]
   units <- c('cm', 'cm^2')
+  color$Species <- paste0("anolis_",color$Species)
   return(.df.melt(color, "Species", units=units))
 }
 
 .munoz.2014 <- function(...){
   data <- read.table(ft_get_si("10.5061/dryad.q39h2", "Munoz_2014_AmNat_Dryad.txt"), header=T)
-  names(data) <- c('species', 'clade', 'island','latitude','longitude','elevation','svl')
+  names(data) <- c('species', 'clade', 'island','latitude','longitude','elevation','snout_vent_length')
+  data$species <- gsub('A.','anolis_', data$species)
   units <- c('degrees', 'degrees', 'm','mm', rep(NA, 3))
   data <- .df.melt(data, "species", units=units)
   data$character$units <- NA
