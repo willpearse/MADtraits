@@ -126,3 +126,9 @@ traits <- function(x, ...){
     return(unique(c(x$numeric$variable,x$character$variable)))
 }
 
+
+citations <- function(...){
+    # load file w/ authors & bibtex
+    # check for matching name, year
+    # return bibtex
+}
