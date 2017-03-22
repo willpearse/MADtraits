@@ -1219,5 +1219,161 @@
   return(data)
 }
 
+## Max's Functions ##
+
+.enriquezUrzelai.2015 <- function(...){
+  data <- read.csv(url("http://datadryad.org/bitstream/handle/10255/dryad.80306/WM_anurans_traits.csv?sequence=1"), as.is=T)
+  data <- subset(data, select=-c(SP,COLLECTION_N,ENTRANCE_N, COLLECTION, T.F))
+  # Aggregating to species means
+  data <- dcast(melt(data), SPECIES + LOC ~ variable, mean, na.rm=TRUE)
+  data$LOC <- as.factor(data$LOC)
+  colnames(data) <- c("species","locomotor_mode","snout_vent_length","tibiofibula_length","femur_length")
+  units <- c(NA,"mm","mm","mm")
+  data$species <- tolower(gsub(" ", "_", (data$species)))
+  data <- .df.melt(data, "species", units=units)
+  return(data)
+}
+
+.kamilar.2015 <- function(...)
+  # http://datadryad.org/resource/doi:10.5061/dryad.pb74r
+  data <- read.xls("http://datadryad.org/bitstream/handle/10255/dryad.94095/Kamilar%26Tecot-AppendixS1.xlsx?sequence=1", skip=1, method="csv", header=FALSE, stringsAsFactors=FALSE)
+  # Species Order BodyMass(g) BrainMass(g)  AntLobeVol(mm3) PitVol(mm3) PostLobeVol(mm3)  FetalGrowthRate(g/d)  PostnatalGrowthRate(g/d)  Gestation(d)  NeonateBodyMass(g)  LitterSize  WeaningAge(d) WeaningBodyMass(g)  MaxLongevity(y)
+  colnames(data) <- c("species","order","body_mass","brain_mass","anterior_lobe_volume","pituitary_volume","posterior_lobe_volume","fetal_growth_rate","postnatal_growth_rate","gestation_length","neonate_body_mass","litter_size","weaning_age","weaning_body_mass","max_longevity")
+  meta <- data[,"order"]
+  data <- subset(data, select=-c(order))
+  units <- c("g","g","mm^3","mm^3","mm^3","g/d","g/d","d","g","individuals","d","g","y")
+  data$species <- tolower(gsub(" ", "_", (data$species)))
+  data <- .df.melt(data, "species", units=units, metadata=meta)
+  return(data)
+}
+
+.kissling.2014 <- function(...){
+  data <- read.delim(url("http://datadryad.org/bitstream/handle/10255/dryad.64565/MammalDIET_v1.0.txt?sequence=1"), as.is=T)
+  data$species <- tolower(paste(data$Genus,data$Species,sep="_"))
+  # Subsetting to only include non-interpolated data (estimates generated from taxonomy higher than species)
+  data <- data[data$FillCode=="0",]
+  meta <- subset(data, select=c(Order,Family,Genus,TaxonomicNote,DataSource))
+  data <- subset(data, select=-c(TaxonID,Order,Family,Genus,Species,TaxonomicNote,FillCode,DataSource))
+  data <- unique(data[which(!is.na(data$species)),])
+  units <- rep(NA,ncol(data)-1)
+  data <- .df.melt(data, "species", units=units, metadata=meta)
+  return(data)
+}
+
+.lislevand.2006 <- function(...){
+  require(caper)
+  data(shorebird)
+  data <- shorebird.data
+  colnames(data) <- c("species","body_mass_male","body_mass_female","egg_mass","clutch_size","mating_system")
+  units <- c("g","g","f",NA,NA)
+  data$species <- tolower(gsub(" ", "_", (data$species)))
+  data <- .df.melt(data, "species", units=units)
+  return(data)
+}
+
+.lupold.2013 <- function(...){
+  data <- read.delim(url("http://datadryad.org/bitstream/handle/10255/dryad.48489/dataset.txt?sequence=1"), as.is=T)
+  data$Species[data$Species=="Aepiceros_melampus"] <- "Aepyceros_melampus"
+  data$species <- tolower(gsub(" ","_", data$Species))
+  meta <- subset(data, select=c(Order,Family,N,ReferenceEjaculateData,ReferenceBodyMass.TestisMass,RererenceBasalMetabolicRate))
+  data <- subset(data, select=-c(Species,Order,Family,N,ReferenceEjaculateData,ReferenceBodyMass.TestisMass,RererenceBasalMetabolicRate, BodyMass_forBMR_.in_g))
+  colnames(data)[6:8] <- c("body_mass","CombinedTestesMass","BasalMetabolicRate")
+  units <- c(NA, NA, NA, NA, NA, "g","g","mlO2/h")
+  data <- .df.melt(data, "species", units=units, metadata=meta)
+  return(data)  
+}
 
 
+.madin.2016 <- function(...){
+  # Coral Trait Data
+  # https://dx.doi.org/10.6084/m9.figshare.2067414.v1
+  
+  data <- download.file("https://ndownloader.figshare.com/files/3678603", destfile="ctdb.zip")
+  data <- read.csv(unzip("ctdb.zip")[1], stringsAsFactors=TRUE)
+  data$species <- tolower(gsub(" ","_", data$specie_name))
+
+  # Aggregation Code from https://coraltraits.org/procedures#reshaping-data-downloads
+  # Develop your aggregation rules function for the "acast" function
+  my_aggregate_rules <- function(x) {
+    if (length(x) > 1) {               # Does a species by trait combination have more than 1 value?
+      x <- type.convert(x, as.is=TRUE)
+      if (is.character(x)) {
+        return(x[1])                   # If values are strings (characters), then return the first value
+      } else {
+        return(as.character(mean(x)))  # If values are numbers, then return the mean (converted back to numeric)
+      }
+    } else {
+      return(x)                        # If a species by trait combination has 1 value, then just return that value 
+    }
+  }
+  
+  i <- sapply(data, is.factor)
+  data[i] <- lapply(data[i], as.character)
+  
+  traits <- subset(data, select=c(species,trait_name,value, standard_unit))
+  traits$standard_unit[traits$standard_unit%in%c("cat","dimensionless","text","bin","id","units")] <- NA  
+  units <- unique(subset(traits, select=c("trait_name","standard_unit")))
+  units <- units[with(units, order(trait_name)),]
+  traits_with_multiple_units <- unique(units$trait_name[duplicated(units$trait_name)])
+  # Some traits are reported in different units per species.
+  # Removing for now - until unit lookup table is available
+  # Some of these are important traits (ex. growth rate), so it would be best to keep them in
+  traits <- traits[!traits$trait_name%in%traits_with_multiple_units,]
+  units <- units$standard_unit[!units$trait_name%in%traits_with_multiple_units]
+  data <- dcast(traits, species ~ trait_name, value.var="value", fun.aggregate=my_aggregate_rules, fill="")
+  data[data == ""] <- NA
+  data <- .df.melt(data, "species", units=units)
+  return(data)
+}
+
+.paquette.2015 <- function(...){
+  #10.1002/ece3.1456
+  data <- read.xls(unzip(ft_get_si("10.1002/ece3.1456", 1))[2], sheet=2, na.strings=c("","NA"),stringsAsFactors=FALSE)
+  data <- data[7:nrow(data),2:8]
+  colnames(data) <- c("species","occurrence","average_maximum_height","wood_density","seed_mass","shade_tolerance","nitrogen_per_leaf_mass_unit")
+  data <- subset(data, select=-c(occurrence))
+  units <- c("m","g/cm^3","mg",NA,"%")
+  data$species <- tolower(gsub(" ","_", data$species))
+  data[2:6] <- lapply(data[2:6], as.numeric)
+  allNAs <- apply(data[2:6], 2,is.na)
+  data <- data[rowSums(allNAs)<5,]
+  data <- .df.melt(data, "species", units=units)
+  return(data)
+}
+
+.rojas.2013 <- function(...){
+  traits.morph <- read.delim(url("http://datadryad.org/bitstream/handle/10255/dryad.48968/morphological_variables.txt?sequence=1"), as.is=T)
+  traits.diet <- read.delim(url("http://datadryad.org/bitstream/handle/10255/dryad.48969/ecological_variables.txt?sequence=1"), as.is=T)
+  data <- merge(traits.morph,traits.diet, by.x="taxon",by.y="taxon")
+  colnames(data)[1:4] <- c("species","n_individuals_sampled","body_mass","cranial_volume")
+  meta <- data[,c("n_individuals_sampled")]
+  data <- subset(data, select=-c(n_individuals_sampled))
+  data$species <- tolower(gsub(" ","_", data$species))
+  units <- c("g","mm^3", rep(NA,6))
+  data <- .df.melt(data, "species", units=units, metadata=meta)
+  return(data)
+}
+
+.stephens.2017 <- function(...){  
+  data <- read.csv(unzip(ft_get_si("10.1002/ecy.1799", 1))[4])
+  colnames(data)[1] <- "species"
+  meta <- data$ParasiteTraitsCitation
+  data <- subset(data, select=-c(ParasiteTraitsCitation))
+  units <- rep(NA,4)
+  data$species <- tolower(gsub(" ","_", data$species))
+  data <- .df.melt(data, "species", units=units, metadata=meta)
+  return(data)
+}
+
+.lagisz.2013 <- function(...){
+  data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.44113/Lagisz_DATATABLE.csv?sequence=1", stringsAsFactors=FALSE)
+  meta <- subset(data, select=c(Refseq,NCBI_taxID,class,size_sources))
+  data <- subset(data, select=-c(ord,Refseq,NCBI_taxID,genus,species,class,log_volume_male, log_volume_female,size_sources))
+  names(data)[1] <- "species"
+  data$species <- tolower(gsub(" ","_", data$species))
+  units <- c(rep(NA,3),rep("mm",4),rep("mm^3",2), rep(NA,16))
+  data <- .df.melt(data, "species", units=units, metadata=meta)
+  return(data)
+}
+
+## end of Max's Functions ##
