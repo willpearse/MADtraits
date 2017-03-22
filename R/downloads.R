@@ -1224,8 +1224,6 @@
 .enriquezUrzelai.2015 <- function(...){
   data <- read.csv(url("http://datadryad.org/bitstream/handle/10255/dryad.80306/WM_anurans_traits.csv?sequence=1"), as.is=T)
   data <- subset(data, select=-c(SP,COLLECTION_N,ENTRANCE_N, COLLECTION, T.F))
-  # Aggregating to species means
-  data <- dcast(melt(data), SPECIES + LOC ~ variable, mean, na.rm=TRUE)
   data$LOC <- as.factor(data$LOC)
   colnames(data) <- c("species","locomotor_mode","snout_vent_length","tibiofibula_length","femur_length")
   units <- c(NA,"mm","mm","mm")
@@ -1234,6 +1232,7 @@
   return(data)
 }
 
+
 .kamilar.2015 <- function(...)
   # http://datadryad.org/resource/doi:10.5061/dryad.pb74r
   data <- read.xls("http://datadryad.org/bitstream/handle/10255/dryad.94095/Kamilar%26Tecot-AppendixS1.xlsx?sequence=1", skip=1, method="csv", header=FALSE, stringsAsFactors=FALSE)
@@ -1241,7 +1240,7 @@
   colnames(data) <- c("species","order","body_mass","brain_mass","anterior_lobe_volume","pituitary_volume","posterior_lobe_volume","fetal_growth_rate","postnatal_growth_rate","gestation_length","neonate_body_mass","litter_size","weaning_age","weaning_body_mass","max_longevity")
   meta <- data[,"order"]
   data <- subset(data, select=-c(order))
-  units <- c("g","g","mm^3","mm^3","mm^3","g/d","g/d","d","g","individuals","d","g","y")
+  units <- c("g","g","mm^3","mm^3","mm^3","g/day","g/day","day","g","individuals","day","g","years")
   data$species <- tolower(gsub(" ", "_", (data$species)))
   data <- .df.melt(data, "species", units=units, metadata=meta)
   return(data)
@@ -1278,22 +1277,17 @@
   meta <- subset(data, select=c(Order,Family,N,ReferenceEjaculateData,ReferenceBodyMass.TestisMass,RererenceBasalMetabolicRate))
   data <- subset(data, select=-c(Species,Order,Family,N,ReferenceEjaculateData,ReferenceBodyMass.TestisMass,RererenceBasalMetabolicRate, BodyMass_forBMR_.in_g))
   colnames(data)[6:8] <- c("body_mass","CombinedTestesMass","BasalMetabolicRate")
-  units <- c(NA, NA, NA, NA, NA, "g","g","mlO2/h")
+  units <- c(NA, NA, NA, NA, NA, "g","g","mL/h")
   data <- .df.melt(data, "species", units=units, metadata=meta)
   return(data)  
 }
 
-
 .madin.2016 <- function(...){
-  # Coral Trait Data
-  # https://dx.doi.org/10.6084/m9.figshare.2067414.v1
-  
-  data <- download.file("https://ndownloader.figshare.com/files/3678603", destfile="ctdb.zip")
-  data <- read.csv(unzip("ctdb.zip")[1], stringsAsFactors=TRUE)
+  # Currently performs aggregation to species means as original data is in long format with no unique identifiers per row
+  data <- read.csv(unzip(ft_get_si("10.6084/m9.figshare.2067414",1))[1], stringsAsFactors=TRUE)
   data$species <- tolower(gsub(" ","_", data$specie_name))
 
   # Aggregation Code from https://coraltraits.org/procedures#reshaping-data-downloads
-  # Develop your aggregation rules function for the "acast" function
   my_aggregate_rules <- function(x) {
     if (length(x) > 1) {               # Does a species by trait combination have more than 1 value?
       x <- type.convert(x, as.is=TRUE)
