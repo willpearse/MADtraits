@@ -6,6 +6,7 @@
 #' @importFrom gdata read.xls
 #' @importFrom utils read.csv read.csv2 read.delim read.table
 #' @importFrom testdat sanitize_text
+#' @importFrom tidyr unite
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
 
 .mesquita.2016 <- function(...){
@@ -32,7 +33,7 @@
   data <- data[,-c(1:3)]
   data$species <- 'zootoca_vivipara'
   colnames(data) <- c('altitude','snout_vent_length','total_mass','parturition_year', 'parturition_day', 'mid_gestation_temperatures', 'forest_cover_coefficient','mountain_chain','species')
-  units <- c('m','mm','g',NA,NA,'�C',NA,NA)
+  units <- c('m','mm','g',NA,NA,'°C',NA,NA)
   data <- .df.melt(data, "species", units=units)
   return(data)
 }
@@ -132,9 +133,9 @@
     data <- read.xls(
         ft_get_si("10.6084/m9.figshare.1190766.v2","mating occurrencePzoe_2010.xls")
         )
-    data$species <- "paraphlebia zoe"
+    data$species <- "paraphlebia_zoe"
     metadata <- data.frame(data$Individual)
-    data$Individual <- NULL
+    data$Individual <- data$Estatus <- NULL
     levels(data$Status) <- c("satellite.male", "territorial.male")
     return(.df.melt(data, "species", c(NA, NA, "mm", "mm", "?", "?", "log10(?)"), metadata))
 }
@@ -287,14 +288,6 @@
   return(data)
 }
 
-.cariveau.2016 <- function(...){
-
-  link = "http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0151482.s003"
-  file = "C:/crap/journal.pone.0151482.s003.XLSX"
-  sheet = "TableS1_v2"
-  data = read.xlsx(ft_get_si("10.1371/journal.pone.0151482", 3), sheetName=sheet)
-}
-
 .simpson.2015 <- function(...){
   data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.99379/Plant%20trait%20data.csv?sequence=1")
   metadata <- data[,c(2:3)]
@@ -339,8 +332,6 @@
   file<-tempfile()
   download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file)
   data<-read.xls(xls=file)
-
-  data<-read.xls(xls="C:/Users/water/Downloads/mmc1.xlsx")
   units<-c("mm","mm")
   data<-.df.melt(data,"Species",units=units)
 }
@@ -363,7 +354,7 @@
   for(i in 2:ncol(data)){
     data[,i] = as.numeric(data[,i])
   }
-  data <- .df.melt(data, species="species",units=units, metadata = metadata)
+  data <- .df.melt(data, "species",units=units, metadata = metadata)
   return(data)
 }
 
@@ -453,13 +444,13 @@
   return(.df.melt(data, "species", units=units))
 }
 
-.mesquita.2015 <- function(...){
-    data <- read.delim(unzip(ft_get_si("E096-058-D1","Life_history_data_of_lizards_of_the_world.txt.zip"), "Data files/Data (revised).txt"))
-    metadata <- data[,c("Species","Genus","Family","Population","Longitude","Latitude","Source","Sample.Size.Female.adult.weight","Sample.size.Mean.F.SVL.adults","Sample.size.Clutch.Size.")]
-    data <- data[,!names(data) %in% names(metadata)]
-    data$Species.1 <- tolower(gsub(" ", "_", data$Species.1))
-    return(.df.melt(data, "Species.1", c("g", "g", "mm", "mm", "mm", "mm", "#", NA, "#", NA, "cc/g", NA, NA, NA), metadata))
-}
+#.mesquita.2015 <- function(...){
+#    data <- read.delim(unzip(ft_get_si("E096-058-D1","Life_history_data_of_lizards_of_the_world.txt.zip", "esa_data_archives"), "Data files/Data (revised).txt"))
+#    metadata <- data[,c("Species","Genus","Family","Population","Longitude","Latitude","Source","Sample.Size.Female.adult.weight","Sample.size.Mean.F.SVL.adults","Sample.size.Clutch.Size.")]
+#    data <- data[,!names(data) %in% names(metadata)]
+#    data$Species.1 <- tolower(gsub(" ", "_", data$Species.1))
+#    return(.df.melt(data, "Species.1", c("g", "g", "mm", "mm", "mm", "mm", "#", NA, "#", NA, "cc/g", NA, NA, NA), metadata))
+#}
 
 #gossner.2015 <- function(...){
 #    data <- read.delim(ft_get_si("E096-102", "HeteropteraMorphometricTraitsRAW.txt", "esa_archives"), as.is=TRUE, fileEncoding="UTF-8")
@@ -527,7 +518,6 @@
   data$species <- gsub("\\)", "", (data$species))
   units <- c(rep('cm^2',2), 'cm^2 (nl)', 'cm', rep('JND', 6), 'nl', NA)
   data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
   return(data)
 }
 
@@ -538,7 +528,6 @@
   colnames(data) <- c('population', 'food', 'sex', 'family', "sire",'dam','development_time','fore_femur_width','mittibial_length', 'species')
   units <- c(rep(NA, 3), 'days', 'mm','mm',rep(NA,4))
   data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
   return(data)
 }
 
@@ -549,7 +538,6 @@
   colnames(data) <- c('age', 'sex', 'lifespan', 'egg_volume', 'clutch_size', 'brood_size', 'no_fledglings', 'species')
   units <- c('years',NA,'years', rep(NA,4))
   data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
   return(data)
 }
 
@@ -723,14 +711,14 @@
   return(data) 
 }
 
-.delgado.2016 <- function(...){
-  data <- read.xls(ft_get_si("10.5061/dryad.1tj60","Delagado_etal_2016_Appendix2.xlsx"), fileEncoding='UTF-8',sheet=1)
-  data <- data[1:109,1:8]
-  metadata <- data[,2:6]
-  data <- data[,-c(2:6)]
-  units <- c("m", 'cm')
-  return(.df.melt(data,"Species",units=units, metadata))
-}
+#.delgado.2016 <- function(...){
+#  data <- read.xls(ft_get_si("10.5061/dryad.1tj60","Delagado_etal_2016_Appendix2.xlsx"), fileEncoding='UTF-8',sheet=1)
+#  data <- data[1:109,1:8]
+#  metadata <- data[,2:6]
+#  data <- data[,-c(2:6)]
+#  units <- c("m", 'cm')
+#  return(.df.melt(data,"Species",units=units, metadata))
+#}
 
 .kefi.2016 <- function(...){
   link = "http://datadryad.org/bitstream/handle/10255/dryad.116249/chilean_metadata.xls?sequence=1"
@@ -739,12 +727,11 @@
             "shore_height_C_breadth", "shore_height_2_restrictive", "shore_height_R_ordinal", "shore_height_r_breadth",
             "phyllum", "subphyllum", "trophic")
   colnames(data) <- vars
-  data$species <- tolower(glob(" ","_", data$species))
+  data$species <- tolower(gsub(" ","_", data$species))
   metadata <- data[,c(1, 6, 9, 12:13)]
   data <- data[,-c(1, 6, 9, 12:13)]
   units <- c("?",NA,"?", "?","?","?","?",NA)
   data <- .df.melt(data, "species", units, metadata)
-
   return(data)
 }
 
@@ -760,26 +747,25 @@
   return(data)
 }
 
-.maire.2016 <- function(...){
-  link <- "http://datadryad.org/bitstream/handle/10255/dryad.119139/globamax_data_160609%20%28for%20GEB%20ms%29.xlsx?sequence=1"
-  data <- read.xls(link, sheet = "Data")
-  legend <- read.xls(link, sheet ="Legend")
-  data <- data[legend$Variable]
-  data <- data[,order(names(data))]
-  units <- c("µmol m^-2 s^-1","% of ECEC","nmol g^-1 s^-1","mm m^-1","kg dm^-3","g  kg^-1","cmol+ kg^-1",
-             "cmolc kg^-1",NA,"%wt","gC gN^-1",NA,"gC kg^-1",NA,NA,"cm","m",NA,NA,NA,NA,"%wt","mmol m^-2 s^-1",
-             NA,NA,NA,NA,"mm mm^-1","mm mm^-1","gN m^-2","%","gN kg^-1",NA,"W m^-2","gP m^-2","mgP2O5 kg^-1",
-             "mm month^-1","mm month^-1",NA,"%","mm","mm","mm","mm",NA,"km",NA,NA,NA,"W m-2","%","dS m^-1","%wt",
-             "%","%wt",NA,"cm2 g^-1","% of ECEC",NA,"%","%","%","%",NA,"cmol kg^-1","ºC",NA,"ºC","ºC","ºC","#","ºC")
-  
-  metadata = data[,c("Country","Latitude","Longitude","Cite", "Continent", "Dataset", "Expt_Remark", "Family","Genus","Location", "P.Method","P.retention.class", "P.Source", "Seeding_Sapling","SITECODE")]
-  units <- units[!names(data) %in% c("Genus.spp",names(metadata))]
-  data <- data[,!names(data) %in% names(metadata)]
-  data$Genus.spp <- tolower(gsub(" ","_",data$Genus.spp))
-  data <- .df.melt(data, "Genus.spp",units,metadata)
-
-  return(data)
-}
+#.maire.2016 <- function(...){
+#    link <- "http://datadryad.org/bitstream/handle/10255/dryad.119139/globamax_data_160609%20%28for%20GEB%20ms%29.xlsx?sequence=1"
+#    data <- read.xls(link, sheet = "Data")
+#    legend <- read.xls(link, sheet ="Legend")
+#    data <- data[legend$Variable]
+#    data <- data[,order(names(data))]
+#    units <- c("µmol m^-2 s^-1","% of ECEC","nmol g^-1 s^-1","mm m^-1","kg dm^-3","g  kg^-1","cmol+ kg^-1",
+#               "cmolc kg^-1",NA,"%wt","gC gN^-1",NA,"gC kg^-1",NA,NA,"cm","m",NA,NA,NA,NA,"%wt","mmol m^-2 s^-1",
+#               NA,NA,NA,NA,"mm mm^-1","mm mm^-1","gN m^-2","%","gN kg^-1",NA,"W m^-2","gP m^-2","mgP2O5 kg^-1",
+#               "mm month^-1","mm month^-1",NA,"%","mm","mm","mm","mm",NA,"km",NA,NA,NA,"W m-2","%","dS m^-1","%wt",
+#               "%","%wt",NA,"cm2 g^-1","% of ECEC",NA,"%","%","%","%",NA,"cmol kg^-1","ºC",NA,"ºC","ºC","ºC","#","ºC")
+#    
+#    metadata = data[,c("Country","Latitude","Longitude","Cite", "Continent", "Dataset", "Expt_Remark", "Family","Genus","Location", "P.Method","P.retention.class", "P.Source", "Seeding_Sapling","SITECODE")]
+#    units <- units[!names(data) %in% c("Genus.spp",names(metadata))]
+#    data <- data[,!names(data) %in% names(metadata)]
+#    data$Genus.spp <- tolower(gsub(" ","_",data$Genus.spp))
+#    data <- .df.melt(data, "Genus.spp",units,metadata)
+#    return(data)
+#}
 
 .myhrvold.2015 <- function(...){
     data <- read.csv("~/Downloads/Amniote_Database_Aug_2015.csv", as.is=TRUE)
@@ -912,11 +898,14 @@
     data <- read.csv(ft_get_si("10.5061/dryad.53550", "Traits%20per%20species%20and%20quadrat.csv"), sep = ";", as.is=TRUE)
     names.data <- read.csv(ft_get_si("10.5061/dryad.53550", "Species%20key.csv"), sep = ";", as.is=TRUE)
     data$binomial <- names.data[,2][match(data$Species, names.data[,1])]
-    data <- data[,-c(1,3)]
-    names(data)[23:32] <- c("specific_leaf_area_1","specific_leaf_area_2","specific_leaf_area_3","specific_leaf_area_4","specific_leaf_area_5","specific_leaf_area_6","specific_leaf_area_7","specific_leaf_area_8","specific_leaf_area_9","specific_leaf_area_10") 
+    metadata <- data[,1:3]
+    data <- data[,-1:-3]
     units <- c("NA", rep("cm",10), rep("mm^2",10), rep("mm^2/mg",10))
-    metadata <- data[,1]
-    return(.df.melt(data, "binomial", units, metadata))
+    data <- .df.melt(data, "binomial", units, metadata)
+    data$numeric$variable <- gsub("Height[0-9]*", "height", data$numeric$variable)
+    data$numeric$variable <- gsub("LeafArea[0-9]*", "leaf_area", data$numeric$variable)
+    data$numeric$variable <- gsub("SLA[0-9]*", "specific_leaf_area", data$numeric$variable)
+    return(data)
 }
 
 .brown.2015 <- function(...){
@@ -945,9 +934,9 @@
 .augspurger.2016a<-function(...){
   file<-tempfile()
   download.file("http://datadryad.org/bitstream/handle/10255/dryad.128418/Data%20File%201.%20Diaspore%20traits.csv?sequence=1",file)
-  data<-read.csv(file)
+  data<-read.csv(file, as.is=TRUE)
   units<-c("mg","cm^2","mg/cm^2","cm/s")
-  data<-.df.melt(data,"Species",units=units)
+  return(.df.melt(data,"Species",units=units))
 }
 
 .augspurger.2016b<-function(...){
@@ -990,18 +979,18 @@
   data<-.df.melt(data,"species",units=units,metadata=metadata)
 }
 
-.valido.2011 <- function(...){
-  link = "http://datadryad.org/bitstream/handle/10255/dryad.89498/Dryad_database.xls?sequence=1"
-  data = read.xls(link,sheet="Traits")
-  metadata = data[,c(2:7)]
-  data = data[,-c(2:7)]
-  vars = c("species","height","cover","leaf_size","LDMC","specific_leaf_area","lchl","lnc","C13","SDMC","WD", "RDMC", "SRL")
-  colnames(data) = vars
-  units = c("m","m^2","cm^2","g g^-1","m^2 Kg^-1", "µg g^-1", "%","%","g g^-1","g cm^-3","g g^-1","m g^-1")
-  data$species = tolower(gsub(" ","_", data$species))
-  data = .df.melt(data, "species", units, metadata)
-  return(data)
-}
+#.valido.2011 <- function(...){
+#    link = "http://datadryad.org/bitstream/handle/10255/dryad.89498/Dryad_database.xls?sequence=1"
+#    data = read.xls(link,sheet="Traits")
+#    metadata = data[,c(2:7)]
+#    data = data[,-c(2:7)]
+#    vars = c("species","height","cover","leaf_size","LDMC","specific_leaf_area","lchl","lnc","C13","SDMC","WD", "RDMC", "SRL")
+#    colnames(data) = vars
+#    units = c("m","m^2","cm^2","g g^-1","m^2 Kg^-1", "µg g^-1", "%","%","g g^-1","g cm^-3","g g^-1","m g^-1")
+#    data$species = tolower(gsub(" ","_", data$species))
+#    data = .df.melt(data, "species", units, metadata)
+#    return(data)
+#}
 
 .jennings.2016a <- function(...){
   link = "http://datadryad.org/bitstream/handle/10255/dryad.112638/spiders.csv?sequence=1"
@@ -1073,9 +1062,7 @@
   names(data) <- tolower(names(data))
   data$species <- 'caenorhabditis_remanei'
   units <- c('μm','μm','sec','sec','sec', rep(NA,3))
-  data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
-  return(data)
+  return(.df.melt(data, "species", units=units))
 }
 
 .nandy.2013 <- function(...){
@@ -1084,9 +1071,7 @@
   names(data) <- tolower(names(data))
   data$species <- 'drosophila_melanogaster'
   units <- c(NA,'mg',NA)
-  data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
-  return(data)
+  return(.df.melt(data, "species", units=units))
 }
 
 .comeault.2013 <- function(...){
@@ -1095,9 +1080,7 @@
   colnames(data) <- c('sex','phenotype','hue_green_color_chip', 'saturation_green_color_chip', 'brightness_green_color_chip', 'lateral_hue_average', 'lateral_saturation_average', 'lateral_brightness_average', 'midsaggital_hue_average', 'midsaggital_saturation_average', 'midsaggital_brightness_average','body_length','body_width','head_width','proportion_striped')
   data$species <- 'timema_cristinae'
   units <- c(rep(NA,9),rep('cm',4),rep(NA,2))
-  data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
-  return(data)
+  return(.df.melt(data, "species", units=units))
 }
 
 .fargevieille.2017 <- function(...){
@@ -1107,9 +1090,7 @@
   colnames(data) <- c('year','population','male_blue_brightness','female_blue_brightness','male_blue_hue','female_blue_hue','male_blue_uv_chroma','female_blue_uv_chroma','male_yellow_brightness','female_yellow_brightness','male_yellow_contrast','female_yellow_contrast')
   data$species <- 'cyanistes_caeruleus'
   units <- c(rep(NA,12))
-  data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
-  return(data)
+  return(.df.melt(data, "species", units=units))
 }
 
 .engemann.2016 <- function(...){
@@ -1191,15 +1172,15 @@
 
 #WILL THERE IS AN UPLOADING ERROR THAT SAYS: EOF within quoted string.  I THINK IT IS AN ISSUE WITH THE QUOTES IN LAT AND LON BUT I DO NOT KNOW HOW TO FIX IT.
 #PUT IT IN HERE BECAUSE EVERYTHING ELSE IS READY TO GO WITH IT, JUST CAN'T FIGURE OUT HOW TO FIX THE UPLOAD.
-.perez.2014 <- function(...){
-  data <- read.xls(ft_get_si('10.5061/dryad.d61jk/1', 'leaf%20traits%2c%20foliar%20freezing%20resistance%2c%20climatic%20niche.xlsx'), as.is=TRUE, sheet=1)
-  data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
-  metadata <- data[,c(2:4)]
-  data <- data[,-c(2:4)]
-  units <- c("cm^2", "gr/m^2", rep("N/mm^2",2), "NA", "latitude", "longitude")
-  data <- .df.melt(data, "Species", units, metadata)
-  return(data)
-}
+#.perez.2014 <- function(...){
+#  data <- read.xls(ft_get_si('10.5061/dryad.d61jk/1', 'leaf%20traits%2c%20foliar%20freezing%20resistance%2c%20climatic%20niche.xlsx'), as.is=TRUE, sheet=1)
+#  data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
+#  metadata <- data[,c(2:4)]
+#  data <- data[,-c(2:4)]
+#  units <- c("cm^2", "gr/m^2", rep("N/mm^2",2), "NA", "latitude", "longitude")
+#  data <- .df.melt(data, "Species", units, metadata)
+#  return(data)
+#}
 
 #similar issue for this as above.  I think it is the quotes in lat and long
 .delaRiva.2015 <- function(...){
@@ -1226,17 +1207,17 @@
 }
 
 
-.kamilar.2015 <- function(...)
-  # http://datadryad.org/resource/doi:10.5061/dryad.pb74r
-  data <- read.xls("http://datadryad.org/bitstream/handle/10255/dryad.94095/Kamilar%26Tecot-AppendixS1.xlsx?sequence=1", skip=1, method="csv", header=FALSE, stringsAsFactors=FALSE)
-  # Species Order BodyMass(g) BrainMass(g)  AntLobeVol(mm3) PitVol(mm3) PostLobeVol(mm3)  FetalGrowthRate(g/d)  PostnatalGrowthRate(g/d)  Gestation(d)  NeonateBodyMass(g)  LitterSize  WeaningAge(d) WeaningBodyMass(g)  MaxLongevity(y)
-  colnames(data) <- c("species","order","body_mass","brain_mass","anterior_lobe_volume","pituitary_volume","posterior_lobe_volume","fetal_growth_rate","postnatal_growth_rate","gestation_length","neonate_body_mass","litter_size","weaning_age","weaning_body_mass","max_longevity")
-  meta <- data[,"order"]
-  data <- subset(data, select=-c(order))
-  units <- c("g","g","mm^3","mm^3","mm^3","g/day","g/day","day","g","individuals","day","g","years")
-  data$species <- tolower(gsub(" ", "_", (data$species)))
-  data <- .df.melt(data, "species", units=units, metadata=meta)
-  return(data)
+.kamilar.2015 <- function(...){
+    # http://datadryad.org/resource/doi:10.5061/dryad.pb74r
+    data <- read.xls("http://datadryad.org/bitstream/handle/10255/dryad.94095/Kamilar%26Tecot-AppendixS1.xlsx?sequence=1", skip=1, method="csv", header=FALSE, stringsAsFactors=FALSE)
+    # Species Order BodyMass(g) BrainMass(g)  AntLobeVol(mm3) PitVol(mm3) PostLobeVol(mm3)  FetalGrowthRate(g/d)  PostnatalGrowthRate(g/d)  Gestation(d)  NeonateBodyMass(g)  LitterSize  WeaningAge(d) WeaningBodyMass(g)  MaxLongevity(y)
+    colnames(data) <- c("species","order","body_mass","brain_mass","anterior_lobe_volume","pituitary_volume","posterior_lobe_volume","fetal_growth_rate","postnatal_growth_rate","gestation_length","neonate_body_mass","litter_size","weaning_age","weaning_body_mass","max_longevity")
+    meta <- data[,"order"]
+    data <- subset(data, select=-c(order))
+    units <- c("g","g","mm^3","mm^3","mm^3","g/day","g/day","day","g","individuals","day","g","years")
+    data$species <- tolower(gsub(" ", "_", (data$species)))
+    data <- .df.melt(data, "species", units=units, metadata=meta)
+    return(data)
 }
 
 .kissling.2014 <- function(...){
@@ -1342,12 +1323,12 @@
 }
 
 .stephens.2017 <- function(...){  
-  data <- read.csv(unzip(ft_get_si("10.1002/ecy.1799", 1))[4])
+  data <- read.csv(unzip(ft_get_si("10.1002/ecy.1799", 1))[4], as.is=TRUE)
   colnames(data)[1] <- "species"
   meta <- data$ParasiteTraitsCitation
   data <- subset(data, select=-c(ParasiteTraitsCitation))
   units <- rep(NA,4)
-  data$species <- tolower(gsub(" ","_", data$species))
+  data$species <- tolower(gsub(" ","_", sanitize_text(data$species)))
   data <- .df.melt(data, "species", units=units, metadata=meta)
   return(data)
 }

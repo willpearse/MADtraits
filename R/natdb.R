@@ -52,17 +52,26 @@ natdb <- function(datasets, cache, delay=5){
             if(file.exists(path)){
                 output[[i]] <- readRDS(path)
             } else {
-                output[[i]] <- eval(as.name(datasets))()
+                output[[i]] <- eval(as.name(datasets[i]))()
+                saveRDS(output[[i]], path)
                 Sys.sleep(delay)
             }
-            output[[i]]$numeric$dataset <- output[[i]]$categorical$dataset <- datasets[i]
+        } else {
+            output[[i]] <- eval(as.name(datasets[i]))()
+            Sys.sleep(delay)
         }
-        if(!missing(cache))
-            saveRDS(output[[i]], path)
+        if(!is.null(output[[i]]$numeric))
+            output[[i]]$numeric$dataset <- datasets[i]
+        if(!is.null(output[[i]]$character))
+            output[[i]]$character$dataset <- datasets[i]
     }
     
-    numeric <- do.call(rbind, lapply(output, function(x) x[[1]]))
-    categorical <- do.call(rbind, lapply(output, function(x) x[[2]]))
+    numeric     <- do.call(rbind,
+                           lapply(Filter(function(y) !is.null(y[[1]]), output), function(x) x[[1]])
+                           )
+    categorical <- do.call(rbind,
+                           lapply(Filter(function(y) !is.null(y[[2]]), output), function(x) x[[2]])
+                           )
     output <- list(numeric=numeric, categorical=categorical)
     return(output)
 }
