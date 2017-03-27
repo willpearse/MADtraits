@@ -9,47 +9,41 @@
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
 
 .mesquita.2016 <- function(...){
-  data <- read.table('http://datadryad.org/bitstream/handle/10255/dryad.108670/Data%20%28revised%29.txt?sequence=1', header=T, sep='\t')
+  data <- read.table(ft_get_si("10.5061/dryad.55610", "Data%20%28revised%29.txt"), header=T, sep='\t')
   data <- data[,-c(2:4,7,9:10,12:13,17,25)]
   data$Species <- tolower(gsub(" ", "_", (data$Species)))
   colnames(data) <- c('species','longitude','latitude','average_female_adult_weight','mean_female_svl_adults','female_svl_at_maturity','offspring_svl','mean_clutch_size','mode_of_reproduction','clutch_per_year','clutch_frequency','relative_clutch_mass','foraging_mode','distribution','prefered_habitat_type')
   units <- c(rep(NA,2),'g', rep('mm',3),rep(NA,3),'g',rep(NA,5))
-  test <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
-  return(data)
+  return(.df.melt(data, "species", units=units))
 }
 
-.Broeckhoven.2016 <- function(...){
-  data <- read.xls('http://datadryad.org/bitstream/handle/10255/dryad.124881/Data%20for%20Dryad.xlsx?sequence=1', skip=1)
+.broeckhoven.2016 <- function(...){
+  data <- read.xls(ft_get_si("10.5061/dryad.k186f", "Data%20for%20Dryad.xlsx"), skip=1)
   data <- data[,-c(23:102)]
   data$Species <- tolower(gsub(" ", "_", (data$Species)))
   names(data) <- tolower(gsub("\\.", "_", names(data)))
   units <- c(rep('mm',21))
-  test <- .df.melt(data, "species", units=units)
-  return(data)
+  return(.df.melt(data, "species", units=units))
 }
 
 .rutschmann.2016 <- function(...){
-  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.102425/Rutschmann_AdaptationofPhenologyacrossPopulations_dataset.csv?sequence=1',sep=';')
+  data <- read.csv(ft_get_si("10.5061/dryad.qd5gj", "Rutschmann_AdaptationofPhenologyacrossPopulations_dataset.csv"),sep=';')
   names(data) <- tolower(gsub("X\\.", "", names(data)))
   data <- data[,-c(1:3)]
   data$species <- 'zootoca_vivipara'
   colnames(data) <- c('altitude','svl','weight','parturition_year', 'parturition_day', 'mid_gestation_temperatures', 'forest_cover_coefficient','mountain_chain','species')
   units <- c('m','mm','g',NA,NA,'°',NA,NA)
   data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
   return(data)
 }
 
 .kuo.2014 <- function(...){
-  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.70378/personality_date1.csv?sequence=1')
+  data <- read.csv(ft_get_si("10.5061/dryad.p8740","personality_date1.csv"))
   data <- data[,-c(1:4,16)]
   colnames(data) <- c('diet','svl','latency','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
   data$species <- 'anolis_sagrei'
   units <- c('cm','min',NA,rep('%',2), 'N','cm',rep(NA,4))
-  data <- .df.melt(data, "species", units=units)
-  data$character$units <- NA
-  return(data)
+  return(.df.melt(data, "species", units=units))
 }
 
 # .klomp.2016 <- function(...){
@@ -981,15 +975,15 @@
   data<-.df.melt(data,"Species",units=units,metadata=metadata)
 }
 
-.abakumova.2016<-function(...){
-  file<-tempfile()
-  download.file("http://datadryad.org/bitstream/handle/10255/dryad.109534/Abakumova_etal_NEWPHY2016_morphology_data.txt?sequence=1",file)
-  data<-read.delim(file)
-  metadata<-data[,c(1,3:9)]
-  data<-data[,-c(1,3:9)]
-  units<-c("cm","cm^2","g","%","cm^2/g","g","g")
-  data<-.df.melt(data,"Focal_species",units=units,metadata=metadata)
-}
+#.abakumova.2016<-function(...){
+#  file<-tempfile()
+#  download.file("http://datadryad.org/bitstream/handle/10255/dryad.109534/Abakumova_etal_NEWPHY2016_morphology_data.txt?sequence=1",file)
+#  data<-read.delim(file)
+#  metadata<-data[,c(1,3:9)]
+#  data<-data[,-c(1,3:9)]
+#  units<-c("cm","cm^2","g","%","cm^2/g","g","g")
+#  data<-.df.melt(data,"Focal_species",units=units,metadata=metadata)
+#}
 
 .lawson.2015<-function(...){
   file<-tempfile()
@@ -1000,7 +994,6 @@
   units<-rep("g/cm^3",3)
   data<-.df.melt(data,"species",units=units,metadata=metadata)
 }
-
 
 .valido.2011 <- function(...){
   link = "http://datadryad.org/bitstream/handle/10255/dryad.89498/Dryad_database.xls?sequence=1"

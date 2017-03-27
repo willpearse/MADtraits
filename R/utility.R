@@ -125,3 +125,12 @@
         return(suffix)
     return(NA)
 }
+
+prog.bar <- function(x, y){
+    if(y < 100){
+        cat(".")} else {
+            z <- Filter(function(z) z>=0, seq(1,y,length.out=100)-x)
+            if(length(z) > 0)
+                tryCatch(if(z[1] < 1) if((length(z) %% 10)==0) cat("|") else cat("."), error=function(z) cat("."))
+        }
+}    

@@ -30,7 +30,7 @@
 #' #@seealso 
 #' @export
 
-natdb <- function(datasets, species, traits){
+natdb <- function(datasets, cache, delay=5){
     #Check datasets
     if(missing(datasets)){
         datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:natdb", all.names=TRUE))
@@ -45,10 +45,24 @@ natdb <- function(datasets, species, traits){
     
     #Do work and return
     output <- vector("list", length(datasets))
-    for(i in seq_along(datasets))
-        output[[i]] <- eval(as.name(datasets))()
+    for(i in seq_along(datasets)){
+        prog.bar(i, length(datasets))
+        if(!missing(cache)){
+            path <- file.path(cache,paste0(datasets[i], ".RDS"))
+            if(file.exists(path)){
+                output[[i]] <- readRDS(path)
+            } else {
+                output[[i]] <- eval(as.name(datasets))()
+                Sys.sleep(delay)
+            }
+            output[[i]]$numeric$dataset <- output[[i]]$categorical$dataset <- datasets[i]
+        }
+        if(!missing(cache))
+            saveRDS(output[[i]], path)
+    }
+    
     numeric <- do.call(rbind, lapply(output, function(x) x[[1]]))
-    categorical <- do.call(rbind, lapply(output, function(x) x[[1]]))
+    categorical <- do.call(rbind, lapply(output, function(x) x[[2]]))
     output <- list(numeric=numeric, categorical=categorical)
     return(output)
 }
