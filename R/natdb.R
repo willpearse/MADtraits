@@ -128,7 +128,12 @@ traits <- function(x, ...){
 
 
 citations <- function(...){
-    # load file w/ authors & bibtex
+    # load in bibtex document
+    bib <- readRDS("citations.rdata")
+
+    datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:natdb", all.names=TRUE))
+
     # check for matching name, year
-    # return bibtex
+    if(bib[,1] == "" & bib[,2] == "")
+        return bib[,3] 
 }
