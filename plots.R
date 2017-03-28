@@ -29,7 +29,7 @@ par(mar=c(5.1,5.1,4.1,2.1))
 plot(sort(traits.tab, TRUE), log="y", type="n", xlab="Number of traits", ylab="Number of species", cex.lab=1.5)
 rect(0, 1, 200, 700, col="grey70", border=NA)
 lines(sort(traits.tab, TRUE), lwd=3)
-text(35000, 1.5, "200 traits have data data on at least 200 species", cex=2, adj=0)
+text(75, 10, "200 traits have data data on at least 200 species", cex=2, adj=0)
 dev.off()
 
 plot(sort(traits.tab, TRUE), log="y", type="l", xlab="Number of traits", ylab="Number of species")
