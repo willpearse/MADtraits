@@ -151,15 +151,13 @@ traits <- function(x, ...){
     return(unique(c(x$numeric$variable,x$categorical$variable)))
 }
 
- citations <- function(x, ...){
-     if(!inherits(x, "natdb"))
-         stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
-     # load in bibtex file
-     bib <- readRDS("citations.rdata")
-     # create column with just the function names (.name.year)
-     bib$Name <- paste0(".", tolower(bib$Author), ".", bib$Year)
-     # 
-      datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:natdb", all.names=TRUE))
- 
-     return(bib[which(bib$Name=='xxxxxx'),3]) 
- }
+citations <- function(x){
+    if(!inherits(x, "natdb"))
+        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
+    
+    data(natdb_citations)
+    datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+[a-d]?", name="package:natdb", all.names=TRUE))
+    natdb.citations$Name <- with(natdb.citations, paste0(".", tolower(Author), ".", Year))
+
+    return(as.character(natdb.citations$BibTeX.citation[match(datasets, natdb.citations$Name)]))
+}
