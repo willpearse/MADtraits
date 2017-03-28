@@ -85,18 +85,18 @@ print.natdb <- function(x, ...){
     # Do main summary
     output <- matrix(0, 3, 3, dimnames=list(c("Numeric","Categorical","Total"),c("Species","Traits","Data-points:")))
     try(output[1,] <- c(length(unique(x$numeric$species)), length(unique(x$numeric$variable)), nrow(x$numeric)), silent=TRUE)
-    try(output[2,] <- c(length(unique(x$character$species)), length(unique(x$character$variable)), nrow(x$character)), silent=TRUE)
+    try(output[2,] <- c(length(unique(x$categorical$species)), length(unique(x$categorical$variable)), nrow(x$categorical)), silent=TRUE)
     output[3,] <- colSums(output)
     cat("A Trait DataBase containing:\n")
     print(output)
 
     # Supplemental summaries
     printer <- FALSE
-    if(!all(is.na(c(x$character$metadata,x$numeric$metadata)))){
+    if(!all(is.na(c(x$categorical$metadata,x$numeric$metadata)))){
         printed <- TRUE
         cat("Meta-data present. ")
     }
-    if(!all(is.na(c(x$character$units,x$numeric$units)))){
+    if(!all(is.na(c(x$categorical$units,x$numeric$units)))){
         printed <- TRUE
         cat("Units present. ")
     }
@@ -119,22 +119,22 @@ summary.natdb <- function(x, ...){
         if(any(x$numeric$species %in% spp))
             x$numeric <- x$numeric[x$numeric$species %in% spp,] else
                                                                     x$numeric <- NULL
-        if(any(x$character$species %in% spp))
-            x$character <- x$character[x$character$species %in% spp,] else
-                                                                          x$character <- NULL
+        if(any(x$categorical$species %in% spp))
+            x$categorical <- x$categorical[x$categorical$species %in% spp,] else
+                                                                          x$categorical <- NULL
     }
     
     # Traits
     if(!missing(traits)){
         if(any(x$numeric$variable %in% traits))
             x$numeric <- x$numeric[x$numeric$variable %in% traits,] else
-                                                                        x$character <- NULL
-        if(any(x$character$variable %in% traits))
-            x$character <- x$character[x$character$variable %in% traits,] else
-                                                                              x$character <- NULL
+                                                                        x$categorical <- NULL
+        if(any(x$categorical$variable %in% traits))
+            x$categorical <- x$categorical[x$categorical$variable %in% traits,] else
+                                                                              x$categorical <- NULL
     }
 
-    output <- list(character=x$character, numeric=x$numeric)
+    output <- list(categorical=x$categorical, numeric=x$numeric)
     class(output) <- "natdb"
     return(output)
 }
@@ -142,10 +142,10 @@ summary.natdb <- function(x, ...){
 species <- function(x, ...){
     if(!inherits(x, "natdb"))
         stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
-    return(unique(c(x$numeric$species,x$character$species)))
+    return(unique(c(x$numeric$species,x$categorical$species)))
 }
 traits <- function(x, ...){
     if(!inherits(x, "natdb"))
         stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
-    return(unique(c(x$numeric$variable,x$character$variable)))
+    return(unique(c(x$numeric$variable,x$categorical$variable)))
 }
