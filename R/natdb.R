@@ -30,7 +30,7 @@
 #' #@seealso 
 #' @export
 
-natdb <- function(datasets, cache, delay=5){
+natdb <- function(cache, datasets, delay=5){
     #Check datasets
     if(missing(datasets)){
         datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:natdb", all.names=TRUE))
@@ -73,6 +73,7 @@ natdb <- function(datasets, cache, delay=5){
                            lapply(Filter(function(y) !is.null(y[[2]]), output), function(x) x[[2]])
                            )
     output <- list(numeric=numeric, categorical=categorical)
+    class(output) <- "natdb"
     return(output)
 }
 
@@ -148,4 +149,3 @@ traits <- function(x, ...){
         stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
     return(unique(c(x$numeric$variable,x$character$variable)))
 }
-

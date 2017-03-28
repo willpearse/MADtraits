@@ -72,7 +72,7 @@
 }
 
 .hintze.2013 <- function(...){
-    data <- read.csv("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S1433831913000218/1-s2.0-S1433831913000218-mmc1.txt/273233/html/S1433831913000218/6bd947d6c0ccb7edd11cd8bf73648447/mmc1.txt", sep=";", as.is=TRUE)
+    data <- read.csv("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S1433831913000218/1-s2.0-S1433831913000218-mmc1.txt/273233/html/S1433831913000218/6bd947d6c0ccb7edd11cd8bf73648447/mmc1.txt", sep=";", as.is=TRUE, dec=",")
     data$metadata <- seq_len(nrow(data))
     data$name <- sapply(strsplit(tolower(sanitize_text(data$name)),split=" "), function(x) paste(x[1:2], collapse="_"))
     data <- data[,!names(data) %in% c("comment","family","citation_total","citation_prop_ane","citation_prop_dyso","citation_prop_endo","citation_prop_epi","citation_prop_hem","citation_prop_hydro","citation_prop_other")]
@@ -93,7 +93,6 @@
 .wilman.2014a  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
     data <- data[,-c(1,23,34)]
-    units <- sample(c("NA", "NA", "NA", "NA", "NA", "Taxo", "NA", "NA", "%", "%", "%", "%", "%", "%", "%", "%", "%", "%", "NA", "Diet.Source", "NA", "%", "%", "%", "%", "%", "%", "%", "boolean", "NA", "boolean", "boolean", "NA", "NA", "boolean", "NA", "NA"),length(names(data))-1,TRUE)
     data <- .df.melt(data, "Scientific")
     data$numeric$species <- tolower(gsub(" ", "_", data$numeric$species))
     data$character$species <- tolower(gsub(" ", "_", data$character$species))
@@ -105,7 +104,6 @@
 .wilman.2014b  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "MamFuncDat.txt", "esa_archives"))
     data <- data[,-c(1)]
-    units <- sample(c("NA","NA","%","%","%","%","%","%","%","%","%","%","NA","NA","NA","NA","NA","boolean","boolean","boolean","NA","NA","NA","NA","NA"),length(names(data))-1,TRUE)
     data <- .df.melt(data, "Scientific")
     data$numeric$species <- tolower(gsub(" ", "_", data$numeric$species))
     data$character$species <- tolower(gsub(" ", "_", data$character$species))
@@ -139,14 +137,17 @@
     levels(data$Status) <- c("satellite.male", "territorial.male")
     return(.df.melt(data, "species", c(NA, NA, "mm", "mm", "?", "?", "log10(?)"), metadata))
 }
-# panTHERIA
-# written by Will during meeting, added by Sylvia
+
 .jones.2009a <- function(...){
     data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR05_Aug2008.txt", "esa_archives"))
     for(i in 1:ncol(data))
         data[data[,i]==-999 | data[,i]=="-999",i] <- NA
-    units <- sample(c("g","m^2"),length(names(data))-1,TRUE)
+    metadata <- data[,c("MSW05_Order","MSW05_Family","MSW05_Genus","MSW05_Species","References")]
+    data <- data[,!names(data) %in% names(metadata)]
+    names(data) <- c("MSW05_Binomial", "X1.activity_cycle", "mass", "forearm_length", "head_body_length", "age_eye_open", "age_birth", "basal_metabolic_rate", "basal_metabolic_rate", "diet_breadth", "dispersal_age", "gestation_length", "habitat_breadth", "home_range", "individual_home_range", "interbirth_interval", "litter_size", "litters_per_year", "max_longevity", "neonate_mass", "neonate_body_length", "population_denisty", "population_group_size", "sexual_maturity_age", "social_group_size", "teat_number", "terrestrial", "trophic_level", "weaning_age", "weaning_mass", "weaning_body_length", "mass", "litters_per_year", "neonate_mass", "weaning_mass", "global_range_area", "max_latitude", "min_latitude", "mid_latitude", "max_longitude", "min_longitude", "mid_longitude", "min_human_population_density", "mean_human_population_density", "human_population_5p_n", "human_population_density_change", "mean_precipitation", "mean_temperature", "mean_actual_evapotranspiration", "mean_potential_evapostranspiration")
+    units <- c(NA, "g", "mm", "mm", "days", "days", "mL/hour", "g", NA, "days", "days", NA, "km^2", "km^2", "days", "#", "#/year", "months", "g", "mm", "km^2", "#", "days", "#", "#", NA, NA, "days", "g", "mm", "g", "#", "g", "g", "km^2", "?", "?", "", "?", "?", "?", "n/km^2", "#/km^2", "#/km^2", ":", "mm", "0.1°C", "mm", "mm")
     data <- .df.melt(data, "MSW05_Binomial", units=units)
+    
     data$character$species <- tolower(gsub(" ","_", data$character$species))
     data$numeric$species <- tolower(gsub(" ","_", data$numeric$species))
     return(data)
@@ -216,7 +217,7 @@
   data <- read.csv(ft_get_si("10.5061/dryad.2d960","HusakFergusonLovern_Anolis_training_diet_alldata.csv"))
   data <- data[,-c(1)]
   data$species <- 'anolis_carolinensis'
-  units <- c('NA',rep('mm',4), rep('g',3),rep('s',2),'mm','%',rep('mg',4),'psi',rep('ng/mL',2),'NA','mg',rep('NA',4))
+  units <- c('NA',rep('mm',4), rep('g',3),rep('sec',2),'mm','%',rep('mg',4),'psi',rep('ng/mL',2),'NA','mg',rep('NA',4))
   data<-.df.melt(data, "species", units=units)
   data$character$units <- NA
   return(data)
@@ -268,13 +269,18 @@
 }
 
 .grootemaat.2015 <- function(...){
-  data <- read.xls(ft_get_si('10.5061/dryad.m41f1', 'Grootemaat%202015_FE_Dryad.xlsx'), sheet ='RAWdata', as.is = TRUE)
-  data <- data[-c(1),]
-  metadata <- data[,c(1,3)]
-  data <- data[,-c(1,3)]
-  units <- c(rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "odw", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
-  data <- .df.melt(data, "species", units, metadata)
-  return(data)
+    data <- read.xls(ft_get_si('10.5061/dryad.m41f1', 'Grootemaat%202015_FE_Dryad.xlsx'), sheet ='RAWdata', as.is = TRUE)
+    # Ugh this is so kludgy...
+    names <- names(data)
+    data <- as.data.frame(as.matrix(data)[-1,], col.names=names, stringsAsFactors=FALSE)
+    for(i in seq_along(names(data)))
+        data[,i] <- type.convert(data[,i])
+    names(data) <- names
+    metadata <- data[,c(1,3)]
+    data <- data[,-c(1,3)]
+    units <- c(rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "odw", "cm^2/g", rep("%",4), 'NA', rep('sec',4), 'NA', 'NA')
+    data <- .df.melt(data, "species", units, metadata)
+    return(data)
 }
 
 .arnold.2016 <- function(...){
@@ -283,7 +289,7 @@
   data <- data.frame(species, data)
   metadata <- data[,c(2:7,24:25)]
   data <- data[,-c(2:7,23:25)]
-  units <- c("µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
+  units <- c("µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), NA, NA, NA, NA, "days", NA, NA, NA)
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -350,7 +356,7 @@
   metadata <- data[,c(2:6,8)]
   data <- data[,-c(2:6,8)]
   units <- c("mg g^-1 d^-1","mg g^-1 d^-1","percent_dry_weight", "percent_dry_weight",
-            "percent_dry_weight", "g g^-1", "mg g^-1", "mol mol^-1","mol mol^-1","mol mol^-1", "mg g^-1 (mg g^-1)^-1")
+            "percent_dry_weight", "g/g", "mg/g", "mol/mol","mol/mol","mol/mol", "mg g^-1 (mg g^-1)^-1")
   for(i in 2:ncol(data)){
     data[,i] = as.numeric(data[,i])
   }
@@ -398,7 +404,7 @@
   data <- unite(data, species, genus, species, remove = FALSE)
   metadata <- data[,c(1:2,4:9,16:18)]
   data <- data[,-c(1:2,4:9,16:18)]
-  units <- c("NA", "cm^2 g^-1", "NA", "mg g-1", rep("NA",3),"years", rep("NA", 5), "mg ha^–1", "?", rep("NA",3))
+  units <- c(NA, "cm^2 g^-1", NA, "mg/g", rep(NA,3),"years", rep(NA, 5), "mg ha^–1", "?", rep(NA,3))
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -409,7 +415,7 @@
   data <- data.frame(species, data[,-1])
   metadata <- data[,c(2, 9:12)]
   data <- data[,-c(2, 9:12)]
-  units <- c("%", "mm", "mm", "cm", "day_since_transplant", "survival_since_transplant", rep("NA", 4), "categorical_measure_occasion")
+  units <- c("%", "mm", "mm", "cm", "day_since_transplant", "survival_since_transplant", rep(NA, 4), "categorical_measure_occasion")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -424,14 +430,6 @@
   names(data) <- c("sex", "body_mass", "body_mass", "snout_vent_length", "snout_vent_length", "species")
   units <- c(NA, "g", "log10(g)", "cm", "log10(cm)")
   return(.df.melt(data, "species", units, metadata))
-}
-
-# Elton traits
-.wilman.2014a  <- function(...){
-    data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
-    data <- data[,-c(23,34)]
-    units <- sample(c("SpecID", "PassNonPass", "IOCOrder", "BLFamilyLatin", "BLFamilyEnglish", "BLFamSequID", "Taxo", "Scientific", "English", "Diet.Inv", "Diet.Vend", "Diet.Vect", "Diet.Vfish", "Diet.Vunk", "Diet.Scav", "Diet.Fruit", "Diet.Nect", "Diet.Seed", "Diet.PlantO", "Diet.5Cat", "Diet.Source", "Diet.Certainty", "ForStrat.watbelowsurf", "ForStrat.wataroundsurf", "ForStrat.ground", "ForStrat.understory", "ForStrat.midhigh", "ForStrat.canopy", "ForStrat.aerial", "PelagicSpecialist", "ForStrat.Source", "ForStrat.SpecLevel", "Nocturnal", "BodyMass.Value", "BodyMass.Source", "BodyMass.SpecLevel", "BodyMass.Comment", "Record.Comment"),length(names(data))-1,TRUE)
-    return(.df.melt(data, "Scientific"))
 }
 
   ## WIP
@@ -459,7 +457,7 @@
 .falster.2015 <- function(...){
     data <- read.csv(unzip(ft_get_si("E096-128","baad_data.zip", "esa_archives"), "baad_data/baad_data.csv"))
     # Note: units "m^2/m^2 are taken from the meta-data
-    units <- c("NA","mm","deg","NA","m^2/m^2","NA","NA","NA","NA","yr","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m","m","m","m","m","m","m","kg","kg","kg","kg","kg","kg","kg","kg","kg","kg","kg","m^2","kg/m^2","kg/m^3","kg/m^3","kg/m^3","kg/m^3","kg/kg","kg/kg","kg/kg","kg/kg","kg/kg","kg/kg")
+    units <- c(NA,"mm","deg",NA,"m^2/m^2",NA,NA,NA,NA,"year","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m^2","m","m","m","m","m","m","m","kg","kg","kg","kg","kg","kg","kg","kg","kg","kg","kg","m^2","kg/m^2","kg/m^3","kg/m^3","kg/m^3","kg/m^3","kg/kg","kg/kg","kg/kg","kg/kg","kg/kg","kg/kg")
     metadata <- data[,c(c("studyName","location","latitude","longitude","species","family"))]
     data$speciesMatched <- tolower(gsub(" ", "_", data$speciesMatched))
     data <- data[,!names(data) %in% names(metadata)]
@@ -479,7 +477,7 @@
     data <- read.csv(ft_get_si("E096-202", "Table1.csv", "esa_archives"))
     metadata <- data[,c("isolate","taxon","synonym", "c_citation")]
     data <- data[,!names(data) %in% names(metadata)]
-    units <- c(NA, "°C", "µmol photons m-2 s-1", "hr", "µm^3", "µm^3", "µmol cell-1", "day^-1", "day^-1", "µmol L-1", "µmol L-1", "µmol N cell-1 day-1", "µmol N µmol C-1 day -1", "µmol N cell-1", "µmol N µmol C-1", "µmol N cell-1", "µmol N µmol C-1", "day-1", "day-1", "µmol L-1", "µmol L-1", "µmol N cell-1 day-1", "µmol N µmol C-1 day-1", "µmol N cell-1", "µmol N µmol C-1", "µmol N cell-1", "µmol N µmol C-1", "day-1", "day-1", "µmol L-1", "µmol L-1", "µmol P cell-1 day-1", "µmol P µmol C-1 day-1", "µmol P cell-1", "µmol P µmol C-1", "µmol P cell-1", "µmol P µmol C-1", "citation")
+    units <- c(NA, "°C", "µmol photons m-2 s-1", "hr", "µm^3", "µm^3", "µmol/cell", "day^-1", "day^-1", "µmol L-1", "µmol L-1", "µmol N cell^-1 day^-1", "µmol N µmol C-1 day -1", "µmol N cell^-1", "µmol N µmol C-1", "µmol N cell^-1", "µmol N µmol C-1", "day^-1", "day^-1", "µmol L-1", "µmol L-1", "µmol N cell^-1 day^-1", "µmol N µmol C-1 day^-1", "µmol N cell^-1", "µmol N µmol C-1", "µmol N cell^-1", "µmol N µmol C-1", "day^-1", "day^-1", "µmol L-1", "µmol L-1", "µmol P cell^-1 day^-1", "µmol P µmol C-1 day^-1", "µmol P cell^-1", "µmol P µmol C-1", "µmol P cell^-1", "µmol P µmol C-1", "citation")
     return(.df.melt(data, "species", units, metadata))
 }
 .edwards.2015b <- function(...){
@@ -545,7 +543,7 @@
   data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8")
   metadata <- data[,14]
   data <- data[,-c(14)]
-  units <- c(rep('%',6), NA, NA, 'cm^2', 'g m^-2', 'MN m-2', '%', 'g cm^-3')
+  units <- c(rep('%',6), NA, NA, 'cm^2', 'g m^-2', 'MN/m^2', '%', 'g/cm^3')
   return(.df.melt(data,"Species",units=units, metadata))
 }
 
@@ -553,7 +551,7 @@
   data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8", sheet=2)
   metadata <- data[,15]
   data <- data[,-c(15)]
-  units <- c(NA, NA, rep('cm^2',3),'g cm^-3', 'g m^-2', 'MN m^-2', rep('%',5), NA)
+  units <- c(NA, NA, rep('cm^2',3),'g/cm^3', 'g m^-2', 'MN/m^2', rep('%',5), NA)
   return(.df.melt(data,"Species",units=units, metadata))
 }
 
@@ -602,7 +600,7 @@
   data <- data.frame(species, data[,-3])
   metadata <- data[,c(2:4)]
   data <- data[,-c(2:4)]
-  units <- c(rep("cm",2), "mm day^-1", "mg", rep("cm",2), "mm day^-1", "mg", "cm/cm", "mg/mg", "mg", rep("NA",3))
+  units <- c(rep("cm",2), "mm/day", "mg", rep("cm",2), "mm/day", "mg", "cm/cm", "mg/mg", "mg", rep(NA,3))
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -613,7 +611,7 @@
   species <- gsub("sp_", "sp.", species)
   data <- data.frame(species, data[,-1])
   data <- data[,-c(2, 9:12)]
-  units <- c(rep("log_mm", 5), "sqrt_mm", "cubert_mm", "mm", "sqrt_mm", "mm", "sqrt_mm", "mm", "inverse_mm", "log_mm", "mm", "mm", "log_mm", rep("mm", 3), "log_mm", rep("mm", 4), "inverse_mm", "log_mm", "cubert_mm", rep("sqrt_mm",2), "cubert_mm", rep("mm",2), "inverse_mm", rep("sqrt_mm",2), "mm", "sqrt_mm", rep("fourthroot_mm",2), "mm", "log_mm", rep("mm",3))
+  units <- c(rep("log(mm)", 5), "mm^1/2", "mm^1/3", "mm", "mm^1/2", "mm", "mm^1/2", "mm", "mm^-1", "log(mm)", "mm", "mm", "log(mm)", rep("mm", 3), "log(mm)", rep("mm", 4), "mm^-1", "log(mm)", "mm^-1/3", rep("mm^1/2",2), "mm^1/3", rep("mm",2), "mm^-1", rep("sqrt(mm)",2), "mm", "sqrt(mm)", rep("mm^-1/4",2), "mm", "log(mm)", rep("mm",3))
   data <- .df.melt(data, "species", units)
   return(data)
 }
@@ -625,7 +623,7 @@
     data[,i] <- as.logical(data[,i])
     names(data)[3:11] <- c("Min.Elevation","Max.Elevation","log.Bill.Length","log.Bill.Width","log.Bill.Depth","log.Tarsus.Length","log.Kipps.Distance","log.Wing.Length","log.Tail.Length")
     names(data)[26] <- "Museum.Institution.codes"
-    units <- c("NA","m","m",rep('mm',7),rep('NA',4),rep('%',10),"NA")
+    units <- c(NA,"m","m",rep('mm',7),rep('NA',4),rep('%',10),NA)
     metadata <- data[,c(1,3:4,26)]
     data <- .df.melt(data, "Binomial", units=units, metadata=metadata)
     return(data)
@@ -634,7 +632,7 @@
 .marx.2016 <- function(...){
     data <- read.csv("https://ndownloader.figshare.com/files/6854532")
     names(data)[3:7] <- c("Seed.Mass","Maximum.Height","","Leaf.Size","Leaf.Nitrogen")
-    units <- c("native/invasive","mg","m","cm2/g","cm2","specific_leaf_area")
+    units <- c("native/invasive","mg","m","cm^2/g","cm^2","specific_leaf_area")
     metadata <- data[,2]
     data <- .df.melt(data, "Species", units=units, metadata=metadata)
     return(data)
@@ -644,7 +642,7 @@
     data <- read.table("https://datadryad.org/bitstream/handle/10255/dryad.90019/fd.txt?sequence=1", header = T, sep = '\t')
     for(i in c(1:9,11))
         data[,i] <- as.logical(data[,i])
-    units <- c(rep('NA',9), "micrometer", "NA")
+    units <- c(rep('NA',9), "micrometer", NA)
     data$species <- rownames(data)
     data <- .df.melt(data, "species", units=units)
     return(data)
@@ -684,7 +682,7 @@
     data$Plant.species <- name.data$Species.name[1:22]
     names(data) <- c("species","leaf_dry_matter", "leaf_nitrogen_content", "leaf_carbon_content", "leaf_carbon_nitrogen_ratio", "leaf_thickness", "leaf_area", "perimeter_leaf_length_ratio")
     data <- data[,1:8]
-    units <- c("%", rep("%_dry_mass",2), "NA", "mm", "cm^2", "NA")
+    units <- c("%", rep("% g",2), NA, "mm", "cm^2", NA)
     data <- .df.melt(data, "species", units=units)
     return(data)
 }
@@ -693,7 +691,7 @@
     data <- read.xls(ft_get_si("10.5061/dryad.12b0h/2","FunctionalTraits_Dryad.xlsx"))
     data <- data[,-c(1,7,8)]
     names(data)[4:14] <- c("Phylum","leaf_habit","specific_leaf_area","photosynthetic_capacitity_per_unit_leaf_mass","N_content_per_unit_mass","P_content_per_unit_mass","leaf_lifespan","leaf_length","seed_mass","wood_density","max_tree_height")
-    units <- c(rep("NA",3),"deciduous/evergreen","m/kg","mmol CO2/g s","%","%","months","mm","mg/seed","g cm^3","m")
+    units <- c(rep(NA,3),"deciduous/evergreen","m/kg","mmol CO2/g s","%","%","month","mm","mg/seed","g cm^3","m")
     metadata <- data[,2:4]
     data <- .df.melt(data, "SpName", units=units, metadata=metadata)
     return(data)
@@ -706,7 +704,7 @@
   data$species <- tolower(data$species)
   metadata <- data[,c(1:2,13,15,30:34,38)]
   data <- data[,-c(1:2,13,15,30:34,38)]
-  units <- c("g", "cm^3", rep("g",2), "cm^3", rep("g",2), "cm^3", "g", "cm", rep("cm", 7), rep("g/cm^3",3), rep("cm^2", 4),  "?", "?", "%", "NA", "NA", "NA", "Na", "intercept", "y/x", "r^2", "pvalue", "class", "y/x")
+  units <- c("g", "cm^3", rep("g",2), "cm^3", rep("g",2), "cm^3", "g", "cm", rep("cm", 7), rep("g/cm^3",3), rep("cm^2", 4),  "?", "?", "%", NA, NA, NA, "Na", "intercept", "y/x", "r^2", "pvalue", "class", "y/x")
   data <- .df.melt(data, "species", units, metadata)
   return(data) 
 }
@@ -900,7 +898,7 @@
     data$binomial <- names.data[,2][match(data$Species, names.data[,1])]
     metadata <- data[,1:3]
     data <- data[,-1:-3]
-    units <- c("NA", rep("cm",10), rep("mm^2",10), rep("mm^2/mg",10))
+    units <- c(NA, rep("cm",10), rep("mm^2",10), rep("mm^2/mg",10))
     data <- .df.melt(data, "binomial", units, metadata)
     data$numeric$variable <- gsub("Height[0-9]*", "height", data$numeric$variable)
     data$numeric$variable <- gsub("LeafArea[0-9]*", "leaf_area", data$numeric$variable)
@@ -911,14 +909,14 @@
 .brown.2015 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.m3d4d/1", "BrownGrahamTraitsData.xlsx"))
     data <- data[,-c(4,16)]
-    units <- c(rep("NA",12),"g")
+    units <- c(rep(NA,12),"g")
     metadata <- data[,1]
     return(.df.melt(data, "Latin.Name", units, metadata))
 }
 
 .gossner.2015 <- function(...){
     data <- read.table(ft_get_si("10.5061/dryad.53ds2", "ArthropodSpeciesTraits.txt"), header = T, sep = '\t')
-    units <- c(rep("NA",4),"mm",rep("NA",11))
+    units <- c(rep(NA,4),"mm",rep(NA,11))
     metadata <- data[,c(1:3,5,17)]
     return(.df.melt(data, "SpeciesID", units, metadata))
 }
@@ -926,8 +924,10 @@
 .price.2014 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.r3n45", "Price%20et%20al%20Data%20for%20Dryad.xlsx"))
     names(data)[7:18] <- c("growth_form","specific_leaf_area","leaf_mass_area","leaf_life_span","N_content_per_unit_mass","N_content_per_unit_area","P_content_per_unit_mass","P_content_per_unit_area","phototsynthetic_capacity_per_mass","phototsynthetic_capacity_per_area","leaf_size","height") 
-    units <- c(rep("NA",6), "mm^2/mg ", "g/m^2", "months", "%", "g/m^2", "%", "g/m^2", "nmol/g s", "micromol/m^2 s", "cm^2", "m")
+    units <- c(rep(NA,6), "mm^2/mg ", "g/m^2", "month", "%", "g/m^2", "%", "g/m^2", "nmol/g s", "micromol/m^2 s", "cm^2", "m")
     metadata <- data[,c(1:2,4:7)]
+    data <- data[,!names(data) %in% names(metadata)]
+    data$leaf_size <- as.numeric(as.character(data$leaf_size))
     return(.df.melt(data, "genus.species", units, metadata))
 }
 
@@ -986,7 +986,7 @@
 #    data = data[,-c(2:7)]
 #    vars = c("species","height","cover","leaf_size","LDMC","specific_leaf_area","lchl","lnc","C13","SDMC","WD", "RDMC", "SRL")
 #    colnames(data) = vars
-#    units = c("m","m^2","cm^2","g g^-1","m^2 Kg^-1", "µg g^-1", "%","%","g g^-1","g cm^-3","g g^-1","m g^-1")
+#    units = c("m","m^2","cm^2","g g^-1","m^2 Kg^-1", "µg g^-1", "%","%","g g^-1","g/cm^3","g g^-1","m g^-1")
 #    data$species = tolower(gsub(" ","_", data$species))
 #    data = .df.melt(data, "species", units, metadata)
 #    return(data)
@@ -1008,7 +1008,7 @@
   data <- read.delim(ft_get_si("10.5061/dryad.t897q", "hummer_traits_Lessard.txt"), sep = " ", row.names = NULL)
   species <- tolower(data[,1])
   data <- data.frame(species, data[,-c(1)])
-  units <- c("g", "mm", "annual_mean_temperature", "annual_precipitation", "range")
+  units <- c("g", "mm", "°C", "?", "range")
   data <- .df.melt(data, "species", units)
   return(data) 
 }
@@ -1019,7 +1019,7 @@
   data <- data.frame(species, data)
   metadata <- data[,c(2:6)]
   data <- data[,-c(2:6)]
-  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
+  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", NA, NA, "abundance", "condition", "condition")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -1030,7 +1030,7 @@
   data <- data.frame(species, data)
   metadata <- data[,c(2:6)]
   data <- data[,-c(2:6)]
-  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
+  units <- c("abundance", "sqrt_abundance", "cm^2", "cm", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", NA, NA, "abundance", "condition", "condition")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -1041,7 +1041,7 @@
   data <- data.frame(species, data)
   metadata <- data[,c(2:6)]
   data <- data[,-c(2:6)]
-  units <- c("cm^2", "cm", "abundance", "sqrt_abundance", "g",  "proportion_initial_mass(g)", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", "NA", "NA", "abundance", "condition", "condition")
+  units <- c("cm^2", "cm", "abundance", "sqrt_abundance", "g",  "proportion_initial_mass(g)", "abundance", "number_of_trichomes/cm^2", "cm^2","cm^2", NA, NA, "abundance", "condition", "condition")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -1052,7 +1052,7 @@
   data$Species_Groups <- tolower(data$Species_Groups)
   metadata <- data[,c(1:2,4:5)]
   data <- data[,-c(1:2,4:5)]
-  units <- c("g", "m^3", "Status", "survivor_status", "life_form_type", "?", "NA", "NA", "treatmet_group")
+  units <- c("g", "m^3", "Status", "survivor_status", "life_form_type", "?", NA, NA, "treatmet_group")
   data <- .df.melt(data, "Individual_Species", units, metadata)
   return(data)
 }
@@ -1061,7 +1061,7 @@
   data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.116802/Castillo%20and%20Delph%20isofemale%20data.csv?sequence=1')
   names(data) <- tolower(names(data))
   data$species <- 'caenorhabditis_remanei'
-  units <- c('μm','μm','sec','sec','sec', rep(NA,3))
+  units <- c('µm','µm','sec','sec','sec', rep(NA,3))
   return(.df.melt(data, "species", units=units))
 }
 
@@ -1109,10 +1109,11 @@
     second$measurement_height <- "130cm"
     names(second)[19] <- "diameter_at_breast_height"
     data <- rbind(first, second)
+    data$vessel_area_per_image <- as.numeric(data$vessel_area_per_image)
     names(data)[5:6] <- c("latitude", "longitude")
     metadata <- data[,c("location","country","state","latitude","longitude","elevation","tree","image","measurement_height")]
     data <- data[,!names(data) %in% names(metadata)]
-    units <- c("#", "#", "µm^2", "µm^2", "µm^2", "# cm^-2", "%", "µm", "µm", "cm", "cm", "cm", "g cm^-3", "g cm^-3", "°C", "°C", "mm", "mm", "mm", "mm", "mm", "mm", "")
+    units <- c("#", "#", "µm^2", "µm^2", "µm^2", "# cm^-2", "%", "µm", "µm", "cm", "cm", "cm", "g/cm^3", "g/cm^3", "°C", "°C", "mm", "mm", "mm", "mm", "mm", "mm", "?")
     return(.df.melt(data, "species", units, metadata))
 }
 
@@ -1121,6 +1122,14 @@
     data$binomial <- tolower(paste(data$Genus, data$Species, sep="_"))
     metadata <- data[,c("Genus","Species","Replicate.number","Group","Ref.tg","Ref.bl","Ref.dm","Ref.C","Ref.N","Ref.P","Ref.NP","Ref.prot","Ref.lip","Ref.resp","Ref.N.ex","Ref.P.ex","Ref.NPex")]
     data <- data[,!names(data) %in% names(metadata)]
+    data$Min.lip <- gsub(",",".",gsub(" ", "", data$Min.lip))
+    data$Temp.Pex.rt <- gsub(",",".",gsub(" ", "", data$Temp.Pex.rt))
+    data$Min.dm <- gsub(",",".",gsub(" ", "", data$Min.dm))
+    data$Temp.resp.rt <- gsub(",",".",gsub(" ", "", data$Temp.resp.rt))
+    data$Min.Nex.rt.ug.dm <- gsub(",",".",gsub(" ", "", data$Min.Nex.rt.ug.dm))
+    data$Temp.Nex.rt <- gsub(",",".",gsub(" ", "", data$Temp.Nex.rt))
+    data$P.phosphate.ex.rt.ug.ind <- gsub(",",".",gsub(" ", "", data$P.phosphate.ex.rt.ug.ind))
+    data$Min.NP.ex <- gsub(",",".",gsub(" ", "", data$Min.NP.ex))
     units <- c(NA, NA, "mm", "mm", "mm","mg", "mg", "mg", "%", "%", "%", "mg", "%", "%", "%", "mg", "%","%", "%", "mg", ":", ":", ":", "%", "%", "%", "%", "%", "%", "µl O2 ind-1 h-1", "µl O2 mgDM -1 h-1","µl O2 mgDM -1 h-1", "µl O2 mgDM -1 h-1", "°C", "°C", "°C", "µg N-NH4+ ind-1 h-1", "µg N-NH4+ mgDM-1 h-1", "µg N-NH4+ mgDM-1 h-1", "µg N-NH4+ mgDM-1 h-1", "nmol N-NH4+ mg DM-1 h-1", "nmol N-NH4+ ind-1 h-1", "nmol N-NH4+ ind-1 h-1", "nmol N-NH4+ ind-1 h-1", "°C", "°C", "°C", "µg P-PO43- ind-1 h-1", "ug P-PO43- mg DM-1 h-1", "ug P-PO43- mg DM-1 h-1", "ug P-PO43- mg DM-1 h-1", "nmol P-PO43- mg DM-1 h-1", "nmol P-PO43- ind-1 h-1", "nmol P-PO43- ind-1 h-1", "nmol P-PO43- ind-1 h-1", "°C", "°C", "°C", ":", ":", ":")
     return(.df.melt(data, "binomial", units, metadata))
 }
@@ -1144,7 +1153,7 @@
   data$genus_species <- tolower(data$genus_species)
   metadata <- data[,c(2:4)]
   data <- data[,-c(2:4)]
-  units <- c(rep("J m^-2",4), "g", "μm", "μm", "abundance", "m", "density", "abundance", "NA", "NA", "NA")
+  units <- c(rep("J/m^2",4), "g", "µm", "µm", "abundance", "m", "density", "abundance", NA, NA, NA)
   data <- .df.melt(data, "genus_species", units, metadata)
   return(data)
 }
@@ -1155,7 +1164,7 @@
   data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
   metadata <- data[,c(2:3)]
   data <- data[,-c(2:3)]
-  units <- c(rep("mm",3), "mm^3", rep("mm",3), rep("J m^-2",2), "concentration_%equivalence_to_4ptStdCurve_ofgallicacid", "concentration_%equivalence_to_8ptStdCurve_ofcrudequebrachotannin", "abundance", "m", "abundance", "density", "NA", "NA")
+  units <- c(rep("mm",3), "mm^3", rep("mm",3), rep("J m^-2",2), "concentration_%equivalence_to_4ptStdCurve_ofgallicacid", "concentration_%equivalence_to_8ptStdCurve_ofcrudequebrachotannin", "abundance", "m", "abundance", "density", NA, NA)
   data <- .df.melt(data, "Species", units, metadata)
   return(data)
 }
@@ -1165,7 +1174,7 @@
   data$species.name <- tolower(data$species.name)
   metadata <- data[,c(1:4,6:10)]
   data <- data[,-c(1:4,6:10)]
-  units <- c("NA", rep("%",4), "g", "g cm^-2", "g", "g cm^-2", "g", "g cm^-2", "mm", "mm", "cm^-2", "mg cm^-3", "mm", "cm^-2", "mg cm^-3", "mg cm-^2 h^-1", "mg g^-1 h^-1", "mg h^-1", "%", "%", "C/N", "cm^-2", "mg cm^-3", "mm", "NA", "NA", "latitude", "longitude", "NA", "NA", "NA", "NA", "NA")
+  units <- c(NA, rep("%",4), "g", "g/cm^2", "g", "g/cm^2", "g", "g/cm^2", "mm", "mm", "cm^-2", "mg/cm^3", "mm", "cm^-2", "mg/cm^3", "mg cm-^2 h^-1", "mg g^-1 h^-1", "mg h^-1", "%", "%", "C/N", "cm^-2", "mg/cm^3", "mm", NA, NA, "latitude", "longitude", NA, NA, NA, NA, NA)
   data <- .df.melt(data, "species.name", units, metadata)
   return(data)
 }
@@ -1177,7 +1186,7 @@
 #  data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
 #  metadata <- data[,c(2:4)]
 #  data <- data[,-c(2:4)]
-#  units <- c("cm^2", "gr/m^2", rep("N/mm^2",2), "NA", "latitude", "longitude")
+#  units <- c("cm^2", "gr/m^2", rep("N/mm^2",2), NA, "latitude", "longitude")
 #  data <- .df.melt(data, "Species", units, metadata)
 #  return(data)
 #}
@@ -1188,7 +1197,7 @@
   data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
   metadata <- data[,c(2:7)]
   data <- data[,-c(2:7)]
-  units <- c("m", "m^2", "cm^2", "g^-1", "m^2 Kg^-1", "μg g^-1", "%", "%", "g^-1", "g cm^-3", "g g^-1", "m g^-1", rep("NA", 4), "Latitude", "Longitude")
+  units <- c("m", "m^2", "cm^2", "g^-1", "m^2 Kg^-1", "μg g^-1", "%", "%", "g^-1", "g/cm^3", "g g^-1", "m g^-1", rep(NA, 4), "Latitude", "Longitude")
   data <- .df.melt(data, "Species", units, metadata)
   return(data)
 }
@@ -1257,41 +1266,44 @@
 }
 
 .madin.2016 <- function(...){
-  # Currently performs aggregation to species means as original data is in long format with no unique identifiers per row
-  data <- read.csv(unzip(ft_get_si("10.6084/m9.figshare.2067414",1))[1], stringsAsFactors=TRUE)
-  data$species <- tolower(gsub(" ","_", data$specie_name))
+    # Currently performs aggregation to species means as original data is in long format with no unique identifiers per row
+    data <- read.csv(unzip(ft_get_si("10.6084/m9.figshare.2067414",1))[1], stringsAsFactors=TRUE)
+    data$species <- tolower(gsub(" ","_", data$specie_name))
 
-  # Aggregation Code from https://coraltraits.org/procedures#reshaping-data-downloads
-  my_aggregate_rules <- function(x) {
-    if (length(x) > 1) {               # Does a species by trait combination have more than 1 value?
-      x <- type.convert(x, as.is=TRUE)
-      if (is.character(x)) {
-        return(x[1])                   # If values are strings (characters), then return the first value
-      } else {
-        return(as.character(mean(x)))  # If values are numbers, then return the mean (converted back to numeric)
-      }
-    } else {
-      return(x)                        # If a species by trait combination has 1 value, then just return that value 
+    # Aggregation Code from https://coraltraits.org/procedures#reshaping-data-downloads
+    my_aggregate_rules <- function(x) {
+        if (length(x) > 1) {               # Does a species by trait combination have more than 1 value?
+            x <- type.convert(x, as.is=TRUE)
+            if (is.character(x)) {
+                return(x[1])                   # If values are strings (characters), then return the first value
+            } else {
+                return(as.character(mean(x)))  # If values are numbers, then return the mean (converted back to numeric)
+            }
+        } else {
+            return(x)                        # If a species by trait combination has 1 value, then just return that value 
+        }
     }
-  }
-  
-  i <- sapply(data, is.factor)
-  data[i] <- lapply(data[i], as.character)
-  
-  traits <- subset(data, select=c(species,trait_name,value, standard_unit))
-  traits$standard_unit[traits$standard_unit%in%c("cat","dimensionless","text","bin","id","units")] <- NA  
-  units <- unique(subset(traits, select=c("trait_name","standard_unit")))
-  units <- units[with(units, order(trait_name)),]
-  traits_with_multiple_units <- unique(units$trait_name[duplicated(units$trait_name)])
-  # Some traits are reported in different units per species.
-  # Removing for now - until unit lookup table is available
-  # Some of these are important traits (ex. growth rate), so it would be best to keep them in
-  traits <- traits[!traits$trait_name%in%traits_with_multiple_units,]
-  units <- units$standard_unit[!units$trait_name%in%traits_with_multiple_units]
-  data <- dcast(traits, species ~ trait_name, value.var="value", fun.aggregate=my_aggregate_rules, fill="")
-  data[data == ""] <- NA
-  data <- .df.melt(data, "species", units=units)
-  return(data)
+    
+    i <- sapply(data, is.factor)
+    data[i] <- lapply(data[i], as.character)
+    
+    traits <- subset(data, select=c(species,trait_name,value, standard_unit))
+    traits$standard_unit[traits$standard_unit%in%c("cat","dimensionless","text","bin","id","units")] <- NA  
+    units <- unique(subset(traits, select=c("trait_name","standard_unit")))
+    units <- units[with(units, order(trait_name)),]
+    traits_with_multiple_units <- unique(units$trait_name[duplicated(units$trait_name)])
+    # Some traits are reported in different units per species.
+    # Removing for now - until unit lookup table is available
+    # Some of these are important traits (ex. growth rate), so it would be best to keep them in
+    traits <- traits[!traits$trait_name%in%traits_with_multiple_units,]
+    units <- units$standard_unit[!units$trait_name%in%traits_with_multiple_units]
+    data <- dcast(traits, species ~ trait_name, value.var="value", fun.aggregate=my_aggregate_rules, fill="")
+    data[data == ""] <- NA
+    # dcast is turning numerics into characters
+    for(i in seq_len(ncol(data)))
+        data[,i] <- type.convert(data[,i], as.is=TRUE)
+    data <- .df.melt(data, "species", units=units)
+    return(data)
 }
 
 .paquette.2015 <- function(...){
