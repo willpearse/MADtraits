@@ -14,12 +14,12 @@ clean.natdb <- function(x){
         x$numeric$variable <- gsub("^area_m2$", "area", x$numeric$variable, perl=TRUE, useBytes=TRUE)
         x$numeric$variable <- gsub("^av_female_length$", "female_length", x$numeric$variable, perl=TRUE, useBytes=TRUE)
         x$numeric$variable <- gsub("^av_male_width$", "male_width", x$numeric$variable, perl=TRUE, useBytes=TRUE)
-        x$numeric$variable <- gsub("^ash_g_dry_weight_1$", "ash_g_dry_weight", x$numeric$variable, perl=TRUE, useBytes=TRUE)
-        x$numeric$variable <- gsub("^ash_g_dry_weight_2$", "ash_g_dry_weight", x$numeric$variable, perl=TRUE, useBytes=TRUE)
-        x$numeric$variable <- gsub("^ash_g_dry_weight_3$", "ash_g_dry_weight", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^ash_g_dry_weight_1$", "ash_g_dry_mass", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^ash_g_dry_weight_2$", "ash_g_dry_mass", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^ash_g_dry_weight_3$", "ash_g_dry_mass", x$numeric$variable, perl=TRUE, useBytes=TRUE)
         x$numeric$variable <- gsub("^average_ash$", "ash", x$numeric$variable, perl=TRUE, useBytes=TRUE)
-        x$numeric$variable <- gsub("^average_female_adult_weight$", "female_weight", x$numeric$variable, perl=TRUE, useBytes=TRUE)
-        x$numeric$variable <- gsub("^average_dry_weight$", "dry_weight", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^average_female_adult_weight$", "female_mass", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^average_dry_weight$", "dry_mass", x$numeric$variable, perl=TRUE, useBytes=TRUE)
         x$numeric$variable <- gsub("^average_indiv__leaf_area$", "leaf_area", x$numeric$variable, perl=TRUE, useBytes=TRUE)
         x$numeric$variable <- gsub("^average_ldmc$", "leaf_dry_matter_content", x$numeric$variable, perl=TRUE, useBytes=TRUE)
         x$numeric$variable <- gsub("^average_puncture$", "leaf_puncturability", x$numeric$variable, perl=TRUE, useBytes=TRUE)
@@ -150,5 +150,24 @@ clean.natdb <- function(x){
         x$categorical$species <- tolower(gsub(" ", "_", sanitize_text(x$categorical$species), perl=TRUE, useBytes=TRUE))
     }
     
+    return(x)
+}
+
+clean.natdb.names <- function(x, thresh, ...){
+    # Argument handling
+    if(!inherits(x, "natdb"))
+        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
+
+    spp <- unique(c(unique(x$numeric$species), unique(x$categorical$species)))
+    dwn.spp <- gnr_resolve(spp)
+    dwn.spp <- dwn.spp[!duplicated(dwn.spp$user_supplied_name),]
+    dwn.spp$matched_name <- tolower(sapply(strsplit(dwn.spp$matched_name, " "), function(x) paste(x[1:2],collapse="_")))
+    
+    if(!missing(thresh))
+        dwn.spp <- dwn.spp[dwn.spp$score >= thresh,]
+    lookup <- with(dwn.spp, setNames(matched_name, user_supplied_name))
+    
+    x$numeric$species <- lookup[x$numeric$species]
+    x$categorical$species <- lookup[x$categorical$species]
     return(x)
 }
