@@ -10,7 +10,7 @@
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
 
 .mesquita.2016 <- function(...){
-  data <- read.table(ft_get_si("10.5061/dryad.55610", "Data%20%28revised%29.txt"), header=T, sep='\t')
+  data <- read.delim(ft_get_si("10.5061/dryad.55610", "Data%20%28revised%29.txt"), header=TRUE)
   data <- data[,-c(2:4,7,9:10,12:13,17,25)]
   data$Species <- tolower(gsub(" ", "_", (data$Species)))
   colnames(data) <- c('species','longitude','latitude','average_female_adult_weight','mean_female_svl_adults','female_svl_at_maturity','offspring_svl','mean_clutch_size','mode_of_reproduction','clutch_per_year','clutch_frequency','relative_clutch_mass','foraging_mode','distribution','prefered_habitat_type')

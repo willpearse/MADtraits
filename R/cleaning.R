@@ -171,3 +171,31 @@ clean.natdb.names <- function(x, thresh, ...){
     x$categorical$species <- lookup[x$categorical$species]
     return(x)
 }
+
+clean.natdb.units <- function(x, choices, ...){
+    # Argument handling
+    if(!inherits(x, "natdb"))
+        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
+
+    if(missing(choices)){
+        choices <- tapply(x$numeric$units, x$numeric$variable, function(y) names(sort(table(y),decreasing=TRUE)[1]))
+        choices <- Filter(Negate(is.null), choices)
+    }
+    
+    for(i in seq_along(choices)){
+        old.unit <- unique(x$numeric$units[x$numeric$variable==names(choices)[i]])
+        for(j in seq_along(old.unit)){
+            with(x$numeric,
+                 converted <- tryCatch(
+                     convert(value[variable==names(choices)[i] & units==old.unit[j]], old.unit, choices[i]),
+                 error=function(y) NA
+                 ))
+            if(any(Negate(is.na)(converted))){
+                x$numeric$units[x$numeric$variable==names(choices)[i] & x$numeric$units==old.unit[j]] <- choices[i]
+                x$numeric$value[x$numeric$variable==names(choices)[i] & x$numeric$units==old.unit[j]] <- converted
+            }
+        }
+    }   
+    
+    return(x)
+}
