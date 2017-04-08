@@ -105,7 +105,7 @@
     metadata <- data[,c(1:3,6)]
     data$species <- with(data, tolower(paste(genus, species, sep="_")))
     data <- data[-c(1:4,6)]
-    data <- .df.melt(data, "species", units=c(NA, NA, NA, NA, NA, "#", "#", "#", "#", "mm","mm","mm","mm",NA,NA), metadata)
+    data <- .df.melt(data, "species", units=c(rep(NA, 9), "mm","mm","mm","mm", NA, NA), metadata)
     return(data)
 }
 
@@ -244,16 +244,16 @@
 
 # Will fix me please!!!
 #issue with the setup
-#.Tian.2016 <- function(...){
-#  data <- read.xls("~/Documents/Programming/NerdClub/Trait_sheets/srep19703-s2.xls", as.is=TRUE)
-#  for(i in 1:ncol(data))
-#    data[ifelse(is.na(data[,i]== "â" | data[,i]== "âÂ§"), FALSE, data[,i]== "â" | data[,i]== "âÂ§"),i] <- NA
-#  data[,-c(1,5,9,12)]
-#  data$Space <- NULL
-#  units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "Î¼m", "mm^2", "%", "Space", "Î¼m", "%", "%", "Space", "classification", "Space", "Needle/Broad")
-#  data <- .df.melt(data, "plant_spp", units=units)
-#  return(data)
-#}
+# .tian.2016 <- function(...){
+#   data <- read.xls("http://www.nature.com/article-assets/npg/srep/2016/160122/srep19703/extref/srep19703-s2.xls", as.is=TRUE)
+#   for(i in 1:ncol(data))
+#     data[ifelse(is.na(data[,i]== "â" | data[,i]== "âÂ§"), FALSE, data[,i]== "â" | data[,i]== "âÂ§"),i] <- NA
+#   data[,-c(1,5,9,12)]
+#   data$Space <- NULL
+#   units <- c("sites", "species", "family", "IVI", "cm^2", "mg individual^-1", "Space","mm^2 mg^-1", "Î¼m", "mm^2", "%", "Space", "Î¼m", "%", "%", "Space", "classification", "Space", "Needle/Broad")
+#   data <- .df.melt(data, "plant_spp", units=units)
+#   return(data)
+# }
 
 .pearse.2014 <- function(...){
   data <- read.csv(ft_get_si("10.6084/m9.figshare.979288", 4), sep = ",", na.strings = c("","NA"))
@@ -296,14 +296,6 @@
   units <- c("µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
-}
-
-.cariveau.2016 <- function(...){
-
-  link = "http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0151482.s003"
-  file = "C:/crap/journal.pone.0151482.s003.XLSX"
-  sheet = "TableS1_v2"
-  data = read.xlsx(ft_get_si("10.1371/journal.pone.0151482", 3), sheetName=sheet)
 }
 
 .simpson.2015 <- function(...){
@@ -402,7 +394,7 @@
   return(data)
 }
 
-.plourde.2014 <- function (...){
+.plourde.2015 <- function (...){
   file<-tempfile()
   download.file("http://datadryad.org/bitstream/handle/10255/dryad.65737/complete.individual.data.txt?sequence=1",file)
   data<-read.delim(file)
