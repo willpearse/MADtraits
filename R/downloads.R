@@ -282,7 +282,7 @@
   data <- data[-c(1),]
   metadata <- data[,c(1,3)]
   data <- data[,-c(1,3)]
-  units <- c(rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "odw", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
+  units <- c(rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "%", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -293,7 +293,7 @@
   data <- data.frame(species, data)
   metadata <- data[,c(2:7,24:25)]
   data <- data[,-c(2:7,23:25)]
-  units <- c("µL CO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep("count",3), "NA", "NA", "NA", "NA", "days", "NA", "NA", "NA")
+  units <- c("µLCO2/h", "counts/h", "mg", rep("mm",7), rep("mm/s",2), rep(NA,7), "days", rep(NA,3))
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -406,11 +406,12 @@
 }
 
 .buzzard.2015 <- function(...){
+  library(tidyr)
   data <- read.csv(ft_get_si("10.5061/dryad.s8f38", "FEBuzzardSpTraits.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
   data <- unite(data, species, genus, species, remove = FALSE)
   metadata <- data[,c(1:2,4:9,16:18)]
   data <- data[,-c(1:2,4:9,16:18)]
-  units <- c("NA", "cm^2 g^-1", "NA", "mg g-1", rep("NA",3),"years", rep("NA", 5), "mg ha^–1", "?", rep("NA",3))
+  units <- c(NA, "cm^2/g", NA, "mg/g", rep(NA,3), "yr", rep("NA", 5), "mg/ha", "?", rep(NA,3))
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -421,7 +422,7 @@
   data <- data.frame(species, data[,-1])
   metadata <- data[,c(2, 9:12)]
   data <- data[,-c(2, 9:12)]
-  units <- c("%", "mm", "mm", "cm", "day_since_transplant", "survival_since_transplant", rep("NA", 4), "categorical_measure_occasion")
+  units <- c("%", "mm", "mm", "cm", "d", rep(NA, 6))
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -605,7 +606,7 @@
   return(.df.melt(data,"Species",units=units, metadata))
 }
 
-.limpens.2013 <- function(...){
+.limpens.2013a <- function(...){
   data <- read.xls(ft_get_si("doi:10.5061/dryad.926nd", "Motherfile.xls"), as.is = TRUE)
   species <- gsub("gla", "picea_glauca", data$Species)
   species <- gsub("mar", "picea_mariana", species)
@@ -618,6 +619,23 @@
   metadata <- data[,c(2:4)]
   data <- data[,-c(2:4)]
   units <- c(rep("cm",2), "ln(mm/day)", "mg", rep("cm",2), "ln(mm/day)", "mg", "cm/cm", "mg/mg", "mg", rep(NA,3))
+  data <- .df.melt(data, "species", units, metadata)
+  return(data)
+}
+
+.limpens.2013b <- function(...){
+  data <- read.xls(ft_get_si("doi:10.5061/dryad.926nd", "traitsandsurvival.xlsx"), as.is = TRUE, na.strings = c("","NA"))
+  species <- gsub("gla", "picea_glauca", data$Species)
+  species <- gsub("mar", "picea_mariana", species)
+  species <- gsub("rub", "picea_rubens", species)
+  species <- gsub("sit", "picea_sitchensis", species)
+  species <- gsub("ban", "pinus_banksiana", species)
+  species <- gsub("nig", "pinus_nigra", species)
+  species <- gsub("syl", "pinus_slyvestris", species)
+  data <- data.frame(species, data[,c(-1,-3)])
+  metadata <- data[,c(2,4)]
+  data <- data[,-c(2,4)]
+  units <- c("%", "mg", "cm", rep("mm",2), "cm", "mg", "mm", "cm/cm", NA, "mg", NA, "?")
   data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
@@ -855,16 +873,6 @@
     names(data)[1] <- "height"
     data$Cut_Stem <- as.logical(data$Cut_Stem)
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
-}
-
-.arnold.2016 <- function(...){
-  data <- read.xls(ft_get_si("10.5061/dryad.t3d52","Arnold_etal_2016_functecol_dataset.xlsx"),skip=3)
-  data <- data[,1:21]
-  data$Species <- "t_castaneum"
-  metadata <- data[,c(1:6)]
-  data <- data[,-c(1:6)]
-  units <- c('uL CO2/h', 'counts/h', 'mg',rep('mm',7), 'mm/s', 'mm/s','# layers beetle reached in trial', 'number of frames no movement', 'number of frames before reaching final passage')
-  return(.df.melt(data,"Species",units=units, metadata))
 }
 
 .pigot.2015 <- function(...){
