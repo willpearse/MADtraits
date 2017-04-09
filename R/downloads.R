@@ -14,8 +14,12 @@
   data <- data[,-c(2:4,7,9:10,12:13,17,25)]
   data$Species <- tolower(gsub(" ", "_", (data$Species)))
   colnames(data) <- c('species','longitude','latitude','average_female_adult_weight','mean_female_svl_adults','female_svl_at_maturity','offspring_svl','mean_clutch_size','mode_of_reproduction','clutch_per_year','clutch_frequency','relative_clutch_mass','foraging_mode','distribution','prefered_habitat_type')
-  units <- c(rep(NA,2),'g', rep('mm',3),rep(NA,3),'g',rep(NA,5))
-  return(.df.melt(data, "species", units=units))
+  metadata <- data[,c(2:3,14:15)]
+  data <- data[,-c(2:3,14:15)]
+  data$mode_of_reproduction <- tolower(data$mode_of_reproduction)
+  data$foraging_mode <- tolower(gsub(' ', '_', data$foraging_mode))
+  units <- c('g', rep('mm',3),rep(NA,3),'g',rep(NA,2))
+  return(.df.melt(data, "species", units, metadata))
 }
 
 .broeckhoven.2016 <- function(...){
@@ -33,18 +37,24 @@
   data <- data[,-c(1:3)]
   data$species <- 'zootoca_vivipara'
   colnames(data) <- c('altitude','snout_vent_length','total_mass','parturition_year', 'parturition_day', 'mid_gestation_temperatures', 'forest_cover_coefficient','mountain_chain','species')
-  units <- c('m','mm','g',NA,NA,'°C',NA,NA)
-  data <- .df.melt(data, "species", units=units)
+  data$mountain_chain <- tolower(data$mountain_chain)
+  metadata <- data[,c(1,4:8)]
+  data <- data[,-c(1,4:8)]
+  units <- c('mm','g')
+  data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
 
 .kuo.2014 <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.p8740","personality_date1.csv"))
-  data <- data[,-c(1:4,16)]
-  colnames(data) <- c('diet','snout_vent_length','latency_to_e','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
+  metadata <- data[,5]
+  metadata <- as.data.frame(metadata)
+  colnames(metadata) <- 'diet'
+  data <- data[,-c(1:5,16)]
+  colnames(data) <- c('snout_vent_length','latency_to_explore','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
   data$species <- 'anolis_sagrei'
-  units <- c('cm','min',NA,rep('%',2), 'N','cm',rep(NA,4))
-  return(.df.melt(data, "species", units=units))
+  units <- c('cm','min',NA,rep('%',2), 'N','cm',rep(NA,3))
+  return(.df.melt(data, "species", units, metadata))
 }
 
 # .klomp.2016 <- function(...){
@@ -155,39 +165,56 @@
 
 .ingram.2016 <- function(...){
   color <- read.csv(ft_get_si("10.5061/dryad.9vr0c", "Dewlap_data_archive.csv"))
+  metadata <- color[,c(3)]
+  metadata <- as.data.frame(metadata)
+  colnames(metadata) <- 'sample_size'
   color <- color[,-c(1,3,4,7:11)]
   units <- c('cm', 'cm^2')
   color$Species <- paste0("anolis_",color$Species)
-  return(.df.melt(color, "Species", units=units))
+  colnames(color) <- tolower(colnames(color))
+  return(.df.melt(color, "species", units, metadata))
 }
 
 .munoz.2014 <- function(...){
   data <- read.table(ft_get_si("10.5061/dryad.q39h2", "Munoz_2014_AmNat_Dryad.txt"), header=T)
   names(data) <- c('species', 'clade', 'island','latitude','longitude','elevation','snout_vent_length')
+  data$island <- tolower(data$island)
+  metadata <- data[,c(3:6)]
+  data <- data[,-c(2:6)]
   data$species <- gsub('A.','anolis_', data$species)
-  units <- c('degrees', 'degrees', 'm','mm', rep(NA, 3))
-  data <- .df.melt(data, "species", units=units)
+  units <- 'mm'
+  data <- .df.melt(data, "species", units,metadata)
   data$character$units <- NA
   return(data)
 }
 
 .artacho.2015 <- function(...){
   data <- read.csv2(ft_get_si("10.5061/dryad.qg062", "phenotypictraits.csv"), sep=';')
-  data <- data[,-c(1:5,10,12:13)]
+  metadata <- data[,c(2:3,5)]
+  data <- data[,-c(1:5,10)]
   data$species <- 'zootoca_vivipara'
-  units <- c('mm', 'mm', 'g','C', 'J/h')
+  units <- c('mm', 'mm', 'g','C', 'J/h', 'cm/sec','cm/sec')
   data$SVL <- as.numeric(data$SVL)
   data$TTL <- as.numeric(data$TTL)
   data$weight <- as.numeric(data$weight)
   data$PBT <- as.numeric(data$PBT)
   data$RMR <- as.numeric(data$RMR)
-  return(.df.melt(data, "species", units=units))
+  colnames(data) <- c('snout_vent_length', 'total_length','body_mass', 'prefered_body_temperature','resting_metabolic_rate','maximum_sprint_speed_intercept','maximum_sprint_speed_slope','species')
+  data$maximum_sprint_speed_intercept <- as.numeric(data$maximum_sprint_speed_intercept)
+  data$maximum_sprint_speed_slope <- as.numeric(data$maximum_sprint_speed_slope)
+  return(.df.melt(data, "species", units=units, metadata))
 }
 
 .kolbe.2011 <- function(...){
   data <- read.table(ft_get_si("10.5061/dryad.1d24c","21%20species%20means.txt"),header=T,sep = '\t')
+  names(data) <- tolower(gsub("\\.", "_", names(data)))
+  data$species <- tolower(gsub('\\. ', 'nolis_', data$species))
+  metadata <- data[,c(2)]
+  metadata <- as.data.frame(metadata)
+  colnames(metadata) <- 'ecomorph'
+  data <- data[,-c(2)]
   units <- c(rep('mm',20))
-  data<-.df.melt(data, "Species", units=units)
+  data<-.df.melt(data, "species", units, metadata)
   data$character$units <- NA
   return(data)
   }
@@ -207,8 +234,13 @@
   data <- read.csv(ft_get_si("10.5061/dryad.9vk07","KamathLososEvol_AnolissagreiMorphAvg.csv"))
   data <- data[,-c(1)]
   data$species <- 'anolis_sagrei'
+  metadata <- data[,c(1)]
+  metadata <- as.data.frame(metadata)
+  colnames(metadata) <- 'sex'
+  data <- data[,-c(1)]
+  colnames(data) <- c('snout_vent_length','average_lamellae_count','toepad_area','limb_length','species')
   units <- c('mm','NA','mm^2','mm',NA)
-  data<-.df.melt(data, "species", units=units)
+  data<-.df.melt(data, "species", units, metadata)
   data$character$units <- NA
   return(data)
 }
@@ -217,8 +249,11 @@
   data <- read.csv(ft_get_si("10.5061/dryad.2d960","HusakFergusonLovern_Anolis_training_diet_alldata.csv"))
   data <- data[,-c(1)]
   data$species <- 'anolis_carolinensis'
-  units <- c('NA',rep('mm',4), rep('g',3),rep('sec',2),'mm','%',rep('mg',4),'psi',rep('ng/mL',2),'NA','mg',rep('NA',4))
-  data<-.df.melt(data, "species", units=units)
+  colnames(data) <- c('sex','training','diet','reproductive_state_binary','pre_snout_vent_length','post_snout_vent_length','snout_vent_length_difference','snout_vent_length_growth','pre_mass','post_mass','mass_difference','growth_mass','pre_endurance','post_endurance','phytohaemagglutinin_response','bacterial_killing_ability','liver_mass','ventricle_mass','atria_mass','heart_mass','bite_force','testosterone_levels','corticosterone_levels','haematocrit','fat_mass','species')
+  metadata <- data[,c(1:4)]
+  data <- data[,-c(1:4)]
+  units <- c(rep('mm',4), rep('g',4),rep('sec',2),'mm','%',rep('mg',4),'N',rep('ng/mL',2),'NA','mg')
+  data<-.df.melt(data, "species", units,metadata)
   data$character$units <- NA
   return(data)
 }
@@ -329,9 +364,15 @@
   file<-tempfile()
   download.file("https://datadryad.org/bitstream/handle/10255/dryad.47130/Ontogenetic%20allometry%20data.csv?sequence=1",file)
   data<-read.csv(file)
-  data<-data[,-c(2:3,5)]
-  units <- c("mm","cm","cm")
-  data<-.df.melt(data,"Species",units=units)
+  metadata <- data[,c(3,5)]
+  data<-data[,-c(2,3,5)]
+  colnames(data) <- c('species', 'snout_vent_length', 'face_length', 'body_length')
+  data$species <- tolower(gsub('A. ', 'anolis_', data$species))
+  colnames(metadata) <- c('age_class','sex')
+  metadata$sex <- tolower(gsub('Male', 'm', metadata$sex))
+  metadata$sex <- tolower(gsub('Female', 'f', metadata$sex))
+  units <- c("mm","mm","mm")
+  data<-.df.melt(data,'species', units, metadata)
 }
 
 .mccullough.2015<-function(...){
@@ -432,14 +473,17 @@
   return(.df.melt(data, "species", units, metadata))
 }
 
-  ## WIP
 .winchell.2016 <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
-  data <- data[,-c(1:2,15:16)]
-  data$species <- 'A.cristatellus'
-  data$perch.diam.cm <- as.numeric(data$perch.diam.cm)
-  units <- c(rep('C',3),'%','cm','cm','g',rep('mm',15), rep(NA, 3))
-  return(.df.melt(data, "species", units=units))
+  metadata <- data[,c(3:5,7:11)]
+  colnames(metadata) <- c('site','context','perch','perch_temperature','ambient_temperature','humidity_percent','perch_height','perch_diameter')
+  metadata$site <- tolower(gsub(' ','_', metadata$site))
+  data <- data[,-c(1:5,7:11,15:16)]
+  colnames(data) <- c('body_temperature', 'mass', 'head_height', 'snout_vent_length', 'average_jaw_length', 'average_jaw_width','average_metacarpals','average_radius','average_ulna','average_humerus', 'average_femur', 'average_tibia','average_fibula','average_metatarsals_i','average_metatarsals_ii','total_forelimb_length','total_hindlimb_length')
+  data$species <- 'anolis_cristatellus'
+  metadata$perch_diameter <- as.numeric(metadata$perch_diameter)
+  units <- c('C','g',rep('mm',15))
+  return(.df.melt(data, "species", units,metadata))
 }
 
 #.mesquita.2015 <- function(...){
@@ -524,18 +568,27 @@
   data$species <- 'sepsis_punctum'
   data <- data[,-c(4)]
   colnames(data) <- c('population', 'food', 'sex', 'family', "sire",'dam','development_time','fore_femur_width','mittibial_length', 'species')
-  units <- c(rep(NA, 3), 'days', 'mm','mm',rep(NA,4))
-  data <- .df.melt(data, "species", units=units)
+  metadata <- data[,c(1:6)]
+  data <- data[,-c(1:6)]
+  metadata$population <- tolower(metadata$population)
+  metadata$food <- tolower(metadata$food)
+  metadata$sex <- tolower(gsub('Female', 'f', metadata$sex))
+  metadata$sex <- tolower(gsub('Male', 'm', metadata$sex))
+  units <- c('days', 'mm','mm')
+  data <- .df.melt(data, "species", units,metadata)
   return(data)
 }
 
 .zhang.2014 <- function(...){
   data <- read.xls('http://datadryad.org/bitstream/handle/10255/dryad.73881/data_traits.xlsx?sequence=1')
   data <- data[,-c(1:2,5:6,8:11,16)]
+  metadata <- data[,c(1:3)]
+  data <- data[,-c(1:3)]
   data$species <- 'sterna_hirundo'
-  colnames(data) <- c('age', 'sex', 'lifespan', 'egg_volume', 'clutch_size', 'brood_size', 'no_fledglings', 'species')
-  units <- c('years',NA,'years', rep(NA,4))
-  data <- .df.melt(data, "species", units=units)
+  colnames(metadata) <- c('age', 'sex', 'lifespan')
+  colnames(data) <- c('egg_volume', 'clutch_size', 'brood_size', 'no_fledglings', 'species')
+  units <- c(rep(NA,4))
+  data <- .df.melt(data, "species", units, metadata)
   return(data)
 }
 
@@ -1061,8 +1114,10 @@
   data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.116802/Castillo%20and%20Delph%20isofemale%20data.csv?sequence=1')
   names(data) <- tolower(names(data))
   data$species <- 'caenorhabditis_remanei'
-  units <- c('µm','µm','sec','sec','sec', rep(NA,3))
-  return(.df.melt(data, "species", units=units))
+  metadata <- data[,c(1:2,8)]
+  data <- data[,-c(1:2,8)]
+  units <- c('µm','µm',rep('sec',3))
+  return(.df.melt(data, "species", units,metadata))
 }
 
 .nandy.2013 <- function(...){
@@ -1070,17 +1125,21 @@
   colnames(data) <- c('selection_regime', 'block', 'total_mass_dry')
   names(data) <- tolower(names(data))
   data$species <- 'drosophila_melanogaster'
-  units <- c(NA,'mg',NA)
-  return(.df.melt(data, "species", units=units))
+  metadata <- data[,c(1:2)]
+  data <- data[,-c(1:2)]
+  units <- c('mg')
+  return(.df.melt(data, "species", units,metadata))
 }
 
 .comeault.2013 <- function(...){
   data <- read.table('http://datadryad.org/bitstream/handle/10255/dryad.54681/Tcris_FHA_phenotypes.txt?sequence=1',header=TRUE)
   data <- data[,-c(1,4)]
-  colnames(data) <- c('sex','phenotype','hue_green_color_chip', 'saturation_green_color_chip', 'brightness_green_color_chip', 'lateral_hue_average', 'lateral_saturation_average', 'lateral_brightness_average', 'midsaggital_hue_average', 'midsaggital_saturation_average', 'midsaggital_brightness_average','body_length','body_width','head_width','proportion_striped')
+  colnames(data) <- c('sex','morph','hue_green_color_chip', 'saturation_green_color_chip', 'brightness_green_color_chip', 'lateral_hue_average', 'lateral_saturation_average', 'lateral_brightness_average', 'midsaggital_hue_average', 'midsaggital_saturation_average', 'midsaggital_brightness_average','body_length','body_width','head_width','proportion_striped')
   data$species <- 'timema_cristinae'
-  units <- c(rep(NA,9),rep('cm',4),rep(NA,2))
-  return(.df.melt(data, "species", units=units))
+  metadata <- data[,c(1:2)]
+  data <- data[,-c(1:2)]
+  units <- c(rep(NA,8),rep('cm',4),rep(NA,2))
+  return(.df.melt(data, "species",units,metadata))
 }
 
 .fargevieille.2017 <- function(...){
@@ -1089,8 +1148,10 @@
   levels(data$pop)<- c('d_muro','e_muro','e_pirio','d_rouviere')
   colnames(data) <- c('year','population','male_blue_brightness','female_blue_brightness','male_blue_hue','female_blue_hue','male_blue_uv_chroma','female_blue_uv_chroma','male_yellow_brightness','female_yellow_brightness','male_yellow_contrast','female_yellow_contrast')
   data$species <- 'cyanistes_caeruleus'
-  units <- c(rep(NA,12))
-  return(.df.melt(data, "species", units=units))
+  metadata <- data[,c(1:2)]
+  data <- data[,-c(1:2)]
+  units <- c(rep(NA,10))
+  return(.df.melt(data, "species", units,metadata))
 }
 
 .engemann.2016 <- function(...){
