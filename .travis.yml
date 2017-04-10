@@ -2,5 +2,6 @@ language: r
 cache: packages
 
 r_github_packages:
+  - hadley/devtools
   - ropensci/testdat
-  - willpearse/fulltext   
+  - willpearse/fulltext

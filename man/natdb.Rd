@@ -4,7 +4,7 @@
 \alias{natdb}
 \title{Builds a trait database}
 \usage{
-natdb(datasets, species, traits)
+natdb(datasets, cache, delay = 5)
 }
 \arguments{
 \item{datasets}{Character vector of datasets to be searched for

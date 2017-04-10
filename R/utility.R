@@ -41,12 +41,12 @@
     return(as.data.frame(output))
 }
 
-.df.melt <- function(x, species, units, metadata){
+.df.melt <- function(x, spp, units, metadata){
     # Meta-data and units
     if(missing(units)){
         units <- setNames(rep(NA, length(names(x))), names(x))
     } else {
-        units <- setNames(units, setdiff(names(x),c(species,"metadata")))
+        units <- setNames(units, setdiff(names(x),c(spp,"metadata")))
     }
 
     if(!missing(metadata)){
@@ -54,10 +54,10 @@
     } else metadata <- rep(NA, nrow(x))
 
     # Numeric data
-    numeric <- x[,sapply(x, is.numeric) | names(x) == species,drop=FALSE]
+    numeric <- x[,sapply(x, is.numeric) | names(x) == spp,drop=FALSE]
     if(ncol(numeric) > 1){
         numeric$metadata <- metadata
-        numeric <- melt(numeric, id.vars=c(species,"metadata"))
+        numeric <- melt(numeric, id.vars=c(spp,"metadata"))
         numeric$variable <- as.character(numeric$variable) # impossible to stop this coercion in melt!
         numeric <- numeric[!is.na(numeric$value),]
         names(numeric)[1] <- "species"
@@ -65,10 +65,10 @@
     } else numeric <- NULL
     
     # Character data
-    character <- x[,sapply(x, Negate(is.numeric)) | names(x) == species,drop=FALSE]
+    character <- x[,sapply(x, Negate(is.numeric)) | names(x) == spp,drop=FALSE]
     if(ncol(character) > 1){
         character$metadata <- metadata
-        character <- melt(character, id.vars=c(species,"metadata"))
+        character <- melt(character, id.vars=c(spp,"metadata"))
         character$variable <- as.character(character$variable) # impossible to stop this coercion in melt!
         character <- character[!is.na(character$value),]
         names(character)[1] <- "species"
@@ -125,3 +125,12 @@
         return(suffix)
     return(NA)
 }
+
+prog.bar <- function(x, y){
+    if(y < 100){
+        cat(".")} else {
+            z <- Filter(function(z) z>=0, seq(1,y,length.out=100)-x)
+            if(length(z) > 0)
+                tryCatch(if(z[1] < 1) if((length(z) %% 10)==0) cat("|") else cat("."), error=function(z) cat("."))
+        }
+}    

@@ -30,7 +30,7 @@
 #' #@seealso 
 #' @export
 
-natdb <- function(datasets, species, traits){
+natdb <- function(cache, datasets, delay=5){
     #Check datasets
     if(missing(datasets)){
         datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:natdb", all.names=TRUE))
@@ -45,11 +45,35 @@ natdb <- function(datasets, species, traits){
     
     #Do work and return
     output <- vector("list", length(datasets))
-    for(i in seq_along(datasets))
-        output[[i]] <- eval(as.name(datasets))()
-    numeric <- do.call(rbind, lapply(output, function(x) x[[1]]))
-    categorical <- do.call(rbind, lapply(output, function(x) x[[1]]))
+    for(i in seq_along(datasets)){
+        prog.bar(i, length(datasets))
+        if(!missing(cache)){
+            path <- file.path(cache,paste0(datasets[i], ".RDS"))
+            if(file.exists(path)){
+                output[[i]] <- readRDS(path)
+            } else {
+                output[[i]] <- eval(as.name(datasets[i]))()
+                saveRDS(output[[i]], path)
+                Sys.sleep(delay)
+            }
+        } else {
+            output[[i]] <- eval(as.name(datasets[i]))()
+            Sys.sleep(delay)
+        }
+        if(!is.null(output[[i]]$numeric))
+            output[[i]]$numeric$dataset <- datasets[i]
+        if(!is.null(output[[i]]$character))
+            output[[i]]$character$dataset <- datasets[i]
+    }
+    
+    numeric     <- do.call(rbind,
+                           lapply(Filter(function(y) !is.null(y[[1]]), output), function(x) x[[1]])
+                           )
+    categorical <- do.call(rbind,
+                           lapply(Filter(function(y) !is.null(y[[2]]), output), function(x) x[[2]])
+                           )
     output <- list(numeric=numeric, categorical=categorical)
+    class(output) <- "natdb"
     return(output)
 }
 
@@ -61,18 +85,18 @@ print.natdb <- function(x, ...){
     # Do main summary
     output <- matrix(0, 3, 3, dimnames=list(c("Numeric","Categorical","Total"),c("Species","Traits","Data-points:")))
     try(output[1,] <- c(length(unique(x$numeric$species)), length(unique(x$numeric$variable)), nrow(x$numeric)), silent=TRUE)
-    try(output[2,] <- c(length(unique(x$character$species)), length(unique(x$character$variable)), nrow(x$character)), silent=TRUE)
+    try(output[2,] <- c(length(unique(x$categorical$species)), length(unique(x$categorical$variable)), nrow(x$categorical)), silent=TRUE)
     output[3,] <- colSums(output)
     cat("A Trait DataBase containing:\n")
     print(output)
 
     # Supplemental summaries
     printer <- FALSE
-    if(!all(is.na(c(x$character$metadata,x$numeric$metadata)))){
+    if(!all(is.na(c(x$categorical$metadata,x$numeric$metadata)))){
         printed <- TRUE
         cat("Meta-data present. ")
     }
-    if(!all(is.na(c(x$character$units,x$numeric$units)))){
+    if(!all(is.na(c(x$categorical$units,x$numeric$units)))){
         printed <- TRUE
         cat("Units present. ")
     }
@@ -95,22 +119,22 @@ summary.natdb <- function(x, ...){
         if(any(x$numeric$species %in% spp))
             x$numeric <- x$numeric[x$numeric$species %in% spp,] else
                                                                     x$numeric <- NULL
-        if(any(x$character$species %in% spp))
-            x$character <- x$character[x$character$species %in% spp,] else
-                                                                          x$character <- NULL
+        if(any(x$categorical$species %in% spp))
+            x$categorical <- x$categorical[x$categorical$species %in% spp,] else
+                                                                          x$categorical <- NULL
     }
     
     # Traits
     if(!missing(traits)){
         if(any(x$numeric$variable %in% traits))
             x$numeric <- x$numeric[x$numeric$variable %in% traits,] else
-                                                                        x$character <- NULL
-        if(any(x$character$variable %in% traits))
-            x$character <- x$character[x$character$variable %in% traits,] else
-                                                                              x$character <- NULL
+                                                                        x$categorical <- NULL
+        if(any(x$categorical$variable %in% traits))
+            x$categorical <- x$categorical[x$categorical$variable %in% traits,] else
+                                                                              x$categorical <- NULL
     }
 
-    output <- list(character=x$character, numeric=x$numeric)
+    output <- list(categorical=x$categorical, numeric=x$numeric)
     class(output) <- "natdb"
     return(output)
 }
@@ -118,11 +142,22 @@ summary.natdb <- function(x, ...){
 species <- function(x, ...){
     if(!inherits(x, "natdb"))
         stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
-    return(unique(c(x$numeric$species,x$character$species)))
+    return(unique(c(x$numeric$species,x$categorical$species)))
 }
+
 traits <- function(x, ...){
     if(!inherits(x, "natdb"))
         stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
-    return(unique(c(x$numeric$variable,x$character$variable)))
+    return(unique(c(x$numeric$variable,x$categorical$variable)))
 }
 
+citations <- function(x){
+    if(!inherits(x, "natdb"))
+        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
+    
+    data(natdb_citations)
+    datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+[a-d]?", name="package:natdb", all.names=TRUE))
+    natdb.citations$Name <- with(natdb.citations, paste0(".", tolower(Author), ".", Year))
+
+    return(as.character(natdb.citations$BibTeX.citation[match(datasets, natdb.citations$Name)]))
+}
