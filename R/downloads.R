@@ -7,6 +7,8 @@
 #' @importFrom utils read.csv read.csv2 read.delim read.table
 #' @importFrom testdat sanitize_text
 #' @importFrom tidyr unite
+#' @import caper
+# -- how do you import only a dataset from a package?...
 # -- this last import must be removed, because testdat isn't on cran (devtools::install_github("ropensci/testdat"))
 
 .mesquita.2016 <- function(...){
@@ -98,8 +100,6 @@
     return(data)
 }
 
-# Elton traits
-# written by Sylvia
 .wilman.2014a  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
     data <- data[,-c(1,23,34)]
@@ -329,7 +329,7 @@
 }
 
 .simpson.2015 <- function(...){
-  data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.99379/Plant%20trait%20data.csv?sequence=1")
+  data <- read.csv(ft_get_si("10.5061/dryad.2c506", "Plant trait data.csv"))
   metadata <- data[,c(2:3)]
   data <- data[-c(2:3)]
   data$Species <- gsub(" ","_",data$Species)
@@ -338,7 +338,7 @@
 }
 
 .martin.2016 <- function(...){
-  data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.127965/Martin%20et%20al.%20Functional%20Ecology.txt?sequence=1", sep = "\t")
+  data <- read.csv(ft_get_si("10.5061/dryad.4t3r6","Martin et al. Functional Ecology.txt"), sep = "\t")
   data$species <- rep("Coffea_arabica", nrow(data))
   metadata <- data[,c(1:10,12)]
   data <- data[-c(1:10,12)]
@@ -350,9 +350,7 @@
 }
 
 .gossner.2015 <- function(...){
-  file<-tempfile()
-  download.file("http://datadryad.org/bitstream/handle/10255/dryad.76638/ArthropodSpeciesTraits.txt?sequence=1",file)
-  data <- read.delim(file)
+  data <- read.delim(ft_get_si("10.5061/dryad.53ds2", "ArthropodSpeciesTraits.txt"))
   metaData <- data[,c(1:3)]
   data <- data[,-c(1:3,5,17)]
   units <- c("mm",rep(NA,10))
@@ -360,9 +358,7 @@
 }
 
 .sherratt.2013<-function(...){
-  file<-tempfile()
-  download.file("https://datadryad.org/bitstream/handle/10255/dryad.47130/Ontogenetic%20allometry%20data.csv?sequence=1",file)
-  data<-read.csv(file)
+  data<-read.csv(ft_get_si("10.5061/dryad.hk2v3","Ontogenetic allometry data.csv"))
   metadata <- data[,c(3,5)]
   data<-data[,-c(2,3,5)]
   colnames(data) <- c('species', 'snout_vent_length', 'face_length', 'body_length')
@@ -383,8 +379,7 @@
 }
 
 .grutters.2017<-function(...){
-  link <- "http://datadryad.org/bitstream/handle/10255/dryad.128398/FE-2016-00091-Data-plant-traits-and-consumption.xlsx?sequence=1"
-  data<-read.xls(link, na.strings=c(""," ","NA"))
+  data<-read.xls(ft_get_si("10.5061/dryad.d4k51","FE-2016-00091-Data-plant-traits-and-consumption.xlsx"), na.strings=c(""," ","NA"))
   vars <- c("species", "native", "clade", "latitude_origin", "acquisition", "shared_pomacea", "consumption_rate_lymnaea", "shared_lymnaea",
            "consumption_rate_pomacea","c","n","p","dmc","total_phenolics","cn","cp","np","n_total_pheno")
   data <- data[-c(1),] #remove row with unit names
@@ -405,8 +400,7 @@
 }
 
 .molinari.2014<-function(...){
-  link <- "http://datadryad.org/bitstream/handle/10255/dryad.55089/Dryad_Final.xlsx?sequence=1"
-  data <- read.xls(link)
+  data <- read.xls(ft_get_si("10.5061/dryad.50hd2","Dryad_Final.xlsx"))
   vars = c("species", "native", "life_form","abundance_2007","abundance_2008", "peak_flowering", "height", "seed_mass", "specific_leaf_area")
   colnames(data) = vars
   data$species = tolower(gsub(" ","_",data$species))
@@ -418,9 +412,7 @@
 }
 
 .anderson.2015 <- function (...){
-  file<-tempfile()
-  download.file("http://journals.plos.org/plosone/article/file?type=supplementary&id=info:doi/10.1371/journal.pone.0166714.s002",file)
-  data<-read.csv(file)
+  data<-read.csv(ft_get_si("10.1371/journal.pone.0166714",2))
   metadata<-data[,c(2:4,44:46)]
   data<-data[,-c(2:4,44:46)]
   units<-c("cm","g","cm^2",rep("?",4),rep("cm^2",7),"?",rep("g",7),rep("mg/g",7),rep("cm^2/g",7),rep("g",4))
@@ -429,9 +421,7 @@
 }
 
 .plourde.2015 <- function (...){
-  file<-tempfile()
-  download.file("http://datadryad.org/bitstream/handle/10255/dryad.65737/complete.individual.data.txt?sequence=1",file)
-  data<-read.delim(file)
+  data<-read.delim(ft_get_si("10.5061/dryad.sv181","complete.individual.data.txt"))
   metadata<-data[,c(1:3,14,16)]
   data<-data[,-c(1:3,14,16,31:39)]
   units<-c("g","cm^3",rep("g",2),"cm^3",rep("g",2),"cm^3","g",rep("cm",8),rep("g/cm^3",3),rep("cm^2",4))
@@ -440,7 +430,6 @@
 }
 
 .buzzard.2015 <- function(...){
-  library(tidyr)
   data <- read.csv(ft_get_si("10.5061/dryad.s8f38", "FEBuzzardSpTraits.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
   data <- unite(data, species, genus, species, remove = FALSE)
   metadata <- data[,c(1:2,4:9,16:18)]
@@ -552,7 +541,7 @@
 }
 
 .klomp.2016 <- function(...){
-  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.117914/draco_comparative%20data.csv?sequence=1')
+  data <- read.csv(ft_get_si("10.5061/dryad.0g3d5","draco_comparative data.csv"))
   names(data) <- tolower(gsub("\\.", "_", names(data)))
   colnames(data) <- c('species', 'female_dewlap_area', 'male_dewlap_area', "sexual_dimorphism_in_dewlap_area", "sexual_size_dimorphism_svl", "sexual_dichromatism_chromatic_contrast",'sexual_dichromatism_achromatic_contrast', 'female_dewlap_chromatic_contrast', 'male_dewlap_chromatic_contrast','female_dewlap_achromatic_contrast', 'male_dewlap_achromatic_contrast', 'light_level_auc','predation_category')
   data$species <- tolower(gsub(" ", "_", (data$species)))
@@ -564,7 +553,7 @@
 }
 
 .dmitriew.2014 <- function(...){
-  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.72954/DataDmitriew%26BlanckenhornJEB12488%202014.csv?sequence=1',sep=';')
+  data <- read.csv(ft_get_si("10.5061/dryad.6g2f8","DataDmitriew&BlanckenhornJEB12488 2014.csv"),sep=';')
   data$species <- 'sepsis_punctum'
   data <- data[,-c(4)]
   colnames(data) <- c('population', 'food', 'sex', 'family', "sire",'dam','development_time','fore_femur_width','mittibial_length', 'species')
@@ -580,7 +569,7 @@
 }
 
 .zhang.2014 <- function(...){
-  data <- read.xls('http://datadryad.org/bitstream/handle/10255/dryad.73881/data_traits.xlsx?sequence=1')
+  data <- read.xls(ft_get_si("10.5061/dryad.9tk7t","data_traits.xlsx"))
   data <- data[,-c(1:2,5:6,8:11,16)]
   metadata <- data[,c(1:3)]
   data <- data[,-c(1:3)]
@@ -700,7 +689,7 @@
 }
 
 .marx.2016 <- function(...){
-    data <- read.csv("https://ndownloader.figshare.com/files/6854532")
+    data <- read.csv(ft_get_si("10.5061/dryad.m88g7","DRYAD2_SJtraits.csv"))
     names(data)[3:7] <- c("Seed.Mass","Maximum.Height","","Leaf.Size","Leaf.Nitrogen")
     units <- c("native/invasive","mg","m","cm^2/g","cm^2","specific_leaf_area")
     metadata <- data[,2]
@@ -709,7 +698,7 @@
 }
 
 .olli.2015 <- function(...){
-    data <- read.table("https://datadryad.org/bitstream/handle/10255/dryad.90019/fd.txt?sequence=1", header = T, sep = '\t')
+    data <- read.table(ft_get_si("10.5061/dryad.d0826", "fd.txt"), header = T, sep = '\t')
     for(i in c(1:9,11))
         data[,i] <- as.logical(data[,i])
     units <- c(rep('NA',9), "micrometer", NA)
@@ -789,8 +778,7 @@
 #}
 
 .kefi.2016 <- function(...){
-  link = "http://datadryad.org/bitstream/handle/10255/dryad.116249/chilean_metadata.xls?sequence=1"
-  data <- read.xls(link)
+  data <- read.xls(ft_get_si("10.5061/dryad.b4vg0","chilean_metadata.xls"))
   vars <- c("id", "species", "body_mass", "sessile_mobile", "cluster", "shore_height_conservative", "shore_height_C_ordinal",
             "shore_height_C_breadth", "shore_height_2_restrictive", "shore_height_R_ordinal", "shore_height_r_breadth",
             "phyllum", "subphyllum", "trophic")
@@ -804,8 +792,7 @@
 }
 
 .petry.2016 <- function(...){
-  link <- "http://datadryad.org/bitstream/handle/10255/dryad.119003/PollenMovement.csv?sequence=1"
-  data <- read.csv(link)
+  data <- read.csv(ft_get_si("10.5061/dryad.1cf8p","PollenMovement.csv"))
   data$species = rep("valeriana_edulis", nrow(data))
   metadata <- data[,c(1)]
   data <- data[,-c(1)]
@@ -992,17 +979,13 @@
 }
 
 .augspurger.2016a<-function(...){
-  file<-tempfile()
-  download.file("http://datadryad.org/bitstream/handle/10255/dryad.128418/Data%20File%201.%20Diaspore%20traits.csv?sequence=1",file)
-  data<-read.csv(file, as.is=TRUE)
+  data<-read.csv(ft_get_si("10.5061/dryad.56cn4","Data File 1. Diaspore traits.csv"), as.is=TRUE)
   units<-c("mg","cm^2","mg/cm^2","cm/s")
   return(.df.melt(data,"Species",units=units))
 }
 
 .augspurger.2016b<-function(...){
-  file<-tempfile()
-  download.file("http://datadryad.org/bitstream/handle/10255/dryad.128420/Data%20File%203.%20Parent%20tree%20information.csv?sequence=1",file)
-  data<-read.csv(file)
+  data<-read.csv(ft_get_si("10.5061/dryad.56cn4","Data File 3. Parent tree information.csv"))
   metadata<-data[,2]
   data<-data[,-2]
   units<-c("cm","m","m","m^2",NA,"m^2")
@@ -1010,9 +993,7 @@
 }
 
 .philipson.2016<-function(...){
-  file<-tempfile()
-  download.file("http://datadryad.org/bitstream/handle/10255/dryad.109340/EcologyEvolution_IntensivePlotsData_forDryad.txt?sequence=1",file)
-  data<-read.delim(file,sep = ",")
+    data<-read.delim(ft_get_si("10.5061/dryad.qn814","EcologyEvolution_IntensivePlotsData_forDryad.txt"),sep = ",")
   metadata<-data[,c(2,7:12)]
   data<-data[,c(1,3:6)]
   units<-c("%","mm","mm","cm")
@@ -1030,9 +1011,7 @@
 #}
 
 .lawson.2015<-function(...){
-  file<-tempfile()
-  download.file("http://datadryad.org/bitstream/handle/10255/dryad.84713/riparian%20wood%20density%20data.csv?sequence=1",file)
-  data<-read.csv(file)
+  data<-read.csv(ft_get_si("10.5061/dryad.72h45","riparian wood density data.csv"))
   metadata<-data[,c(1,3,5,7,9)]
   data<-data[,-c(1,3,5,7,9)]
   units<-rep("g/cm^3",3)
@@ -1053,8 +1032,7 @@
 #}
 
 .jennings.2016a <- function(...){
-  link = "http://datadryad.org/bitstream/handle/10255/dryad.112638/spiders.csv?sequence=1"
-  data = read.csv(link)
+  data = read.csv(ft_get_si("10.5061/dryad.m23g6","spiders.csv"))
   data$species = rep("sosippus_floridanus", nrow(data))
   vars = c("web_area","web_height","diff_trich","diff_trap","sum_trap", "species")
   units = c("cm^2","cm","#/cm^2","cm^2","cm^2")
@@ -1117,7 +1095,7 @@
 # }
 
 .castillo.2016 <- function(...){
-  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.116802/Castillo%20and%20Delph%20isofemale%20data.csv?sequence=1')
+  data <- read.csv(ft_get_si("10.5061/dryad.8j65p","Castillo and Delph isofemale data.csv"))
   names(data) <- tolower(names(data))
   data$species <- 'caenorhabditis_remanei'
   metadata <- data[,c(1:2,8)]
@@ -1127,7 +1105,7 @@
 }
 
 .nandy.2013 <- function(...){
-  data <- read.xls('http://datadryad.org/bitstream/handle/10255/dryad.53849/Nandy%20et%20al.%2013-0268.R2_data.xlsx?sequence=1')
+  data <- read.xls(ft_get_si("10.5061/dryad.r54m2","Nandy et al. 13-0268.R2_data.xlsx"))
   colnames(data) <- c('selection_regime', 'block', 'total_mass_dry')
   names(data) <- tolower(names(data))
   data$species <- 'drosophila_melanogaster'
@@ -1138,7 +1116,7 @@
 }
 
 .comeault.2013 <- function(...){
-  data <- read.table('http://datadryad.org/bitstream/handle/10255/dryad.54681/Tcris_FHA_phenotypes.txt?sequence=1',header=TRUE)
+  data <- read.table(ft_get_si("10.5061/dryad.ck2cm","Tcris_FHA_phenotypes.txt"),header=TRUE)
   data <- data[,-c(1,4)]
   colnames(data) <- c('sex','morph','hue_green_color_chip', 'saturation_green_color_chip', 'brightness_green_color_chip', 'lateral_hue_average', 'lateral_saturation_average', 'lateral_brightness_average', 'midsaggital_hue_average', 'midsaggital_saturation_average', 'midsaggital_brightness_average','body_length','body_width','head_width','proportion_striped')
   data$species <- 'timema_cristinae'
@@ -1149,7 +1127,7 @@
 }
 
 .fargevieille.2017 <- function(...){
-  data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.138322/ColorTraitValuesECE3-2822.csv?sequence=1',sep=';')
+  data <- read.csv(ft_get_si("10.5061/dryad.b1q08","ColorTraitValuesECE3-2822.csv"),sep=';')
   data <- data[,-c(3,4)]
   levels(data$pop)<- c('d_muro','e_muro','e_pirio','d_rouviere')
   colnames(data) <- c('year','population','male_blue_brightness','female_blue_brightness','male_blue_hue','female_blue_hue','male_blue_uv_chroma','female_blue_uv_chroma','male_yellow_brightness','female_yellow_brightness','male_yellow_contrast','female_yellow_contrast')
@@ -1272,7 +1250,7 @@
 ## Max's Functions ##
 
 .enriquezUrzelai.2015 <- function(...){
-  data <- read.csv(url("http://datadryad.org/bitstream/handle/10255/dryad.80306/WM_anurans_traits.csv?sequence=1"), as.is=T)
+  data <- read.csv(ft_get_si("10.5061/dryad.d3v78","WM_anurans_traits.csv"), as.is=T)
   data <- subset(data, select=-c(SP,COLLECTION_N,ENTRANCE_N, COLLECTION, T.F))
   data$LOC <- as.factor(data$LOC)
   colnames(data) <- c("species","locomotor_mode","snout_vent_length","tibiofibula_length","femur_length")
@@ -1285,7 +1263,7 @@
 
 .kamilar.2015 <- function(...){
     # http://datadryad.org/resource/doi:10.5061/dryad.pb74r
-    data <- read.xls("http://datadryad.org/bitstream/handle/10255/dryad.94095/Kamilar%26Tecot-AppendixS1.xlsx?sequence=1", skip=1, method="csv", header=FALSE, stringsAsFactors=FALSE)
+    data <- read.xls(ft_get_si("10.5061/dryad.pb74r","Kamilar&Tecot-AppendixS1.xlsx"), skip=1, method="csv", header=FALSE, stringsAsFactors=FALSE)
     # Species Order BodyMass(g) BrainMass(g)  AntLobeVol(mm3) PitVol(mm3) PostLobeVol(mm3)  FetalGrowthRate(g/d)  PostnatalGrowthRate(g/d)  Gestation(d)  NeonateBodyMass(g)  LitterSize  WeaningAge(d) WeaningBodyMass(g)  MaxLongevity(y)
     colnames(data) <- c("species","order","body_mass","brain_mass","anterior_lobe_volume","pituitary_volume","posterior_lobe_volume","fetal_growth_rate","postnatal_growth_rate","gestation_length","neonate_body_mass","litter_size","weaning_age","weaning_body_mass","max_longevity")
     meta <- data[,"order"]
@@ -1297,7 +1275,7 @@
 }
 
 .kissling.2014 <- function(...){
-  data <- read.delim(url("http://datadryad.org/bitstream/handle/10255/dryad.64565/MammalDIET_v1.0.txt?sequence=1"), as.is=T)
+  data <- read.delim(ft_get_si("10.5061/dryad.6cd0v","MammalDIET_v1.0.txt"), as.is=T)
   data$species <- tolower(paste(data$Genus,data$Species,sep="_"))
   # Subsetting to only include non-interpolated data (estimates generated from taxonomy higher than species)
   data <- data[data$FillCode=="0",]
@@ -1310,7 +1288,6 @@
 }
 
 .lislevand.2006 <- function(...){
-  require(caper)
   data(shorebird)
   data <- shorebird.data
   colnames(data) <- c("species","body_mass_male","body_mass_female","egg_mass","clutch_size","mating_system")
@@ -1321,7 +1298,7 @@
 }
 
 .lupold.2013 <- function(...){
-  data <- read.delim(url("http://datadryad.org/bitstream/handle/10255/dryad.48489/dataset.txt?sequence=1"), as.is=T)
+  data <- read.delim(ft_get_si("10.5061/dryad.qj811","dataset.txt"), as.is=T)
   data$Species[data$Species=="Aepiceros_melampus"] <- "Aepyceros_melampus"
   data$species <- tolower(gsub(" ","_", data$Species))
   meta <- subset(data, select=c(Order,Family,N,ReferenceEjaculateData,ReferenceBodyMass.TestisMass,RererenceBasalMetabolicRate))
@@ -1389,8 +1366,8 @@
 }
 
 .rojas.2013 <- function(...){
-  traits.morph <- read.delim(url("http://datadryad.org/bitstream/handle/10255/dryad.48968/morphological_variables.txt?sequence=1"), as.is=T)
-  traits.diet <- read.delim(url("http://datadryad.org/bitstream/handle/10255/dryad.48969/ecological_variables.txt?sequence=1"), as.is=T)
+  traits.morph <- read.delim(ft_get_si("10.5061/dryad.f435k","morphological_variables.txt"), as.is=T)
+  traits.diet <- read.delim(ft_get_si("10.5061/dryad.f435k","ecological_variables.txt"), as.is=T)
   data <- merge(traits.morph,traits.diet, by.x="taxon",by.y="taxon")
   colnames(data)[1:4] <- c("species","n_individuals_sampled","body_mass","cranial_volume")
   meta <- data[,c("n_individuals_sampled")]
@@ -1413,7 +1390,7 @@
 }
 
 .lagisz.2013 <- function(...){
-  data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.44113/Lagisz_DATATABLE.csv?sequence=1", stringsAsFactors=FALSE)
+  data <- read.csv(ft_get_si("10.5061/dryad.kf490","Lagisz_DATATABLE.csv"), stringsAsFactors=FALSE)
   meta <- subset(data, select=c(Refseq,NCBI_taxID,class,size_sources))
   data <- subset(data, select=-c(ord,Refseq,NCBI_taxID,genus,species,class,log_volume_male, log_volume_female,size_sources))
   names(data)[1] <- "species"
@@ -1422,5 +1399,3 @@
   data <- .df.melt(data, "species", units=units, metadata=meta)
   return(data)
 }
-
-## end of Max's Functions ##
