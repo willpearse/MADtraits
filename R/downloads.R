@@ -100,7 +100,6 @@
   units<-c("mg","cm^2","mg/cm^2","cm/s")
   return(.df.melt(data,"Species",units=units))
 }
-
 .augspurger.2016b<-function(...){
   data<-read.csv(ft_get_si("10.5061/dryad.56cn4","Data File 3. Parent tree information.csv"))
   metadata<-data[,2]
@@ -209,7 +208,7 @@
 }
 
 .castillo.2016 <- function(...){
-  data <- read.csv(ft_get_si("10.5061/dryad.8j65p","Castillo and Delph isofemale data.csv"))
+  data <- read.csv(ft_get_si("10.5061/dryad.gm465","Castillo and Delph isofemale data.csv"))
   names(data) <- tolower(names(data))
   data$species <- 'caenorhabditis_remanei'
   metadata <- data[,c(1:2,8)]
@@ -260,8 +259,8 @@
 }
 
 .deraison.2014 <- function(...){
-    data <- read.xls(ft_get_si("10255/dryad.72345","Plant%20traits.xls"), sheet = 2)
-    name.data <- read.xls(ft_get_si("10255/dryad.72345","Plant%20traits.xls"), sheet = 1)
+    data <- read.xls(ft_get_si("10.5061/dryad.5q33h","Plant traits.xls"), sheet = 2)
+    name.data <- read.xls(ft_get_si("10.5061/dryad.5q33h","Plant traits.xls"), sheet = 1)
     data$Plant.species <- name.data$Species.name[1:22]
     names(data) <- c("species","leaf_dry_matter", "leaf_nitrogen_content", "leaf_carbon_content", "leaf_carbon_nitrogen_ratio", "leaf_thickness", "leaf_area", "perimeter_leaf_length_ratio")
     data <- data[,1:8]
@@ -495,7 +494,7 @@
   return(data)
 }
 
-.jones.2009a <- function(...){
+.jones.2009 <- function(...){
     data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR05_Aug2008.txt", "esa_archives"))
     for(i in 1:ncol(data))
         data[data[,i]==-999 | data[,i]=="-999",i] <- NA
@@ -870,7 +869,6 @@
 }
 
 .myhrvold.2015 <- function(...){
-    data <- read.csv("~/Downloads/Amniote_Database_Aug_2015.csv", as.is=TRUE)
     data <- read.csv(ft_get_si("E096-269","Data_Files/Amniote_Database_Aug_2015.csv", "esa_archives", cache=FALSE))
     for(i in seq_len(ncol(data)))
         data[data[,i]==-999 | data[,i]=="-999",i] <- NA
@@ -987,7 +985,8 @@
 }
 
 .pigot.2015 <- function(...){
-    data <- read.xls(ft_get_si("10.5061/dryad.fd986","Database S1 Pigot, Trisos and Tobias.xls"), as.is=TRUE)
+    # Will says: Need to leave the URI in there; potentially fulltext problem?
+    data <- read.xls(ft_get_si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
     data <- data[,-c(26:28)]
         for(i in 12:15)
     data[,i] <- as.logical(data[,i])
@@ -1170,7 +1169,7 @@
 }
 
 .yin.2015 <- function(...){
-  data <- read.xls(ft_get_si("10255/dryad.86209","Species-XylemAnatomy.xlsx"), fileEncoding="UTF-8")
+  data <- read.xls(ft_get_si("10.5061/dryad.76ph0","Species-XylemAnatomy.xlsx"), fileEncoding="UTF-8")
   metaData <- data[,2]
   data <- data[,-c(2,13)]
   units <- c(NA, NA, rep('um',6), NA, NA, NA)
@@ -1191,41 +1190,6 @@
 }
 
 
-# .klomp.2016 <- function(...){
-#   data <- read.csv('http://datadryad.org/bitstream/handle/10255/dryad.117914/draco_comparative%20data.csv?sequence=1')
-#   names(data) <- tolower(gsub("\\.", "_", names(data)))
-#
-#   colnames(data) <- c('species', 'female_dewlap_area', 'male_dewlap_area_', sexual_dimorphism_in_dewlap_area__natural_logged_ sexual_size_dimorphism__svl_ sexual_dichromatism__chromatic_contrast_
-#   data <- data[,-c(1:4,16)]
-#   colnames(data) <- c('diet','svl','latency','perch_inspected','percent_time_newzone','percent_time_onperch','bite_force','tail_diameter', 'personality_principal_component_1','personality_principal_component_2','transformed_principal_component_1')
-#   data$species <- 'anolis_sagrei'
-#   units <- c('cm','min',NA,rep('%',2), 'N','cm',rep(NA,4))
-#   data <- .df.melt(data, "species", units=units)
-#   data$character$units <- NA
-#   return(data)
-# }
-
-
-
-
-
-
-#KW first attempt to be verified
-
-
-
-
-
-
-
-
-
-# high impact invaders
-# written by Sylvia
-# Konrad tried to update units, turns out they're not reported with the data or in the paper WTF!
-
-# Will fix me please!!!
-#issue with the setup
 # .tian.2016 <- function(...){
 #   data <- read.xls("http://www.nature.com/article-assets/npg/srep/2016/160122/srep19703/extref/srep19703-s2.xls", as.is=TRUE)
 #   for(i in 1:ncol(data))
@@ -1237,24 +1201,6 @@
 #   return(data)
 # }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#KW attempt 2
-
-
 #.mesquita.2015 <- function(...){
 #    data <- read.delim(unzip(ft_get_si("E096-058-D1","Life_history_data_of_lizards_of_the_world.txt.zip", "esa_data_archives"), "Data files/Data (revised).txt"))
 #    metadata <- data[,c("Species","Genus","Family","Population","Longitude","Latitude","Source","Sample.Size.Female.adult.weight","Sample.size.Mean.F.SVL.adults","Sample.size.Clutch.Size.")]
@@ -1262,34 +1208,6 @@
 #    data$Species.1 <- tolower(gsub(" ", "_", data$Species.1))
 #    return(.df.melt(data, "Species.1", c("g", "g", "mm", "mm", "mm", "mm", "#", NA, "#", NA, "cc/g", NA, NA, NA), metadata))
 #}
-
-#gossner.2015 <- function(...){
-#    data <- read.delim(ft_get_si("E096-102", "HeteropteraMorphometricTraitsRAW.txt", "esa_archives"), as.is=TRUE, fileEncoding="UTF-8")
-#}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#KW
-
-#KW
-
-
-
 
 #.delgado.2016 <- function(...){
 #  data <- read.xls(ft_get_si("10.5061/dryad.1tj60","Delagado_etal_2016_Appendix2.xlsx"), fileEncoding='UTF-8',sheet=1)
@@ -1299,8 +1217,6 @@
 #  units <- c("m", 'cm')
 #  return(.df.melt(data,"Species",units=units, metadata))
 #}
-
-
 
 #.maire.2016 <- function(...){
 #    link <- "http://datadryad.org/bitstream/handle/10255/dryad.119139/globamax_data_160609%20%28for%20GEB%20ms%29.xlsx?sequence=1"
@@ -1322,21 +1238,6 @@
 #    return(data)
 #}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #.abakumova.2016<-function(...){
 #  file<-tempfile()
 #  download.file("http://datadryad.org/bitstream/handle/10255/dryad.109534/Abakumova_etal_NEWPHY2016_morphology_data.txt?sequence=1",file)
@@ -1346,7 +1247,6 @@
 #  units<-c("cm","cm^2","g","%","cm^2/g","g","g")
 #  data<-.df.melt(data,"Focal_species",units=units,metadata=metadata)
 #}
-
 
 #.valido.2011 <- function(...){
 #    link = "http://datadryad.org/bitstream/handle/10255/dryad.89498/Dryad_database.xls?sequence=1"
@@ -1361,10 +1261,6 @@
 #    return(data)
 #}
 
-  
-
-
-
 # .vanier.2013 <- function(...){
 #   data <- read.delim(ft_get_si("E094-246", "Mass_volume_data.txt", "esa_archives"), sep = "", as.is = TRUE, na.strings = c("","NA"))
 #   data$Individual_Species <- tolower(data$Individual_Species)
@@ -1375,13 +1271,6 @@
 #   data <- .df.melt(data, "Individual_Species", units, metadata)
 #   return(data)
 # }
-
-
-
-
-
-
-
 
 #.neuheimer.2016 <- function(...){
 #    data <- read.csv(unzip(ft_get_si("10.1890/15-1261.1", 1), "15-1261_Neuheimer_SizeDatabase.csv"), as.is=TRUE)
@@ -1396,9 +1285,6 @@
 #    metadata <- data[,c()]
 #    data <- data[,!names(data) %in% names(metadata)]    
 #}
-
-
-
 
 #WILL THERE IS AN UPLOADING ERROR THAT SAYS: EOF within quoted string.  I THINK IT IS AN ISSUE WITH THE QUOTES IN LAT AND LON BUT I DO NOT KNOW HOW TO FIX IT.
 #PUT IT IN HERE BECAUSE EVERYTHING ELSE IS READY TO GO WITH IT, JUST CAN'T FIGURE OUT HOW TO FIX THE UPLOAD.
@@ -1422,17 +1308,3 @@
 #   data <- .df.melt(data, "Species", units, metadata)
 #   return(data)
 # }
-
-## Max's Functions ##
-
-
-
-
-
-
-
-
-
-
-
-
