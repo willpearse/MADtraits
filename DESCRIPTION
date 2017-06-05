@@ -2,8 +2,10 @@ Package: natdb
 Type: Package
 Title: Not A Trait DataBase
 Version: 1.0
-Date: 2017-02-13
-Author: USU Biology Nerd Group
+Date: 2017-06-04
+Author: William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen, Mallory
+    A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian, Ryan McCleary,
+    Anne E. McManis, Alexandre Rego, & Kathryn M Welglarz
 Maintainer: Will Pearse <will.pearse@usu.edu>
 Description: NATDB automates the download and assembly of species'
     trait data from published sources. It emphatically is *not* a
@@ -15,7 +17,7 @@ Description: NATDB automates the download and assembly of species'
     available within this package to aid that). Some basic data
     checking, and functions to perform data checking, are included
     within this package.
-License: MIT
+License: MIT + file LICENSE
 RoxygenNote: 6.0.1
 Imports:
     fulltext (>= 0.1.4),
@@ -24,5 +26,5 @@ Imports:
     reshape2 (>= 1.4.2),
     httr (>= 1.2.1),
     caper (>= 0.5.2),
-    tidyr (>= 0.6.1)
-
+    tidyr (>= 0.6.1),
+    taxize (>= 0.8.4)

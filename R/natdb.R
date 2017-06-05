@@ -3,33 +3,33 @@
 #' The key function of the natdb package. When run with defaults, it
 #' will download and build a database of species' traits from all the
 #' manuscript sources in the package. This totals XXX
-#' manuscripts/databases, XXX species, and XXX traits. Please note
-#' that all parameters are interactive; thus specifying \code{species}
-#' and \code{traits} constraints will constraint according to both,
-#' for example. Please also note that specifying any kind of
-#' constraints makes use of the package's built-in cache of what
-#' species and traits information are available in each database;
-#' making use of this on the GitHub (developer) build of this package
-#' is not advisable, and (further) it is impossible for us to verify
-#' whether the datasets NATDB searches have been updated since the
-#' package was last built.
+#' manuscripts/databases, XXX species, and XXX traits. *Please* make
+#' use the the \code{cache} feature, as it will massively speed and
+#' ease your use of the package.
 #' 
 #' @param datasets Character vector of datasets to be searched for
 #'     trait data. If not specified (the default) all trait datasets
 #'     will be downloaded and returned.
-#' @param species Character vector of species to be searched for trait
-#'     data. If not specified (the default) data for all species will
-#'     be downloaded and returned.
-#' @param traits Character vector of traits to be searched for
-#'     data. If not specified (the default) data for all traits will
-#'     be downloaded and returned.
+#' @param cache Specify an existing directory/folder where datasets
+#'     can be downloaded to and stored. If a dataset is already
+#'     present in this directory, it will not be downloaded from the
+#'     server but instead loaded locally. We *STRONGLY* advise you to
+#'     specify a cache location.
+#' @param delay How many seconds to wait between downloading and
+#'     processing each dataset (default: 5). This delay may seem
+#'     large, but if you specify a \code{cache} (see above) you only
+#'     need do it once, and specifying a large delay ensures you don't
+#'     over-stretch servers. Keeping servers happy is good for you
+#'     (they won't reject you!) and good for them (they can help
+#'     everyone).
 #' @return natdb.data object. XXX
 #' @author Will Pearse; USU Biology Nerd Group (XXX)
 #' #@examples
 #' # Limit the scope of these as they have to work online on servers!...
+#' # Also give an example (notrun) of how to use the cache
 #' #@seealso 
 #' @export
-
+#' @importFrom gdata ls.funs
 natdb <- function(cache, datasets, delay=5){
     #Check datasets
     if(missing(datasets)){
@@ -151,6 +151,19 @@ traits <- function(x, ...){
     return(unique(c(x$numeric$variable,x$categorical$variable)))
 }
 
+#' Returns citationns for NATDB database
+#'
+#' This will generate citations (in BibTeX format) for a given NATDB
+#' dataset.
+#' 
+#' @param x The NATDB database object for which you want citations
+#' @return Character vector of citations in BibTeX format
+#' @author Will Pearse; Sylia Kinosian
+#' #@examples
+#' # Limit the scope of these as they have to work online on servers!...
+#' # Also give an example (notrun) of how to use the cache
+#' #@seealso 
+#' @export
 citations <- function(x){
     if(!inherits(x, "natdb"))
         stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
