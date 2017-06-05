@@ -612,17 +612,15 @@
 }
 
 .kolbe.2011 <- function(...){
-  data <- read.table(ft_get_si("10.5061/dryad.1d24c","21%20species%20means.txt"),header=T,sep = '\t')
-  names(data) <- tolower(gsub("\\.", "_", names(data)))
-  data$species <- tolower(gsub('\\. ', 'nolis_', data$species))
-  metadata <- data[,c(2)]
-  metadata <- as.data.frame(metadata)
-  colnames(metadata) <- 'ecomorph'
-  data <- data[,-c(2)]
-  colnames(data)[c(13,15)] <- c('femur_length','phalanx_i_4th_hindtoe_length')
-  units <- c(rep('mm',6),rep(NA,2),rep('mm',7))
-  data<-.df.melt(data, "species", units, metadata)
-  return(data)
+    data <- read.table(ft_get_si("x10.5061/dryad.1d24c","21%20species%20means.txt"),header=TRUE,sep = '\t')
+    names(data) <- tolower(gsub("\\.", "_", names(data)))
+    data$species <- tolower(gsub('\\. ', 'nolis_', data$species))
+    names(data)[14] <- "femur_length"
+    metadata <- data[,2,drop=FALSE]
+    names(metadata) <- 'ecomorph'
+    data <- data[,-2]
+    units <- c(rep('mm',ncol(data)))
+    return(.df.melt(data, "species", units, metadata))
 }
 
 .kuo.2014 <- function(...){
@@ -698,7 +696,7 @@
 }
 
 .lislevand.2006 <- function(...){
-  data("shorebird")
+  data("shorebird". envir=environment())
   colnames(shorebird.data) <- c("species","body_mass_male","body_mass_female","egg_mass","clutch_size","mating_system")
   units <- c("g","g","f",NA,NA)
   shorebird.data$species <- tolower(gsub(" ", "_", (shorebird.data$species)))

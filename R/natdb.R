@@ -168,7 +168,7 @@ citations <- function(x){
     if(!inherits(x, "natdb"))
         stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
     
-    data(natdb_citations)
+    data("natdb_citations", envir=environment())
     datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+[a-d]?", name="package:natdb", all.names=TRUE))
     natdb.citations$Name <- with(natdb.citations, paste0(".", tolower(Author), ".", Year))
 

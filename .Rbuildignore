@@ -1,0 +1,6 @@
+.git/*
+.travis.yml
+README.md
+LICENCE
+^\.travis\.yml$
+cache/*
