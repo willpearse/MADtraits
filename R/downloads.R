@@ -619,11 +619,11 @@
   metadata <- as.data.frame(metadata)
   colnames(metadata) <- 'ecomorph'
   data <- data[,-c(2)]
-  units <- c(rep('mm',20))
+  colnames(data)[c(13,15)] <- c('femur_length','phalanx_i_4th_hindtoe_length')
+  units <- c(rep('mm',6),rep(NA,2),rep('mm',7))
   data<-.df.melt(data, "species", units, metadata)
-  data$character$units <- NA
   return(data)
-  }
+}
 
 .kuo.2014 <- function(...){
   data <- read.csv(ft_get_si("10.5061/dryad.p8740","personality_date1.csv"))
@@ -1182,6 +1182,7 @@
   units <- c('C','g',rep('mm',15))
   return(.df.melt(data, "species", units,metadata))
 }
+
 
 .wright.2004 <- function(...){
     raw <- read.xls("http://www.nature.com/nature/journal/v428/n6985/extref/nature02403-s2.xls", as.is=TRUE, skip=7)
