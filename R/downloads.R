@@ -612,11 +612,11 @@
 }
 
 .kolbe.2011 <- function(...){
-    data <- read.table(ft_get_si("x10.5061/dryad.1d24c","21%20species%20means.txt"),header=T,sep = '\t')
+    data <- read.table(ft_get_si("x10.5061/dryad.1d24c","21%20species%20means.txt"),header=TRUE,sep = '\t')
     names(data) <- tolower(gsub("\\.", "_", names(data)))
     data$species <- tolower(gsub('\\. ', 'nolis_', data$species))
     names(data)[14] <- "femur_length"
-    metadata <- as.data.frame(data[,2])
+    metadata <- data[,2,drop=FALSE]
     names(metadata) <- 'ecomorph'
     data <- data[,-2]
     units <- c(rep('mm',ncol(data)))
@@ -1180,6 +1180,7 @@
   units <- c('C','g',rep('mm',15))
   return(.df.melt(data, "species", units,metadata))
 }
+
 
 .wright.2004 <- function(...){
     raw <- read.xls("http://www.nature.com/nature/journal/v428/n6985/extref/nature02403-s2.xls", as.is=TRUE, skip=7)
