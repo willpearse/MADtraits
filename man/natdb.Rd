@@ -2,9 +2,13 @@
 % Please edit documentation in R/natdb.R
 \name{natdb}
 \alias{natdb}
+\alias{as.data.frame.natdb}
 \title{Builds a trait database}
 \usage{
 natdb(cache, datasets, delay = 5)
+
+\method{as.data.frame}{natdb}(x, row.names, optional, num.func = mean,
+  cat.func = function(x) names(which.max(table(x))), data = 10, ...)
 }
 \arguments{
 \item{cache}{Specify an existing directory/folder where datasets
@@ -24,6 +28,37 @@ need do it once, and specifying a large delay ensures you don't
 over-stretch servers. Keeping servers happy is good for you
 (they won't reject you!) and good for them (they can help
 everyone).}
+
+\item{x}{\code{natdb} object to be printed}
+
+\item{row.names}{Ignored}
+
+\item{optional}{Ignored}
+
+\item{num.func}{To summarise data at the species level (which is
+done by default), a function is needed to summarise the
+continuous data at the species level. This argument specifies
+this function; while the default is \code{\link[base]{mean}},
+you could change this to \code{\link[stats]{median}} or specify
+your own standard error function.}
+
+\item{cat.func}{To summarise data at the species level (which is
+done by default), a function is needed to summarise the
+continuous data at the species level. This argument specifies
+this function; while the default is to just return the modal
+value, other options could be used.}
+
+\item{data}{Which variables to summarise into a data.frame. If
+numeric, the top \code{data} variables with the most data will
+be summarised (default: top ten variables). You can also
+specify variable names if you wish. Note: there are over a
+thousand variables and over 100,000 species in NATDB - you *do
+not* want to turn all of this data into a single
+\code{data.frame}, as it will be unmanageable. Subset your data
+down first to your species or traits of interest (see
+"examples")}
+
+\item{...}{ignored}
 }
 \value{
 natdb.data object. XXX
@@ -36,10 +71,27 @@ manuscripts/databases, XXX species, and XXX traits. *Please* make
 use the the \code{cache} feature, as it will massively speed and
 ease your use of the package.
 }
+\examples{
+\dontrun{
+# Download all NATDB data, and cache (save) it on your hard-drive for use later
+data <- natdb(cache="Documents/natdb/cache")
+# Perform basic checks and cleaning on that data
+clean.data <- clean.natdb(data)
+
+# Subset data down to the traits you want (notice the comma position)
+subset.data <- clean.data[,c("specific_leaf_area","height")]
+# Subset data down to the species you want (notice the comma position)
+subset.data <- clean.data[c("quercus_robur","quercus_ilex"),]
+# Subset multiple things at once
+clean.data[c("quercus_robur","quercus_ilex"),"specific_leaf_area"]
+
+# Convert that into a data.frame for use in an analysis
+neat.data <- as.data.frame(clean.data)
+}
+}
+\seealso{
+clean.natdb convert.natdb.units lookup.natdb.species
+}
 \author{
 Will Pearse; USU Biology Nerd Group (XXX)
-#@examples
-# Limit the scope of these as they have to work online on servers!...
-# Also give an example (notrun) of how to use the cache
-#@seealso
 }

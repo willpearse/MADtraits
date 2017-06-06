@@ -1,16 +1,4 @@
-# Unzips a file from a downloaded zip file
-# param file name of file to be extracted from zip
-# param zip location and name of zip file (e.g.,
-#     ~/Downlaods/a_file.zip)
-# param to.save.dir directory to save resulting file (DEFAULT: a new
-#     temporary directory will be used)
-# param to.save.name name to save the file as (DEFAULT: it will be
-#     named paste(zip,file, sep='_'))
-# return Complete path to unzipped file
-#' @importFrom utils unzip download.file
-#' @importFrom reshape2 melt
-#' @importFrom httr GET
-#' @importFrom stats setNames
+#' @importFrom utils unzip
 .unzip <- function(file, zip, to.save.dir, to.save.name){
     if(missing(to.save.dir))
         to.save.dir <- tempdir()
@@ -40,7 +28,8 @@
     colnames(output) <- paste(names, gsub("factor_to_expand", "", colnames(output)), sep="_")
     return(as.data.frame(output))
 }
-
+#' @importFrom stats setNames
+#' @importFrom reshape2 melt
 .df.melt <- function(x, spp, units, metadata){
     # Meta-data and units
     if(missing(units)){
@@ -76,9 +65,11 @@
    } else character <- NULL
 
     #Cleanup and return
-    return(list(numeric=numeric,character=character))
+    output <- list(numeric=numeric,character=character)
+    class(output) <- "natdb"
+    return(output)
 }
-
+#' @importFrom utils download.file
 .download <- function(url, dir, save.name, cache=TRUE){
     destination <- file.path(dir, save.name)
     suffix <- .file.suffix(url, 4)

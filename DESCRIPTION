@@ -1,7 +1,7 @@
 Package: natdb
 Type: Package
 Title: Not A Trait DataBase
-Version: 1.0
+Version: 1.0-0
 Date: 2017-06-04
 Author: William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen, Mallory
     A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian, Ryan McCleary,
@@ -27,4 +27,5 @@ Imports:
     httr (>= 1.2.1),
     caper (>= 0.5.2),
     tidyr (>= 0.6.1),
-    taxize (>= 0.8.4)
+    taxize (>= 0.8.4),
+    convertr (>= 0.1)

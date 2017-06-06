@@ -1,12 +1,37 @@
-#Headers
+#' Internal dataset wrappers used by NATDB
+#'
+#' Each of these functions downloads a dataset from a published
+#' dataset that (to the best of the authors' knowledge) has been
+#' released for public use. Please note that it is *impossible* for
+#' NATDB to download a dataset that has not been released to the user;
+#' NATDB is Not A DataBase; these functions download data to which the
+#' user already has access.
+#' 
+#' @param ... Optional arguments that can be specified to a function
+#'     at run-time. Currently, all arguments passed to any of these
+#'     functions are ignored.
+#' @return \code{\link{natdb}} object
+#' @author William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen,
+#'     Mallory A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian,
+#'     Ryan McCleary, Anne E. McManis, Alexandre Rego, & Kathryn M
+#'     Welglarz
+#' @rdname datasets
+#' @name datasets
+#' @examples
+#' # You almost certainly *don't* want to use these functions on their own
+#' # - use the function "natdb" to build a database instead
+#' .pearse.2014()
+#' @export
+#' @importFrom gdata ls.funs
 #' @importFrom fulltext ft_get_si
 #' @importFrom gdata read.xls
-#' @importFrom utils read.csv read.csv2 read.delim read.table
+#' @importFrom utils read.csv read.csv2 read.delim read.table unzip
 #' @importFrom testdat sanitize_text
 #' @importFrom tidyr unite
-#' @import caper
-#' @importFrom utils type.convert data
+#' @importFrom caper pgls
+#' @importFrom utils type.convert data download.file unzip
 #' @importFrom reshape2 dcast
+#' @importFrom httr GET
 .albouy.2015 <- function(...){
     data <- read.csv(unzip(ft_get_si("E096-203","Functional_data.zip", "esa_archives"), "Functional_data.csv"), sep=";")
     for(i in 11:17)
@@ -18,6 +43,7 @@
     return(.df.melt(data, "Species", c(NA,"cm","cm",rep(NA,8),"m","m",rep(NA,9)), metadata))
 }
 
+#' @export
 .ameztegui.2016 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.12b0h/2","FunctionalTraits_Dryad.xlsx"))
     data <- data[,-c(1,7,8)]
@@ -28,6 +54,7 @@
     return(data)
 }
 
+#' @export
 .anderson.2015 <- function (...){
     data<-read.csv(ft_get_si("10.1371/journal.pone.0166714",2))
     metadata<-data[,c(2:4,44:46)]
@@ -37,6 +64,7 @@
     return(data)
 }
 
+#' @export
 .arnold.2016 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.t3d52", "Arnold_etal_2016_functecol_dataset.xlsx"), as.is = TRUE, skip = 3)
     species <- rep(c("Tribolium_castaneum"), nrow(data))
@@ -47,6 +75,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .artacho.2015 <- function(...){
     data <- read.csv2(ft_get_si("10.5061/dryad.qg062", "phenotypictraits.csv"), sep=';')
     metadata <- data[,c(2:3,5)]
@@ -64,6 +93,7 @@
     return(.df.melt(data, "species", units=units, metadata))
 }
 
+#' @export
 .aubret.2012a <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=1)
     data$species <- "notechis_scutatus"
@@ -84,6 +114,7 @@
     units <- c("log10(cm)", "g", "log10(g)", "log10(mean(cm))", "g", "log10(g)", "?", "?", "mean(g)", "log10(mean(g))", "mean(cm)", "log10(mean(cm))", "mean(cm)", "log10(mean(cm))", NA)
     return(.df.melt(data, "species", units, metadata))
 }
+#' @export
 .aubret.2012c <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=3)
     names(data) <- c("genus_species", "body_mass", "max_circumference")
@@ -91,11 +122,13 @@
     return(.df.melt(data, "genus_species", units))
 }
 
+#' @export
 .augspurger.2016a<-function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.56cn4","Data File 1. Diaspore traits.csv"), as.is=TRUE)
     units <- c("mg","cm^2","mg/cm^2","cm/s")
     return(.df.melt(data,"Species",units=units))
 }
+#' @export
 .augspurger.2016b<-function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.56cn4","Data File 3. Parent tree information.csv"))
     metadata <- data[,2,drop=FALSE]
@@ -104,6 +137,7 @@
     return(.df.melt(data,"Species",units=units,metadata=metadata))
 }
 
+#' @export
 .bello_bedoy.2015a <- function(...){
     data <- read.csv(
         ft_get_si("10.6084/m9.figshare.1190766.v2","Mating success H americana.csv")
@@ -129,6 +163,7 @@
     return(.df.melt(data, "species", c(NA, NA, "mm", "mm", "?", "?", "log10(?)"), metadata))
 }
 
+#' @export
 .benesh.2017 <- function(...){
     data <- read.csv(unzip(ft_get_si("10.1002/ecy.1680", 1), "CLC_database_lifehistory.csv"))
     metadata <- data[,c("Parasite.genus", "Parasite.group", "Development.remarks", "Size.reported.as", "Size.remarks", "Author", "Year", "Journal", "Volume", "Pages")]
@@ -136,6 +171,7 @@
     return(.df.melt(data, "Parasite.species", c(NA, "#", NA, NA, "days", "degC", "mm", "mm", "mm", "mm", "n", NA, NA, NA), metadata))
 }
 
+#' @export
 .bengtsson.2016 <- function(...){
     data <- read.csv(ft_get_si('10.5061/dryad.62054', 'bengtsson_etal_2016_traits.csv'), as.is=TRUE)
     data$species.name <- tolower(data$species.name)
@@ -146,6 +182,7 @@
     return(data)
 }
 
+#' @export
 .broeckhoven.2016 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.k186f", "Data%20for%20Dryad.xlsx"), skip=1)
     data <- data[,-c(23:102)]
@@ -155,6 +192,7 @@
     return(.df.melt(data, "species", units=units))
 }
 
+#' @export
 .brown.2015 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.m3d4d/1", "BrownGrahamTraitsData.xlsx"))
     data <- data[,-c(4,16)]
@@ -163,6 +201,7 @@
     return(.df.melt(data, "Latin.Name", units, metadata))
 }
 
+#' @export
 .buzzard.2015 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.s8f38", "FEBuzzardSpTraits.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
     data$species <- with(data, tolower(paste(genus, species, sep="_")))
@@ -173,6 +212,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .cariveau.2016 <- function(...){
     data <- read.xls(ft_get_si("10.1371/journal.pone.0151482", 3), sheet="TableS1_v2")
     metadata <- data[,c(1:3,6)]
@@ -182,6 +222,7 @@
     return(data)
 }
 
+#' @export
 .carmona.2014 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.53550", "Traits%20per%20species%20and%20quadrat.csv"), sep = ";", as.is=TRUE)
     names.data <- read.csv(ft_get_si("10.5061/dryad.53550", "Species%20key.csv"), sep = ";", as.is=TRUE)
@@ -196,6 +237,7 @@
     return(data)
 }
 
+#' @export
 .case.2016 <- function(...){
     data <- read.csv("http://datadryad.org/bitstream/handle/10255/dryad.103099/Traits.2Feb2015.csv?sequence=1", sep = ",", header = TRUE)
     #units <- length(names(data))
@@ -203,6 +245,7 @@
     return(data)
 }
 
+#' @export
 .castillo.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.gm465","Castillo and Delph isofemale data.csv"))
     names(data) <- tolower(names(data))
@@ -213,6 +256,7 @@
     return(.df.melt(data, "species", units,metadata))
 }
 
+#' @export
 .cavender_bares.2015a <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.855pg","Freezing.vulnerability.csv"), fileEncoding="UTF-8")
     data <- data[1:758,]
@@ -221,6 +265,7 @@
     units <- c('C', 'C', '%', '%')
     return(.df.melt(data,"Species",units=units, metadata))
 }
+#' @export
 .cavender_bares.2015b <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.855pg","Tree.height.csv"))
     data <- data[1:109,1:8]
@@ -229,6 +274,7 @@
     units <- c("m", 'cm')
     return(.df.melt(data,"Species",units=units, metadata))
 }
+#' @export
 .cavender_bares.2015c <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.855pg","PCA_All_Virentes.csv"))
     metadata <- data[,c(1,2,4:9,11:18)]
@@ -243,6 +289,7 @@
     return(.df.melt(data,"Species",units=units, metadata))
 }
 
+#' @export
 .comeault.2013 <- function(...){
     data <- read.table(ft_get_si("10.5061/dryad.ck2cm","Tcris_FHA_phenotypes.txt"),header=TRUE)
     data <- data[,-c(1,4)]
@@ -254,6 +301,7 @@
     return(.df.melt(data, "species",units,metadata))
 }
 
+#' @export
 .delaRiva.2015 <- function(...){
     data <- read.xls(ft_get_si('10.5061/dryad.dr275.2', 'Dryad_database.xls'), as.is=TRUE, sheet='Traits', fileEncoding="latin1")
     names(data) <- c("species", "country", "province", "zone", "plot", "latitude", "longitude", "height", "plant_cover", "leaf_size", "leaf_dry_matter_content", "species_leaf_area","LChl", "LNC", "delta_13C", "SDMC", "WD", "RDMC", "SRL")
@@ -264,6 +312,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .deraison.2014 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.5q33h","Plant traits.xls"), sheet = 2)
     name.data <- read.xls(ft_get_si("10.5061/dryad.5q33h","Plant traits.xls"), sheet = 1)
@@ -275,6 +324,7 @@
     return(data)
 }
 
+#' @export
 .dmitriew.2014 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.6g2f8","DataDmitriew&BlanckenhornJEB12488 2014.csv"),sep=';')
     data$species <- 'sepsis_punctum'
@@ -291,6 +341,7 @@
     return(data)
 }
 
+#' @export
 .edwards.2015a <- function(...){
     data <- read.csv(ft_get_si("E096-202", "Table1.csv", "esa_archives"))
     metadata <- data[,c("isolate","taxon","synonym", "c_citation")]
@@ -298,6 +349,7 @@
     units <- c(NA, "degC", "umol photons m-2 s-1", "hr", "um^3", "um^3", "umol/cell", "day^-1", "day^-1", "umol L-1", "umol L-1", "umol N cell^-1 day^-1", "umol N umol C-1 day -1", "umol N cell^-1", "umol N umol C-1", "umol N cell^-1", "umol N umol C-1", "day^-1", "day^-1", "umol L-1", "umol L-1", "umol N cell^-1 day^-1", "umol N umol C-1 day^-1", "umol N cell^-1", "umol N umol C-1", "umol N cell^-1", "umol N umol C-1", "day^-1", "day^-1", "umol L-1", "umol L-1", "umol P cell^-1 day^-1", "umol P umol C-1 day^-1", "umol P cell^-1", "umol P umol C-1", "umol P cell^-1", "umol P umol C-1", "citation")
     return(.df.melt(data, "species", units, metadata))
 }
+#' @export
 .edwards.2015b <- function(...){
     data <- read.csv(ft_get_si("E096-202", "Table3.csv", "esa_archives"))
     metadata <- data[,c("isolate","volume_citation")]
@@ -306,6 +358,7 @@
     return(.df.melt(data, "species", "um3", metadata))
 }
 
+#' @export
 .engemann.2016 <- function(...){
     data <- read.delim(unzip(ft_get_si("10.1002/ecy.1569", 1), "DataS1/GrowthForm_Final.txt"))
     metadata <- data[,c("FAMILY_STD", "CONSENSUS", "ID", "SOURCES")]
@@ -314,6 +367,7 @@
     return(.df.melt(data, "SPECIES_STD", rep(NA,2), metadata))
 }
 
+#' @export
 .enriquezUrzelai.2015 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.d3v78","WM_anurans_traits.csv"), as.is=T)
     data <- subset(data, select=-c("SP","COLLECTION_N","ENTRANCE_N", "COLLECTION", "T.F"))
@@ -325,6 +379,7 @@
     return(data)
 }
 
+#' @export
 .falster.2015 <- function(...){
     data <- read.csv(unzip(ft_get_si("E096-128","baad_data.zip", "esa_archives"), "baad_data/baad_data.csv"))
     # Note: units "m^2/m^2 are taken from the meta-data
@@ -335,6 +390,7 @@
     return(.df.melt(data, "speciesMatched", units, metadata))
 }
 
+#' @export
 .fargevieille.2017 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.b1q08","ColorTraitValuesECE3-2822.csv"),sep=';')
     data <- data[,-c(3,4)]
@@ -347,6 +403,7 @@
     return(.df.melt(data, "species", units,metadata))
 }
 
+#' @export
 .friedman.2014 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.489c7","NILs_rawdata.xls"))
     metadata <- data[,c(1:6,18,19)]
@@ -356,6 +413,7 @@
     return(.df.melt(data,"Species",units=units, metadata))
 }
 
+#' @export
 .fitzgerald.2017 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.67140", "traits.csv"), sep = ",", as.is = TRUE)
     species <- tolower(gsub(".", "_", data$species, fixed = TRUE))
@@ -367,6 +425,7 @@
     return(data)
 }
 
+#' @export
 .gossner.2015 <- function(...){
     data <- read.delim(ft_get_si("10.5061/dryad.53ds2", "ArthropodSpeciesTraits.txt"))
     metadata <- data[,c(1:3)]
@@ -375,6 +434,7 @@
     data <- .df.melt(data,"SpeciesID",units=units, metadata)
 }
 
+#' @export
 .grootemaat.2015 <- function(...){
     data <- read.xls(ft_get_si('10.5061/dryad.m41f1', 'Grootemaat%202015_FE_Dryad.xlsx'), sheet ='RAWdata', as.is = TRUE)
     # Ugh this is so kludgy...
@@ -390,6 +450,7 @@
     return(data)
 }
 
+#' @export
 .grutters.2017<-function(...){
     data<-read.xls(ft_get_si("10.5061/dryad.d4k51","FE-2016-00091-Data-plant-traits-and-consumption.xlsx"), na.strings=c(""," ","NA"))
     vars <- c("species", "native", "clade", "latitude_origin", "acquisition", "shared_pomacea", "consumption_rate_lymnaea", "shared_lymnaea",
@@ -411,6 +472,7 @@
     return(data)
 }
 
+#' @export
 .hebert.2016 <- function(...){
     data <- read.csv(unzip(ft_get_si("10.1890/15-1275.1",1), "zooplankton_traits.csv"), sep=";", as.is=TRUE, dec=",")
     data$binomial <- tolower(paste(data$Genus, data$Species, sep="_"))
@@ -428,6 +490,7 @@
     return(.df.melt(data, "binomial", units, metadata))
 }
 
+#' @export
 .hintze.2013 <- function(...){
     data <- read.csv("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S1433831913000218/1-s2.0-S1433831913000218-mmc1.txt/273233/html/S1433831913000218/6bd947d6c0ccb7edd11cd8bf73648447/mmc1.txt", sep=";", as.is=TRUE, dec=",")
     data$metadata <- seq_len(nrow(data))
@@ -436,6 +499,7 @@
     return(.df.melt(data, "name"))
 }
 
+#' @export
 .husak.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.2d960","HusakFergusonLovern_Anolis_training_diet_alldata.csv"))
     data <- data[,-1]
@@ -447,6 +511,7 @@
     return(.df.melt(data, "species", units,metadata))
 }
 
+#' @export
 .ingram.2016 <- function(...){
     color <- read.csv(ft_get_si("10.5061/dryad.9vr0c", "Dewlap_data_archive.csv"))
     metadata <- color[,c(3)]
@@ -459,6 +524,7 @@
     return(.df.melt(color, "species", units, metadata))
 }
 
+#' @export
 .jennings.2015 <- function(...){
     data <- read.csv(ft_get_si("E096-226", "SIA_N_C_Atlantic_marine_fishes_squids_20150105_v1.csv", "esa_archives"))
     metadata <- data[,c("record", "year", "DOY", "latitude", "longitude", "sea")]
@@ -467,6 +533,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .jennings.2016a <- function(...){
     data = read.csv(ft_get_si("10.5061/dryad.m23g6","spiders.csv"))
     data$species = rep("sosippus_floridanus", nrow(data))
@@ -477,6 +544,7 @@
     colnames(data) = vars
     data = .df.melt(data, "species", units, metadata)
 }
+#' @export
 .jennings.2016b <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.m23g6", "sundews.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
     species <- rep(c("drosera_capillaris"), nrow(data))
@@ -498,6 +566,7 @@
     return(data)
 }
 
+#' @export
 .jones.2009 <- function(...){
     data <- read.delim(ft_get_si("E090-184", "PanTHERIA_1-0_WR05_Aug2008.txt", "esa_archives"))
     for(i in 1:ncol(data))
@@ -513,6 +582,7 @@
     return(data)
 }
 
+#' @export
 .kamath.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.9vk07","KamathLososEvol_AnolissagreiMorphAvg.csv"))
     data <- data[,-c(1)]
@@ -526,6 +596,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .kamilar.2015 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.pb74r","Kamilar&Tecot-AppendixS1.xlsx"), skip=1, method="csv", header=FALSE, stringsAsFactors=FALSE)
     colnames(data) <- c("species","order","body_mass","brain_mass","anterior_lobe_volume","pituitary_volume","posterior_lobe_volume","fetal_growth_rate","postnatal_growth_rate","gestation_length","neonate_body_mass","litter_size","weaning_age","weaning_body_mass","max_longevity")
@@ -537,6 +608,7 @@
     return(data)
 }
 
+#' @export
 .kefi.2016 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.b4vg0","chilean_metadata.xls"))
     vars <- c("id", "species", "body_mass", "sessile_mobile", "cluster", "shore_height_conservative", "shore_height_C_ordinal",
@@ -551,6 +623,7 @@
     return(data)
 }
 
+#' @export
 .kelt.2015 <- function(...){
     data <- read.delim(ft_get_si("E096-155","Mammal_Home_Ranges.txt", "esa_archives"))
     names(data) <- c("taxon","order","family","trophic_group","body_mass","home_range","references","notes")
@@ -560,6 +633,7 @@
     return(.df.melt(data, "taxon", c(NA,"log10(g)","log10(ha)"), metadata))
 }
 
+#' @export
 .kissling.2014 <- function(...){
     data <- read.delim(ft_get_si("10.5061/dryad.6cd0v","MammalDIET_v1.0.txt"), as.is=T)
     data$species <- tolower(paste(data$Genus,data$Species,sep="_"))
@@ -573,6 +647,7 @@
     return(data)
 }
 
+#' @export
 .klomp.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.0g3d5","draco_comparative data.csv"))
     names(data) <- tolower(gsub("\\.", "_", names(data)))
@@ -585,6 +660,7 @@
     return(data)
 }
 
+#' @export
 .kolbe.2011 <- function(...){
     data <- read.table(ft_get_si("x10.5061/dryad.1d24c","21%20species%20means.txt"),header=TRUE,sep = '\t')
     names(data) <- tolower(gsub("\\.", "_", names(data)))
@@ -597,6 +673,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .kraft.2015a <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.69ph0", "BCI%20data.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
     data$genus_species <- tolower(data$genus_species)
@@ -606,6 +683,7 @@
     data <- .df.melt(data, "genus_species", units, metadata)
     return(data)
 }
+#' @export
 .kraft.2015b <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.69ph0", "Kraft_et_al%20data.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
     data <-  data[1:166,-19]
@@ -628,6 +706,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .lagisz.2013 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.kf490","Lagisz_DATATABLE.csv"), stringsAsFactors=FALSE)
     meta <- data[,c("Refseq","NCBI_taxID","class","size_sources")]
@@ -639,6 +718,7 @@
     return(data)
 }
 
+#' @export
 .lawson.2015<-function(...){
     data<-read.csv(ft_get_si("10.5061/dryad.72h45","riparian wood density data.csv"))
     metadata<-data[,c(1,3,5,7,9)]
@@ -647,6 +727,7 @@
     data<-.df.melt(data,"species",units=units,metadata=metadata)
 }
 
+#' @export
 .lessard.2016 <- function(...){
     data <- read.delim(ft_get_si("10.5061/dryad.t897q", "hummer_traits_Lessard.txt"), sep = " ", row.names = NULL)
     species <- tolower(data[,1])
@@ -655,6 +736,7 @@
     return(.df.melt(data, "species", units))
 }
 
+#' @export
 .limpens.2014a <- function(...){
     data <- read.xls(ft_get_si("doi:10.5061/dryad.926nd", "Motherfile.xls"), as.is = TRUE)
     species <- gsub("gla", "picea_glauca", data$Species)
@@ -688,6 +770,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .lislevand.2006 <- function(...){
     data("shorebird", package="caper", envir=environment())
     names(shorebird.data) <- c("species","body_mass_male","body_mass_female","egg_mass","clutch_size","mating_system")
@@ -696,6 +779,7 @@
     return(.df.melt(shorebird.data, "species", units=units))
 }
 
+#' @export
 .lu.2016a <- function(...){
     data <- read.csv(unzip(ft_get_si("10.1002/ecy.1600", 2), "GCReW_Allom_General_Data.csv"))
     data$binomial <- data$Spp_Orig
@@ -747,6 +831,7 @@
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
 }
 
+#' @export
 .lupold.2013 <- function(...){
     data <- read.delim(ft_get_si("10.5061/dryad.qj811","dataset.txt"), as.is=T)
     data$Species[data$Species=="Aepiceros_melampus"] <- "Aepyceros_melampus"
@@ -759,6 +844,7 @@
     return(data)  
 }
 
+#' @export
 .madin.2016 <- function(...){
     # Currently performs aggregation to species means as original data is in long format with no unique identifiers per row
     data <- read.csv(unzip(ft_get_si("10.6084/m9.figshare.2067414",1))[1], stringsAsFactors=TRUE)
@@ -800,6 +886,7 @@
     return(data)
 }
 
+#' @export
 .martin.2014 <- function(...){
     data <- read.table(ft_get_si("10.5061/dryad.j4n82","Sexually%20antagonistic%20association%20between%20paternal%20phenotype%20and%20offspring%20viability%20reinforces%20total%20selection%20on%20a%20sexually%20selected%20trait%20-%20id%20data.txt"),sep='\t',header=TRUE)
     metadata <- data[,c(1:3,7:9)]
@@ -809,6 +896,7 @@
     return(.df.melt(data,"Species",units=units, metadata))
 }
 
+#' @export
 .martin.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.4t3r6","Martin et al. Functional Ecology.txt"), sep = "\t")
     data$species <- rep("Coffea_arabica", nrow(data))
@@ -821,6 +909,7 @@
     return(data)
 }
 
+#' @export
 .marx.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.m88g7","DRYAD2_SJtraits.csv"))
     names(data)[3:7] <- c("Seed.Mass","Maximum.Height","","Leaf.Size","Leaf.Nitrogen")
@@ -829,6 +918,7 @@
     return(.df.melt(data, "Species", units=units, metadata=metadata))
 }
 
+#' @export
 .mccullough.2015<-function(...){
     file<-tempfile()
     download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file)
@@ -837,6 +927,7 @@
     data<-.df.melt(data,"Species",units=units)
 }
 
+#' @export
 .mesquita.2016 <- function(...){
     data <- read.delim(ft_get_si("10.5061/dryad.55610", "Data%20%28revised%29.txt"), header=TRUE)
     data <- data[,-c(2:4,7,9:10,12:13,17,25)]
@@ -850,6 +941,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .molinari.2014<-function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.50hd2","Dryad_Final.xlsx"))
     vars = c("species", "native", "life_form","abundance_2007","abundance_2008", "peak_flowering", "height", "seed_mass", "specific_leaf_area")
@@ -862,6 +954,7 @@
     return(data)
 }
 
+#' @export
 .myhrvold.2015 <- function(...){
     data <- read.csv(ft_get_si("E096-269","Data_Files/Amniote_Database_Aug_2015.csv", "esa_archives", cache=FALSE))
     for(i in seq_len(ncol(data)))
@@ -874,6 +967,7 @@
     return(.df.melt(data, "binomial", units, metadata))
 }
 
+#' @export
 .munoz.2014 <- function(...){
     data <- read.table(ft_get_si("10.5061/dryad.q39h2", "Munoz_2014_AmNat_Dryad.txt"), header=T)
     names(data) <- c('species', 'clade', 'island','latitude','longitude','elevation','snout_vent_length')
@@ -885,6 +979,7 @@
     return(.df.melt(data, "species", units,metadata))
 }
 
+#' @export
 .nandy.2013 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.r54m2","Nandy et al. 13-0268.R2_data.xlsx"))
     colnames(data) <- c('selection_regime', 'block', 'total_mass_dry')
@@ -896,6 +991,7 @@
     return(.df.melt(data, "species", units,metadata))
 }
 
+#' @export
 .olli.2015 <- function(...){
     data <- read.table(ft_get_si("10.5061/dryad.d0826", "fd.txt"), header = T, sep = '\t')
     for(i in c(1:9,11))
@@ -906,6 +1002,7 @@
     return(data)
 }
 
+#' @export
 .paquette.2015 <- function(...){
     data <- read.xls(unzip(ft_get_si("10.1002/ece3.1456", 1))[2], sheet=2, na.strings=c("","NA"),stringsAsFactors=FALSE)
     data <- data[7:nrow(data),2:8]
@@ -920,17 +1017,19 @@
     return(.df.melt(data, "species", units=units))
 }
 
+#' @export
 .pearse.2014 <- function(...){
     data <- read.csv(ft_get_si("10.6084/m9.figshare.979288", 4), sep = ",", na.strings = c("","NA"))
     species <- rep(c("Carcinus_maenas"), nrow(data))
     data <- data.frame(species, data)
     metadata <- data[,c(2:3,8:15)]
     data <- data[,-c(2:3,8:15)]
-    units <- c(rep(NA,7), "min", rep(NA,6))
+    units <- c(NA, "mm","#","#")
     data <- .df.melt(data, "species", units=units, metadata)
     return(data)
 }
 
+#' @export
 .perez.2014 <- function(...){
     data <- read.xls(ft_get_si('10.5061/dryad.d61jk/1', 'leaf%20traits%2c%20foliar%20freezing%20resistance%2c%20climatic%20niche.xlsx'), as.is=TRUE, sheet=1, fileEncoding="latin1")
     data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
@@ -940,6 +1039,7 @@
     return(.df.melt(data, "Species", units, metadata))
 }
 
+#' @export
 .petry.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.1cf8p","PollenMovement.csv"))
     data$species <- rep("valeriana_edulis", nrow(data))
@@ -949,6 +1049,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .philipson.2014 <- function(...){
     data <- read.delim(ft_get_si("10.5061/dryad.qn814", "EcologyEvolution_IntensivePlotsData_forDryad.txt"), sep = ",", as.is = TRUE)
     species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
@@ -960,6 +1061,7 @@
     return(data)
 }
 
+#' @export
 .philipson.2016<-function(...){
     data<-read.delim(ft_get_si("10.5061/dryad.qn814","EcologyEvolution_IntensivePlotsData_forDryad.txt"),sep = ",")
     metadata<-data[,c(2,7:12)]
@@ -968,6 +1070,7 @@
     data<-.df.melt(data,"Species",units=units,metadata=metadata)
 }
 
+#' @export
 .pfautsch.2016 <- function(...){
     first <- read.csv(unzip(ft_get_si("10.1890/16-0147.1", 1), "Eucalyptus_vessel_anatomy_800cm.csv"), as.is=TRUE)
     first$measurement_height <- "800cm"
@@ -984,6 +1087,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .pigot.2015 <- function(...){
     # Will says: Need to leave the URI in there; potentially fulltext problem?
     data <- read.xls(ft_get_si("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE)
@@ -998,6 +1102,7 @@
     return(data)
 }
 
+#' @export
 .price.2014 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.r3n45", "Price%20et%20al%20Data%20for%20Dryad.xlsx"))
     names(data)[7:18] <- c("growth_form","specific_leaf_area","leaf_mass_area","leaf_life_span","N_content_per_unit_mass","N_content_per_unit_area","P_content_per_unit_mass","P_content_per_unit_area","phototsynthetic_capacity_per_mass","phototsynthetic_capacity_per_area","leaf_size","height") 
@@ -1008,6 +1113,7 @@
     return(.df.melt(data, "genus.species", units, metadata))
 }
 
+#' @export
 .plourde.2015 <- function(...){
     data <- read.delim(ft_get_si("10.5061/dryad.sv181", "complete.individual.data.txt"))
     data$species <- with(data, tolower(paste(genus, species, sep="_")))
@@ -1018,6 +1124,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 
+#' @export
 .rahman.2013 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.2v68d","Data%20for%20Dryad.xls"))
     data$Species <- "P_reticulata"
@@ -1027,6 +1134,7 @@
     return(.df.melt(data,"Species",units=units, metadata))
 }
 
+#' @export
 .rojas.2013 <- function(...){
     traits.morph <- read.delim(ft_get_si("10.5061/dryad.f435k","morphological_variables.txt"), as.is=T)
     traits.diet <- read.delim(ft_get_si("10.5061/dryad.f435k","ecological_variables.txt"), as.is=T)
@@ -1040,6 +1148,7 @@
     return(data)
 }
 
+#' @export
 .rutschmann.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.qd5gj", "Rutschmann_AdaptationofPhenologyacrossPopulations_dataset.csv"),sep=';')
     names(data) <- tolower(gsub("X\\.", "", names(data)))
@@ -1054,6 +1163,7 @@
     return(data)
 }
 
+#' @export
 .sherratt.2013<-function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.hk2v3","Ontogenetic allometry data.csv"))
     metadata <- data[,c(3,5)]
@@ -1067,6 +1177,7 @@
     return(.df.melt(data,'species', units, metadata))
 }
 
+#' @export
 .shibata.2016a <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8")
     metadata <- data[,14,drop=FALSE]
@@ -1074,6 +1185,7 @@
     units <- c(rep('%',6), NA, NA, 'cm^2', 'g m^-2', 'MN/m^2', '%', 'g/cm^3')
     return(.df.melt(data,"Species",units=units, metadata))
 }
+#' @export
 .shibata.2016b <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8", sheet=2)
     metadata <- data[,15,drop=FALSE]
@@ -1082,6 +1194,7 @@
     return(.df.melt(data,"Species",units=units, metadata))
 }
 
+#' @export
 .simmons.2014 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.42pg7", "Simmons%20%26%20Buzatto%202013.xlsx"), as.is=TRUE)
     species <- rep(c("Onthophagus_taurus"), nrow(data))
@@ -1093,6 +1206,7 @@
     return(data)
 }
 
+#' @export
 .simpson.2015 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.2c506", "Plant trait data.csv"))
     metadata <- data[,c(2:3)]
@@ -1102,6 +1216,7 @@
     return(data)
 }
 
+#' @export
 .stephens.2017 <- function(...){  
     data <- read.csv(unzip(ft_get_si("10.1002/ecy.1799", 1))[4], as.is=TRUE)
     colnames(data)[1] <- "species"
@@ -1112,6 +1227,7 @@
     return(.df.melt(data, "species", units=units, metadata=meta))
 }
 
+#' @export
 .vanier.2013 <- function(...){
     data <- read.delim(ft_get_si("E094-246", "Mass_volume_data.txt", "esa_archives"), sep = "", as.is = TRUE, na.strings = c("","NA"))
     data$Individual_Species <- tolower(data$Individual_Species)
@@ -1122,6 +1238,7 @@
     return(.df.melt(data, "Individual_Species", units, metadata))
 }
 
+#' @export
 .visser.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.fm654","final.csv"))
     data <- data[,2:8]
@@ -1131,6 +1248,7 @@
     return(.df.melt(data,"sp",units=units, metadata))
 }
 
+#' @export
 .wilman.2014a  <- function(...){
     data <- read.delim(ft_get_si("E095-178", "BirdFuncDat.txt", "esa_archives"))
     data <- data[,-c(1,23,34)]
@@ -1152,6 +1270,7 @@
     return(data)
 }
 
+#' @export
 .winchell.2016 <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.h234n","winchell_evol_phenshifts.csv"))
     metadata <- data[,c(3:5,7:11)]
@@ -1165,17 +1284,7 @@
     return(.df.melt(data, "species", units,metadata))
 }
 
-
-.wright.2004 <- function(...){
-    raw <- read.xls("http://www.nature.com/nature/journal/v428/n6985/extref/nature02403-s2.xls", as.is=TRUE, skip=7)
-    metadata <- data.frame(raw[,c("Code","Dataset","BIOME")],need_permission=TRUE)
-    raw <- raw[,!names(raw) %in% c("Code","Dataset","BIOME","X","X.1","X.2","X.3","X.4","X.5","X.6")]
-    raw$Species <- gsub(" ", "_", tolower(raw$Species))
-    output <- .df.melt(raw, "Species", units=c(NA,NA,NA,NA,NA,"log10(mo)", "log10(g m-2)", "log10(%)", "log10(g m-2)", "log10(%)", "log10(%)", "log10(nmol g-1s-1)", "log10(micromol m-2s-1)", "?", "log10(nmol g-1s-1)", "log10(micromol m-2s-1)", "ppm"), metadata)
-    class(output) <- "natdb"
-    return(output)
-}
-
+#' @export
 .yin.2015 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.76ph0","Species-XylemAnatomy.xlsx"), fileEncoding="UTF-8")
     metadata <- data.frame(data[,2])
@@ -1184,6 +1293,7 @@
     return(.df.melt(data,"Species",units=units, metadata))
 }
 
+#' @export
 .zhang.2014 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.9tk7t","data_traits.xlsx"))
     data <- data[,-c(1:2,5:6,8:11,16)]
@@ -1202,6 +1312,7 @@
 # checked by their original authors. ########
 # I will not add units to papers I haven't ##
 # read... ###################################
+#' @export
 .tian.2016 <- function(...){
     data <- read.xls("http://www.nature.com/article-assets/npg/srep/2016/160122/srep19703/extref/srep19703-s2.xls", as.is=TRUE, skip=8, header=FALSE)
     names(data) <- c("site","species","family","important_value_index","leaf_area","leaf_dry_weight","specific_leaf_area","blank","stomatal_length","stomatal_density","spi","blank2","leaf_thickness","palisade-leaf_mesophyll_thickness_ratio","spingy-leaf_mesophyll_thickness_ratio","blank3","evergreen_deciduous","blank4","leaf_type")
@@ -1214,6 +1325,7 @@
     return(.df.melt(data, "species", metadata=metadata))
 }
 
+#' @export
 .maire.2016 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.j42m7.2","globamax_data_160609 (for GEB ms).xlsx"), sheet = "Data")
     data <- data[,order(names(data))]
@@ -1226,6 +1338,7 @@
     return(.df.melt(data, "Genus.spp",units,metadata))
 }
 
+#' @export
 .neuheimer.2016 <- function(...){
     data <- read.csv(unzip(ft_get_si("10.1890/15-1261.1", 1), "15-1261_Neuheimer_SizeDatabase.csv"), as.is=TRUE)
     value <- with(data, c(AdultSize1,AdultSize2,ProgenySize1,ProgenySize2))

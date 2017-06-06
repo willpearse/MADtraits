@@ -3,7 +3,6 @@ cache: packages
 latex: false
 
 r_github_packages:
-  - hadley/devtools
   - ropensci/testdat
   - willpearse/fulltext
   - jimhester/covr
