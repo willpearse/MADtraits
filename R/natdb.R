@@ -44,6 +44,8 @@ natdb <- function(cache, datasets, delay=5){
     }
     
     #Do work and return
+    cat("Downloading/loading data\n")
+    cat("'.' --> 1%; '|' --> 10% complete\n")
     output <- vector("list", length(datasets))
     for(i in seq_along(datasets)){
         prog.bar(i, length(datasets))
@@ -52,20 +54,20 @@ natdb <- function(cache, datasets, delay=5){
             if(file.exists(path)){
                 output[[i]] <- readRDS(path)
             } else {
-                output[[i]] <- eval(as.name(datasets[i]))()
+                capture.output(output[[i]] <- eval(as.name(datasets[i]))())
                 saveRDS(output[[i]], path)
                 Sys.sleep(delay)
             }
         } else {
-            output[[i]] <- eval(as.name(datasets[i]))()
+            capture.output(output[[i]] <- eval(as.name(datasets[i]))())
             Sys.sleep(delay)
         }
+        
         if(!is.null(output[[i]]$numeric))
             output[[i]]$numeric$dataset <- datasets[i]
         if(!is.null(output[[i]]$character))
             output[[i]]$character$dataset <- datasets[i]
     }
-    
     numeric     <- do.call(rbind,
                            lapply(Filter(function(y) !is.null(y[[1]]), output), function(x) x[[1]])
                            )
@@ -74,6 +76,7 @@ natdb <- function(cache, datasets, delay=5){
                            )
     output <- list(numeric=numeric, categorical=categorical)
     class(output) <- "natdb"
+    cat("\n")
     return(output)
 }
 

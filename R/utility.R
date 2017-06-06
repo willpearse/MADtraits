@@ -50,7 +50,7 @@
     }
 
     if(!missing(metadata)){
-        metadata <- apply(sapply(1:2, function(y) paste(names(x)[y],x[,y],sep=":")), 1, paste, collapse=";")
+        metadata <- apply(sapply(seq_along(names(metadata)), function(y) paste(names(metadata)[y],metadata[,y],sep=":")), 1, paste, collapse=";")
     } else metadata <- rep(NA, nrow(x))
 
     # Numeric data
