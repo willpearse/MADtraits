@@ -4,3 +4,4 @@ README.md
 LICENCE
 ^\.travis\.yml$
 cache/*
+citations.tsv

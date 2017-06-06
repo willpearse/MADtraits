@@ -133,4 +133,4 @@ prog.bar <- function(x, y){
             if(length(z) > 0)
                 tryCatch(if(z[1] < 1) if((length(z) %% 10)==0) cat("|") else cat("."), error=function(z) cat("."))
         }
-}    
+}

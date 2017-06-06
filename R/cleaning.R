@@ -154,6 +154,7 @@ clean.natdb <- function(x){
     return(x)
 }
 
+#' @importFrom taxize gnr_resolve
 clean.natdb.names <- function(x, thresh, ...){
     # Argument handling
     if(!inherits(x, "natdb"))
@@ -173,7 +174,6 @@ clean.natdb.names <- function(x, thresh, ...){
     return(x)
 }
 
-#' @importFrom taxize gnr_resolve
 clean.natdb.units <- function(x, choices, ...){
     # Argument handling
     if(!inherits(x, "natdb"))

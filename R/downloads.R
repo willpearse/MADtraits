@@ -104,7 +104,7 @@
     return(.df.melt(data,"Species",units=units,metadata=metadata))
 }
 
-.bellobedoy.2015a <- function(...){
+.bello_bedoy.2015a <- function(...){
     data <- read.csv(
         ft_get_si("10.6084/m9.figshare.1190766.v2","Mating success H americana.csv")
     )
@@ -118,7 +118,7 @@
     data$numeric$variable <- gsub("lwing", "wing_length", data$numeric$variable, fixed=TRUE)
     return(data)
 }
-.bellobedoy.2015b <- function(...){
+.bello_bedoy.2015b <- function(...){
     data <- read.xls(
         ft_get_si("10.6084/m9.figshare.1190766.v2","mating occurrencePzoe_2010.xls")
     )
@@ -213,7 +213,7 @@
     return(.df.melt(data, "species", units,metadata))
 }
 
-.cavender.2015a <- function(...){
+.cavender_bares.2015a <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.855pg","Freezing.vulnerability.csv"), fileEncoding="UTF-8")
     data <- data[1:758,]
     metadata <- data[,c(2,3)]
@@ -221,7 +221,7 @@
     units <- c('C', 'C', '%', '%')
     return(.df.melt(data,"Species",units=units, metadata))
 }
-.cavender.2015b <- function(...){
+.cavender_bares.2015b <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.855pg","Tree.height.csv"))
     data <- data[1:109,1:8]
     metadata <- data[,2:6]
@@ -229,7 +229,7 @@
     units <- c("m", 'cm')
     return(.df.melt(data,"Species",units=units, metadata))
 }
-.cavender.2015c <- function(...){
+.cavender_bares.2015c <- function(...){
     data <- read.csv(ft_get_si("10.5061/dryad.855pg","PCA_All_Virentes.csv"))
     metadata <- data[,c(1,2,4:9,11:18)]
     data <- data[,-c(1,2,4:9,11:18)]
@@ -655,7 +655,7 @@
     return(.df.melt(data, "species", units))
 }
 
-.limpens.2013a <- function(...){
+.limpens.2014a <- function(...){
     data <- read.xls(ft_get_si("doi:10.5061/dryad.926nd", "Motherfile.xls"), as.is = TRUE)
     species <- gsub("gla", "picea_glauca", data$Species)
     species <- gsub("mar", "picea_mariana", species)
@@ -671,7 +671,7 @@
     data <- .df.melt(data, "species", units, metadata)
     return(data)
 }
-.limpens.2013b <- function(...){
+.limpens.2014b <- function(...){
     data <- read.xls(ft_get_si("doi:10.5061/dryad.926nd", "traitsandsurvival.xlsx"), as.is = TRUE, na.strings = c("","NA"))
     species <- gsub("gla", "picea_glauca", data$Species)
     species <- gsub("mar", "picea_mariana", species)
@@ -1067,14 +1067,14 @@
     return(.df.melt(data,'species', units, metadata))
 }
 
-.shibata.2015a <- function(...){
+.shibata.2016a <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8")
     metadata <- data[,14,drop=FALSE]
     data <- data[,-14]
     units <- c(rep('%',6), NA, NA, 'cm^2', 'g m^-2', 'MN/m^2', '%', 'g/cm^3')
     return(.df.melt(data,"Species",units=units, metadata))
 }
-.shibata.2015b <- function(...){
+.shibata.2016b <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8", sheet=2)
     metadata <- data[,15,drop=FALSE]
     data <- data[,-15]
