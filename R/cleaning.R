@@ -232,7 +232,7 @@ lookup.natdb.names <- function(x, thresh=0.8, use.cache=TRUE){
 
     # Download / use cache
     if(use.cache==TRUE){
-        data("natdb_taxonomy", envir=environment())
+        lookup <- natdb_taxonomy
     } else  {
         warning("It can take an *exceedingly* long time to download taxonomic data for the entire dataset, and a server error in the middle of this may mess everything up. Please read the help file for advice on this!")
         spp <- unique(c(unique(x$numeric$species), unique(x$categorical$species)))
@@ -242,12 +242,12 @@ lookup.natdb.names <- function(x, thresh=0.8, use.cache=TRUE){
         
     if(!missing(thresh))
         dwn.spp <- dwn.spp[dwn.spp$score >= thresh,]
-    natdb_taxonomy <- with(dwn.spp, setNames(matched_name, user_supplied_name))
+    lookup <- with(dwn.spp, setNames(matched_name, user_supplied_name))
     }
 
     # Lookup and return
-    x$numeric$species <- natdb_taxonomy[x$numeric$species]
-    x$categorical$species <- natdb_taxonomy[x$categorical$species]
+    x$numeric$species <- lookup[x$numeric$species]
+    x$categorical$species <- lookup[x$categorical$species]
     return(x)
 }
 
