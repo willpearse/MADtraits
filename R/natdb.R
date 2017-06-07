@@ -105,6 +105,7 @@ print.natdb <- function(x, ...){
     try(output[1,] <- c(length(unique(x$numeric$species)), length(unique(x$numeric$variable)), nrow(x$numeric)), silent=TRUE)
     try(output[2,] <- c(length(unique(x$categorical$species)), length(unique(x$categorical$variable)), nrow(x$categorical)), silent=TRUE)
     output[3,] <- colSums(output)
+    output[3,1] <- length(unique(c(x$numeric$species,x$categorical$species)))
     cat("A Trait DataBase containing:\n")
     print(output)
 
