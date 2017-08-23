@@ -65,7 +65,7 @@ natdb <- function(cache, datasets, delay=5){
     for(i in seq_along(datasets)){
         prog.bar(i, length(datasets))
         if(!missing(cache)){
-            path <- file.path(cache,paste0(sub("\\.",datasets[i]), ".RDS"))
+            path <- file.path(cache,paste0(sub("\\.","",datasets[i]), ".RDS"))
             if(file.exists(path)){
                 output[[i]] <- readRDS(path)
             } else {
