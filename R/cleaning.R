@@ -157,7 +157,13 @@ clean.natdb <- function(x){
         x$numeric$variable <- gsub("^head_lengthength$", "head_length", x$numeric$variable, perl=TRUE, useBytes=TRUE)
         x$numeric$variable <- gsub("^leaf_carbonc$", "leaf_carbon", x$numeric$variable, perl=TRUE, useBytes=TRUE)
         x$numeric$variable <- gsub("^leaf_carboncn$", "leaf_carbon_nitrogen", x$numeric$variable, perl=TRUE, useBytes=TRUE)
-        x$numeric$variable <- gsub("^leaf_carbonc$", "", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^sla$", "sla", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^leaf[0-9]_", "leaf_", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^seedmass$", "^seed_mass$", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^leaf_ldmc$", "leaf_dry_matter_content", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^max_tree_height$", "height", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^average_maximum_height$", "height", x$numeric$variable, perl=TRUE, useBytes=TRUE)
+        x$numeric$variable <- gsub("^total_leaf_area$", "leaf_area", x$numeric$variable, perl=TRUE, useBytes=TRUE)
 
         x$numeric$species <- tolower(gsub(" ", "_", x$numeric$species))
     }
