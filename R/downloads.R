@@ -1352,7 +1352,7 @@
 }
 
 #'@export
-#'.peel.2016 <- function(...) { 
+.peel.2016 <- function(...) { 
 dp_data <- read.csv(suppdata(x="10.5061/dryad.2fp34",si = "Eidolon data 2007_2014_Openaccess.csv"),as.is=TRUE)
 ###Create meta data object------------------------------------------------------------------------------------------------------
 my_metadata <- as.data.frame(dp_data[c(1:12, 23:24, 26, 31, 33)])
