@@ -2,12 +2,11 @@ Package: natdb
 Type: Package
 Title: Not A Trait DataBase
 Version: 1.0-0
-Date: 2017-06-04
 Author: William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen, Mallory
     A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian, Ryan McCleary,
     Anne E. McManis, Alexandre Rego, & Kathryn M Welglarz
 Maintainer: Will Pearse <will.pearse@usu.edu>
-Description: NATDB automates the download and assembly of species'
+Description: Automates the download and assembly of species'
     trait data from published sources. It emphatically is *not* a
     trait database (the clue is in the name): it assembles data that
     are already available for the user, but this is a software package
@@ -30,4 +29,5 @@ Imports:
     caper (>= 0.5.2),
     tidyr (>= 0.6.1),
     taxize (>= 0.8.4),
-    convertr (>= 0.1)
+    convertr (>= 0.1),
+    readxl (>= 1.0.0)

@@ -6,7 +6,7 @@
 #' @seealso citations natdb
 #' @return Vector of dataset IDs
 #' @author Will Pearse; Matthew Helmus
-#' #@examples
+#' @examples
 #' \dontrun{
 #' datasets <- natdb_datasets()
 #' data <- natdb(datasets = datasets[1:2])

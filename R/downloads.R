@@ -24,7 +24,7 @@
 #' @export
 #' @importFrom gdata ls.funs
 #' @importFrom suppdata suppdata
-#' @importFrom readxl read_excel
+#' @importFrom readxl read_excel read_xls read_xlsx
 #' @importFrom utils read.csv read.csv2 read.delim read.table unzip
 #' @importFrom testdat sanitize_text
 #' @importFrom tidyr unite
