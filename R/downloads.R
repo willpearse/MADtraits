@@ -66,7 +66,7 @@
 
 #' @export
 .arnold.2016 <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.t3d52", "Arnold_etal_2016_functecol_dataset.xlsx"), as.is = TRUE, skip = 3))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.t3d52", "Arnold_etal_2016_functecol_dataset.xlsx"), skip = 3))
     species <- rep(c("Tribolium_castaneum"), nrow(data))
     data <- data.frame(species, data)
     metadata <- data[,c(2:7,24:25)]
@@ -95,7 +95,7 @@
 
 #' @export
 .aubret.2012a <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=1))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), sheet=1))
     data$species <- "notechis_scutatus"
     metadata <- data.frame(data$POPULATION, data$DATE)
     data$POPULATION <- NULL
@@ -105,7 +105,7 @@
     return(.df.melt(data, "species", units, metadata))
 }
 .aubret.2012b <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=2))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), sheet=2))
     data$X <- data$X.1 <- data$X.2 <- data$X.3 <- data$BCI <- NULL
     data$species <- "notechis_scutatus"
     metadata <- data[,c("POPULATION", "MOTHER", "BIRTH.DATE")]
@@ -116,7 +116,7 @@
 }
 #' @export
 .aubret.2012c <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), as.is=TRUE, sheet=3))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), sheet=3))
     names(data) <- c("genus_species", "body_mass", "max_circumference")
     units <- c("g", "cm")
     return(.df.melt(data, "genus_species", units))
@@ -214,7 +214,7 @@
 
 #' @export
 .cariveau.2016 <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.1371/journal.pone.0151482", 3), sheet="TableS1_v2"))
+    data <- as.data.frame(read_xlsx(suppdata("10.1371/journal.pone.0151482", 3), sheet="TableS1_v2"))
     metadata <- data[,c(1:3,6)]
     data$species <- with(data, tolower(paste(genus, species, sep="_")))
     data <- data[-c(1:4,6)]
@@ -303,7 +303,7 @@
 
 #' @export
 .delaRiva.2015 <- function(...){
-    data <- as.data.frame(read_excel(suppdata('10.5061/dryad.dr275.2', 'Dryad_database.xls'), as.is=TRUE, sheet='Traits', fileEncoding="latin1"))
+    data <- as.data.frame(read_excel(suppdata('10.5061/dryad.dr275.2', 'Dryad_database.xls'), sheet='Traits'))
     names(data) <- c("species", "country", "province", "zone", "plot", "latitude", "longitude", "height", "plant_cover", "leaf_size", "leaf_dry_matter_content", "species_leaf_area","LChl", "LNC", "delta_13C", "SDMC", "WD", "RDMC", "SRL")
     data$species <- tolower(gsub(" ", "_", data$species, ignore.case = TRUE))
     metadata <- data[,c(2:7)]
@@ -436,7 +436,7 @@
 
 #' @export
 .grootemaat.2015 <- function(...){
-    data <- as.data.frame(read_excel(suppdata('10.5061/dryad.m41f1', 'Grootemaat%202015_FE_Dryad.xlsx'), sheet ='RAWdata', as.is = TRUE))
+    data <- as.data.frame(read_excel(suppdata('10.5061/dryad.m41f1', 'Grootemaat%202015_FE_Dryad.xlsx'), sheet ='RAWdata'))
     # Ugh this is so kludgy...
     names <- names(data)
     data <- as.data.frame(as.matrix(data)[-1,], col.names=names, stringsAsFactors=FALSE)
@@ -452,7 +452,7 @@
 
 #' @export
 .grutters.2017<-function(...){
-    data<-as.data.frame(read_excel(suppdata("10.5061/dryad.d4k51","FE-2016-00091-Data-plant-traits-and-consumption.xlsx"), na.strings=c(""," ","NA")))
+    data<-as.data.frame(read_excel(suppdata("10.5061/dryad.d4k51","FE-2016-00091-Data-plant-traits-and-consumption.xlsx"), na=c(""," ","NA")))
     vars <- c("species", "native", "clade", "latitude_origin", "acquisition", "shared_pomacea", "consumption_rate_lymnaea", "shared_lymnaea",
               "consumption_rate_pomacea","c","n","p","dmc","total_phenolics","cn","cp","np","n_total_pheno")
     data <- data[-c(1),] #remove row with unit names
@@ -598,8 +598,15 @@
 
 #' @export
 .kamilar.2015 <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.pb74r","Kamilar&Tecot-AppendixS1.xlsx"), skip=1, method="csv", header=FALSE, stringsAsFactors=FALSE))
-    colnames(data) <- c("species","order","body_mass","brain_mass","anterior_lobe_volume","pituitary_volume","posterior_lobe_volume","fetal_growth_rate","postnatal_growth_rate","gestation_length","neonate_body_mass","litter_size","weaning_age","weaning_body_mass","max_longevity")
+    data <- as.data.frame(read_excel(
+        suppdata("10.5061/dryad.pb74r","Kamilar&Tecot-AppendixS1.xlsx"),
+        skip=1, col_names=c("species","order","body_mass","brain_mass",
+                            "anterior_lobe_volume","pituitary_volume",
+                            "posterior_lobe_volume","fetal_growth_rate",
+                            "postnatal_growth_rate","gestation_length",
+                            "neonate_body_mass","litter_size","weaning_age",
+                            "weaning_body_mass","max_longevity")
+    ))
     meta <- data[,"order",drop=FALSE]
     data <- subset(data, select=-c(order))
     units <- c("g","g","mm^3","mm^3","mm^3","g/day","g/day","day","g","individuals","day","g","years")
@@ -610,11 +617,14 @@
 
 #' @export
 .kefi.2016 <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.b4vg0","chilean_metadata.xls")))
-    vars <- c("id", "species", "body_mass", "sessile_mobile", "cluster", "shore_height_conservative", "shore_height_C_ordinal",
-              "shore_height_C_breadth", "shore_height_2_restrictive", "shore_height_R_ordinal", "shore_height_r_breadth",
-              "phyllum", "subphyllum", "trophic")
-    colnames(data) <- vars
+    data <- as.data.frame(read_excel(
+        suppdata("10.5061/dryad.b4vg0","chilean_metadata.xls"),
+        col_names=c("id", "species", "body_mass", "sessile_mobile", "cluster",
+                    "shore_height_conservative", "shore_height_C_ordinal",
+                    "shore_height_C_breadth", "shore_height_2_restrictive",
+                    "shore_height_R_ordinal", "shore_height_r_breadth",
+                    "phyllum", "subphyllum", "trophic")
+    ))
     data$species <- tolower(gsub(" ","_", data$species))
     metadata <- data[,c(1, 6, 9, 12:13)]
     data <- data[,-c(1, 6, 9, 12:13)]
@@ -738,7 +748,7 @@
 
 #' @export
 .limpens.2014a <- function(...){
-    data <- as.data.frame(read_excel(suppdata("doi:10.5061/dryad.926nd", "Motherfile.xls"), as.is = TRUE))
+    data <- as.data.frame(read_excel(suppdata("doi:10.5061/dryad.926nd", "Motherfile.xls")))
     species <- gsub("gla", "picea_glauca", data$Species)
     species <- gsub("mar", "picea_mariana", species)
     species <- gsub("rub", "picea_rubens", species)
@@ -754,7 +764,7 @@
     return(data)
 }
 .limpens.2014b <- function(...){
-    data <- as.data.frame(read_excel(suppdata("doi:10.5061/dryad.926nd", "traitsandsurvival.xlsx"), as.is = TRUE, na.strings = c("","NA")))
+    data <- as.data.frame(read_excel(suppdata("doi:10.5061/dryad.926nd", "traitsandsurvival.xlsx"), na = c("","NA")))
     species <- gsub("gla", "picea_glauca", data$Species)
     species <- gsub("mar", "picea_mariana", species)
     species <- gsub("rub", "picea_rubens", species)
@@ -922,7 +932,7 @@
 .mccullough.2015<-function(...){
     file<-tempfile()
     download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file)
-    data<-as.data.frame(read_excel(xls=file))
+    data<-as.data.frame(read_xlsx(file))
     units<-c("mm","mm")
     data<-.df.melt(data,"Species",units=units)
 }
@@ -1004,7 +1014,10 @@
 
 #' @export
 .paquette.2015 <- function(...){
-    data <- as.data.frame(read_excel(unzip(suppdata("10.1002/ece3.1456", 1))[2], sheet=2, na.strings=c("","NA"),stringsAsFactors=FALSE))
+    # They zipped the zip when they transferred the SI to the new system,
+    # - hence unzip(unzip(...))
+    data <- as.data.frame(read_xls(unzip(unzip(suppdata("10.1002/ece3.1456", 1)))[2], sheet=2, na=c("","NA")))
+    #WHAT IS WRONG HERE
     data <- data[7:nrow(data),2:8]
     colnames(data) <- c("species","occurrence","average_maximum_height","wood_density","seed_mass","shade_tolerance","nitrogen_per_leaf_mass_unit")
     data <- data[, names(data)!="occurrence"]
@@ -1031,7 +1044,7 @@
 
 #' @export
 .perez.2014 <- function(...){
-    data <- as.data.frame(read_excel(suppdata('10.5061/dryad.d61jk/1', 'leaf%20traits%2c%20foliar%20freezing%20resistance%2c%20climatic%20niche.xlsx'), as.is=TRUE, sheet=1, fileEncoding="latin1"))
+    data <- as.data.frame(read_excel(suppdata('10.5061/dryad.d61jk/1', 'leaf%20traits%2c%20foliar%20freezing%20resistance%2c%20climatic%20niche.xlsx'), sheet=1))
     data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
     metadata <- data[,c(2:4)]
     data <- data[,-c(2:4)]
@@ -1090,7 +1103,7 @@
 #' @export
 .pigot.2015 <- function(...){
     # Will says: Need to leave the URI in there; potentially fulltext problem?
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls"), as.is=TRUE))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.fd986","Database%20S1%20Pigot%2c%20Trisos%20and%20Tobias.xls")))
     data <- data[,-c(26:28)]
     for(i in 12:15)
         data[,i] <- as.logical(data[,i])
@@ -1179,7 +1192,7 @@
 
 #' @export
 .shibata.2016a <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8"))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls")))
     metadata <- data[,14,drop=FALSE]
     data <- data[,-14]
     units <- c(rep('%',6), NA, NA, 'cm^2', 'g m^-2', 'MN/m^2', '%', 'g/cm^3')
@@ -1187,7 +1200,7 @@
 }
 #' @export
 .shibata.2016b <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), fileEncoding="UTF-8", sheet=2))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls"), sheet=2))
     metadata <- data[,15,drop=FALSE]
     data <- data[,-15]
     units <- c(NA, NA, rep('cm^2',3),'g/cm^3', 'g m^-2', 'MN/m^2', rep('%',5), NA)
@@ -1196,7 +1209,7 @@
 
 #' @export
 .simmons.2014 <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.42pg7", "Simmons%20%26%20Buzatto%202013.xlsx"), as.is=TRUE))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.42pg7", "Simmons%20%26%20Buzatto%202013.xlsx")))
     species <- rep(c("Onthophagus_taurus"), nrow(data))
     data <- data.frame(species, data)
     metadata <- data[,11,drop=FALSE]
@@ -1286,7 +1299,7 @@
 
 #' @export
 .yin.2015 <- function(...){
-    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.76ph0","Species-XylemAnatomy.xlsx"), fileEncoding="UTF-8"))
+    data <- as.data.frame(read_excel(suppdata("10.5061/dryad.76ph0","Species-XylemAnatomy.xlsx")))
     metadata <- data.frame(data[,2])
     data <- data[,-c(2,13)]
     units <- c(NA, NA, rep('um',6), NA, NA, NA)
@@ -1314,8 +1327,17 @@
 # read... ###################################
 #' @export
 .tian.2016 <- function(...){
-    data <- as.data.frame(read_excel("http://www.nature.com/article-assets/npg/srep/2016/160122/srep19703/extref/srep19703-s2.xls", as.is=TRUE, skip=8, header=FALSE))
-    names(data) <- c("site","species","family","important_value_index","leaf_area","leaf_dry_weight","specific_leaf_area","blank","stomatal_length","stomatal_density","spi","blank2","leaf_thickness","palisade-leaf_mesophyll_thickness_ratio","spingy-leaf_mesophyll_thickness_ratio","blank3","evergreen_deciduous","blank4","leaf_type")
+    file<-tempfile()
+    download.file("http://www.nature.com/article-assets/npg/srep/2016/160122/srep19703/extref/srep19703-s2.xls",file)
+    data <- as.data.frame(read_xls(file, skip=8,
+                                   col_names=c("site","species","family","important_value_index",
+                                               "leaf_area","leaf_dry_weight","specific_leaf_area",
+                                               "blank","stomatal_length","stomatal_density","spi",
+                                               "blank2","leaf_thickness",
+                                               "palisade-leaf_mesophyll_thickness_ratio",
+                                               "spingy-leaf_mesophyll_thickness_ratio","blank3",
+                                               "evergreen_deciduous","blank4","leaf_type")
+    ))
     data$species <- gsub("\xa0", " ", data$species)
     data$species <- sanitize_text(data$species)
     data$species <- sapply(strsplit(data$species, " "), function(x) paste(x[1:2], collapse="_"))
