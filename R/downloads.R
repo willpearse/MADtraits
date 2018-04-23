@@ -108,7 +108,7 @@
     data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), sheet=2))
     data$X <- data$X.1 <- data$X.2 <- data$X.3 <- data$BCI <- NULL
     data$species <- "notechis_scutatus"
-    metadata <- data[,c("POPULATION", "MOTHER", "BIRTH.DATE")]
+    metadata <- data[,c("POPULATION", "MOTHER", "BIRTH DATE")]
     data <- data[,!names(data) %in% names(metadata)]
     names(data) <- c("snout_vent_length", "body_mass_pre", "body_mass_pre", "body_mass_post", "body_mass_post", "bm_body_mass_post", "rcm", "total_litter_body_mass", "total_litter_body_mass", "total_litter_snout_vent_length", "total_litter_snout_vent_length", "total_litter_jaw_length", "total_litter_jaw_length","species")
     units <- c("log10(cm)", "g", "log10(g)", "log10(mean(cm))", "g", "log10(g)", "?", "?", "mean(g)", "log10(mean(g))", "mean(cm)", "log10(mean(cm))", "mean(cm)", "log10(mean(cm))", NA)
@@ -163,13 +163,14 @@
     return(.df.melt(data, "species", c(NA, NA, "mm", "mm", "?", "?", "log10(?)"), metadata))
 }
 
-#' @export
-.benesh.2017 <- function(...){
-    data <- read.csv(unzip(suppdata("10.1002/ecy.1680", 1), "CLC_database_lifehistory.csv"))
-    metadata <- data[,c("Parasite.genus", "Parasite.group", "Development.remarks", "Size.reported.as", "Size.remarks", "Author", "Year", "Journal", "Volume", "Pages")]
-    data <- data[,!names(data) %in% names(metadata)]
-    return(.df.melt(data, "Parasite.species", c(NA, "#", NA, NA, "days", "degC", "mm", "mm", "mm", "mm", "n", NA, NA, NA), metadata))
-}
+# Out of commission until https://github.com/willpearse/suppdata/issues/22 is closed
+### #' @export
+#.benesh.2017 <- function(...){
+#    data <- read.csv(unzip(suppdata("10.1002/ecy.1680", 1), "CLC_database_lifehistory.csv"))
+#    metadata <- data[,c("Parasite.genus", "Parasite.group", "Development.remarks", "Size.reported.as", "Size.remarks", "Author", "Year", "Journal", "Volume", "Pages")]
+#    data <- data[,!names(data) %in% names(metadata)]
+#    return(.df.melt(data, "Parasite.species", c(NA, "#", NA, NA, "days", "degC", "mm", "mm", "mm", "mm", "n", NA, NA, NA), metadata))
+#}
 
 #' @export
 .bengtsson.2016 <- function(...){
@@ -198,7 +199,7 @@
     data <- data[,-c(4,16)]
     units <- c(rep(NA,12),"g")
     metadata <- data[,1,drop=FALSE]
-    return(.df.melt(data, "Latin.Name", units, metadata))
+    return(.df.melt(data, "Latin Name", units, metadata))
 }
 
 #' @export
@@ -358,8 +359,10 @@
     return(.df.melt(data, "species", "um3", metadata))
 }
 
-#' @export
-.engemann.2016 <- function(...){
+# Out of commission until https://github.com/willpearse/suppdata/issues/22 is closed
+# #' @export
+if(FALSE)
+    .engemann.2016 <- function(...){
     data <- read.delim(unzip(suppdata("10.1002/ecy.1569", 1), "DataS1/GrowthForm_Final.txt"))
     metadata <- data[,c("FAMILY_STD", "CONSENSUS", "ID", "SOURCES")]
     data <- data[,!names(data) %in% names(metadata)]
@@ -472,8 +475,9 @@
     return(data)
 }
 
-#' @export
-.hebert.2016 <- function(...){
+# Out of commission until https://github.com/willpearse/suppdata/issues/22 is closed
+# #' @export
+if(FALSE) .hebert.2016 <- function(...){
     data <- read.csv(unzip(suppdata("10.1890/15-1275.1",1), "zooplankton_traits.csv"), sep=";", as.is=TRUE, dec=",")
     data$binomial <- tolower(paste(data$Genus, data$Species, sep="_"))
     metadata <- data[,c("Genus","Species","Replicate.number","Group","Ref.tg","Ref.bl","Ref.dm","Ref.C","Ref.N","Ref.P","Ref.NP","Ref.prot","Ref.lip","Ref.resp","Ref.N.ex","Ref.P.ex","Ref.NPex")]
@@ -672,7 +676,7 @@
 
 #' @export
 .kolbe.2011 <- function(...){
-    data <- read.table(suppdata("x10.5061/dryad.1d24c","21%20species%20means.txt"),header=TRUE,sep = '\t')
+    data <- read.table(suppdata("10.5061/dryad.1d24c","21%20species%20means.txt"),header=TRUE,sep = '\t')
     names(data) <- tolower(gsub("\\.", "_", names(data)))
     data$species <- tolower(gsub('\\. ', 'nolis_', data$species))
     names(data)[14] <- "femur_length"
@@ -789,8 +793,10 @@
     return(.df.melt(shorebird.data, "species", units=units))
 }
 
-#' @export
-.lu.2016a <- function(...){
+# Out of commission until https://github.com/willpearse/suppdata/issues/22 is closed
+# #' @export
+if(FALSE){
+    .lu.2016a <- function(...){
     data <- read.csv(unzip(suppdata("10.1002/ecy.1600", 2), "GCReW_Allom_General_Data.csv"))
     data$binomial <- data$Spp_Orig
     data$binomial <- gsub("PHAU", "phragmites_australis", data$binomial)
@@ -840,6 +846,7 @@
     data$Cut_Stem <- as.logical(data$Cut_Stem)
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
 }
+    }
 
 #' @export
 .lupold.2013 <- function(...){
@@ -931,7 +938,7 @@
 #' @export
 .mccullough.2015<-function(...){
     file<-tempfile()
-    download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file)
+    download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file, quiet=TRUE)
     data<-as.data.frame(read_xlsx(file))
     units<-c("mm","mm")
     data<-.df.melt(data,"Species",units=units)
@@ -1083,8 +1090,9 @@
     data<-.df.melt(data,"Species",units=units,metadata=metadata)
 }
 
-#' @export
-.pfautsch.2016 <- function(...){
+# Out of commission until https://github.com/willpearse/suppdata/issues/22 is closed 
+# #' @export
+if(FALSE) .pfautsch.2016 <- function(...){
     first <- read.csv(unzip(suppdata("10.1890/16-0147.1", 1), "Eucalyptus_vessel_anatomy_800cm.csv"), as.is=TRUE)
     first$measurement_height <- "800cm"
     names(first)[19] <- "diameter_at_breast_height"
@@ -1123,7 +1131,7 @@
     metadata <- data[,c(1:2,4:7)]
     data <- data[,!names(data) %in% names(metadata)]
     data$leaf_size <- as.numeric(as.character(data$leaf_size))
-    return(.df.melt(data, "genus.species", units, metadata))
+    return(.df.melt(data, "genus species", units, metadata))
 }
 
 #' @export
@@ -1229,8 +1237,10 @@
     return(data)
 }
 
-#' @export
-.stephens.2017 <- function(...){  
+# Out of commission until https://github.com/willpearse/suppdata/issues/22 is closed
+# #' @export
+if(FALSE)
+    .stephens.2017 <- function(...){  
     data <- read.csv(unzip(suppdata("10.1002/ecy.1799", 1))[4], as.is=TRUE)
     colnames(data)[1] <- "species"
     meta <- data[,"ParasiteTraitsCitation",drop=FALSE]
@@ -1360,8 +1370,9 @@
     return(.df.melt(data, "Genus.spp",units,metadata))
 }
 
+# Out of commission until https://github.com/willpearse/suppdata/issues/22 is closed
 #' @export
-.neuheimer.2016 <- function(...){
+if(FALSE) .neuheimer.2016 <- function(...){
     data <- read.csv(unzip(suppdata("10.1890/15-1261.1", 1), "15-1261_Neuheimer_SizeDatabase.csv"), as.is=TRUE)
     value <- with(data, c(AdultSize1,AdultSize2,ProgenySize1,ProgenySize2))
     variable <- rep(c("size","size","progeny_size","progeny_size"),each=nrow(data))
