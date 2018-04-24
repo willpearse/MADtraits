@@ -1350,3 +1350,27 @@
     class(output) <- "natdb"
     return(output)
 }
+
+#' @export
+.hadfield.2013b <- function(...){
+  #get data
+  orig_data <- read.csv(suppdata(
+    x = "10.5061/dryad.8qj87/2",
+    si = "tMORPH_dryad.csv"), as.is = TRUE)
+  #select metadata
+  my_metadata <- data.frame(orig_data[, c(4:7, 9:13)]) #metadata subject ID
+  #colnames(my_metadata)<- c("ID")
+  #tidy and rename data
+  tidied_data <- orig_data[c(1:3, 8)]
+  colnames(tidied_data) <- c("tarsus_lenght", "head_bill_lenght", "wing_lenght", "sex")
+  #add species and units
+  tidied_data$species <- "cyanistes_caeruleus"
+  my_units <- c("mm", "mm", "mm", NA)
+  #melt dat
+  final_data <- .df.melt(
+    tidied_data,
+    "species",
+    units = my_units,
+    metadata = my_metadata
+  )
+  return(final_data)
