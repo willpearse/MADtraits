@@ -183,6 +183,29 @@
 }
 
 #' @export
+.bennett.2016 <- function (...){
+  dl_data <- read.csv(
+    suppdata(
+      x = "10.5061/dryad.hg578",
+      si = "Bennett et al 2016  J Ecol Competition trait data for dryad.csv"),
+    as.is = TRUE
+  )
+  meta_data <- dl_data[,c(1,3:5)]
+  my_data <-  dl_data[, c(2, 6:13)]                 
+  colnames(my_data) <- c("species", "avg_leaf_area", "specific_leaf_area",
+                         "shoot_mass", "root_mass", "total_mass", 
+                         "root-shoot_ratio", "avg_root_diameter", "specific_root_lenght")
+  my_units <- c("mm^2", "cm^2/g", "g", "g", "g", "NA", "mm", "cm/g")
+  final_data <-  .df.melt(                    
+    x = my_data,
+    spp = "species",
+    units = my_units,
+    metadata = meta_data)
+  return(final_data)
+}
+
+
+#' @export
 .broeckhoven.2016 <- function(...){
     data <- read.xls(ft_get_si("10.5061/dryad.k186f", "Data%20for%20Dryad.xlsx"), skip=1)
     data <- data[,-c(23:102)]
