@@ -290,6 +290,22 @@
 }
 
 #' @export
+.clemente.2014a <- function(...){
+  dl_data <- read.csv(
+    suppdata(x = "10.5061/dryad.14mb6",
+             si = "Clemente_Supp_data1.csv")
+    ,as.is = TRUE
+  )
+  data <- dl_data[, c(1:5)]
+  colnames(data) <- c("species", "bcom_hip", "snout_vent_length", "bipedal", "bipedal_category")
+  units <- sample(c("","","mm", "", ""))
+  
+  data <- .df.melt(data, "species", units=units) #as written on natdb wiki
+  return(data)
+  
+}
+
+#' @export
 .comeault.2013 <- function(...){
     data <- read.table(ft_get_si("10.5061/dryad.ck2cm","Tcris_FHA_phenotypes.txt"),header=TRUE)
     data <- data[,-c(1,4)]
