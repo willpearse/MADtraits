@@ -1351,7 +1351,7 @@
     return(output)
 }
 
-##########New functions added for papers by Temple folks
+##########New functions added for papers by Temple folks (NAH, NGS, TT)
 
 #' @export
 .zagar.2017 <- function(...){
@@ -1363,15 +1363,63 @@
   #rename species col
   colnames(data)[colnames(data) %in% "SP"] <- "species"
   #separate out metadata
-  metadata <- as.data.frame(data[,2:5])
-  colnames(metadata) <- c("sex", "max_bite_force", "max_run_speed", "max_climb_speed")
+  metadata <- as.data.frame(data[,3:5])
+  colnames(metadata) <- c("max_bite_force", "max_run_speed", "max_climb_speed")
   #separate out focal data
-  data <- as.data.frame(data[,-2:-5])
-  colnames(data) <- c("species", "snout_vent_length", "trunk_length", "head_length", "pileus_length", "head_width", "head_height", "mouth_opening", "fore_limb_length", "hind_limb_length")
+  data <- as.data.frame(data[,-3:-5])
+  colnames(data) <- c("species", "sex", "snout_vent_length", "trunk_length", "head_length", "pileus_length", "head_width", "head_height", "mouth_opening", "fore_limb_length", "hind_limb_length")
   #create units object
-  units <- c(rep("mm", times = 9))
+  myunits <- c(NA, rep("mm", times = 9))
   #summary dataframe
-  data <- .df.melt(x = data, spp = "species", units = units, metadata = metadata)  
-  #report out results
+  data <- .df.melt(x = data, spp = "species", units = myunits, metadata = metadata)  
+  #output
   return(data)
 }
+
+#' @export
+.goncalves.2018 <- function(...){
+  #The functionality of suppdata for ESA articles published in 2018 (at least) seems incompatible. This newer article has no obvious ESA identifier we found to track the supmat
+  #So we created a version that works without suppdata()
+  temp <- tempfile()
+  download.file("https://esajournals.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2Fecy.2106&attachmentId=2172118256", temp)
+  data <- read.csv(unzip(temp, "ATLANTIC_TR_all_data.csv"), as.is = TRUE)
+  #rename binomial column to "species"
+  colnames(data)[colnames(data) %in% 'binomial'] <- 'species'
+  #change upper case letters to lower case letters
+  data$species <- tolower(data$species)
+  #use gsub to add _ between genus and species
+  data$species <- gsub(x = data$species, pattern = " ", replacement = "_")
+  #create metadata
+  metadata <- as.data.frame(data)[,c(1:6,15:19)]
+  colnames(metadata) <- c("ID_register", "species_ID", "group", "order", "family", "genus", "status", "longitude", "latitude", "year", "collector")
+  #create trait data
+  data <- data[,c(7:14)]
+  colnames(data) <- c("species", "body_mass", "body_length", "tail_length", "forearm_length", "age", "sex", "reproductive_stage")
+  #the units
+  my_units <- c("g", rep("mm", 3), NA, NA, NA)
+  #put it all together 
+  return_data <- .df.melt(x = data, spp = "species", units = my_units, metadata = metadata)
+  return(return_data)
+}
+
+#' @export
+.collar.2016 <- function(...){
+  #read in data
+  data <- read.csv(suppdata(x="10.5061/dryad.2d7km",si="labyrinth_data.csv"), as.is = TRUE)
+  data <- data[,c(-18)]
+  data <- transform(data, species = paste(tolower(data$Genus), data$Species, sep = "_"))
+  #drop old "Species" col
+  data <- data[,!colnames(data) %in% "Species"]
+  ###Create meta data object
+  metadata <- data[, c(1, 2)] 
+  ### Create focal data object
+  data <- data[,c(17, 4:16)] 
+  ### Rename columns
+  colnames(data) <- c("species", "body_height","body_width","head_length","head_height","head_width","n_precaudal_vertebrae","precaudal_vertebrae_length","precaudal_vertebrae_height","precaudal_vertebrae_width","n_caudal_vertebrae","caudal_vertebrae_length","caudal_vertebrae_height","caudal_vertebrae_width")
+  ### Add units column
+  my_units <-c(rep("mm", 5), NA, rep("mm", 3), NA, rep("mm", 3))
+  ### Add df.melt function
+  to_return_data <-.df.melt(x=data,spp="species", units=my_units, metadata=metadata)
+  #output
+  return(to_return_data)
+} 
