@@ -1,11 +1,8 @@
+sudo: false
 language: r
 cache: packages
 latex: false
 
 r_github_packages:
   - ropensci/testdat
-  - willpearse/fulltext
-  - jimhester/covr
-
-after_success:
-  - Rscript -e 'covr::coveralls()'
+  - willpearse/suppdata
