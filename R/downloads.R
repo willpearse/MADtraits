@@ -1534,3 +1534,39 @@ my_units <- c("g", NA, NA, NA, NA, "mo", "mo", NA, "mm", NA, NA, NA, NA, NA, NA,
 to_return_data <- .df.melt(x = my_data, spp = "species", units = my_units, metadata = my_metadata)
 return(to_return_data)
 }
+
+#'@export
+.sherratt.2018d <- function(...){
+  downl_data <- read.csv(
+    suppdata(
+      x = "10.5061/dryad.48r5h.2",
+      si = "trait data.csv")
+    ,as.is=TRUE, header = TRUE, na.strings = c("")) #Read file from internet
+  our_metadata <- data.frame(downl_data[, 2]) #Our metadata object
+  our_data <- downl_data[, c(1, 3:8)] #Our data object
+  colnames(our_data) <- c("species", "number_specimens_in_girth" , "max_total_length", "relative_girth_at_0.75SVL", "SD_of_relative_girth", "proportion_burrowing", "prey_type") #Column names for our data
+  our_units <- c("", "mm","mm", "", "", "") #Units for our data
+  our_final_data <- .df.melt(
+    x = our_data,
+    spp = "species",
+    units = our_units,
+    metadata = our_metadata)
+  return(our_final_data)
+}
+
+#'@export
+#.ord.2015b <- function(...){
+downl_data <- read.delim(
+  suppdata(
+    x = "10.5061/dryad.f01t1",
+    si = "ORD_TJ-JEB-2015-00382R1_hyoid_data.txt")
+  ,as.is=TRUE) #Read file from internet
+our_data <- downl_data[, c(1:3)] #Our data object
+colnames(our_data) <- c("species", "fulcrum_ratio_of_hyoid", "hypohyal_angle_to_ceratobranchial") #Column names for our data
+our_units <- c("", "degrees") #Units for our data
+our_final_data <- .df.melt(
+  x = our_data,
+  spp = "species",
+  units = our_units)
+return(our_final_data)
+}
