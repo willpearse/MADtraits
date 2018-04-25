@@ -1536,7 +1536,7 @@ return(to_return_data)
 }
 
 #'@export
-.sherratt.2018d <- function(...){
+.sherratt.2018 <- function(...){
   downl_data <- read.csv(
     suppdata(
       x = "10.5061/dryad.48r5h.2",
@@ -1555,7 +1555,7 @@ return(to_return_data)
 }
 
 #'@export
-#.ord.2015b <- function(...){
+.ord.2015 <- function(...){
 downl_data <- read.delim(
   suppdata(
     x = "10.5061/dryad.f01t1",
