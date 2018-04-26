@@ -1395,16 +1395,13 @@ if(FALSE) .neuheimer.2016 <- function(...){
   data$SP <- gsub(pattern = "PMUR", replacement = "podarcis_muralis", x = data$SP)
   #rename species col
   colnames(data)[colnames(data) %in% "SP"] <- "species"
-  #separate out metadata
-  metadata <- as.data.frame(data[,3:5])
-  colnames(metadata) <- c("max_bite_force", "max_run_speed", "max_climb_speed")
-  #separate out focal data
-  data <- as.data.frame(data[,-3:-5])
-  colnames(data) <- c("species", "sex", "snout_vent_length", "trunk_length", "head_length", "pileus_length", "head_width", "head_height", "mouth_opening", "fore_limb_length", "hind_limb_length")
+  #separate out metadata: There is no metadata
+  #separate out focal data: all cols are focal data
+  colnames(data) <- c("species", "sex", "max_bite_force", "max_run_speed", "max_climb_speed", "snout_vent_length", "trunk_length", "head_length", "pileus_length", "head_width", "head_height", "mouth_opening", "fore_limb_length", "hind_limb_length")
   #create units object
-  myunits <- c(NA, rep("mm", times = 9))
+  myunits <- c(NA, "N", rep("cm/s", times = 2), rep("mm", times = 9))
   #summary dataframe
-  data <- .df.melt(x = data, spp = "species", units = myunits, metadata = metadata)  
+  data <- .df.melt(x = data, spp = "species", units = myunits)  
   #output
   return(data)
 }
