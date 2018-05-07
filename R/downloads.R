@@ -1585,7 +1585,7 @@ return(our_final_data)
 }
 
 #'@export
-.Knief.2012 <- function(...){
+.knief.2012 <- function(...){
   downl_data <- read.csv(
     suppdata(
       x = "10.5061/dryad.9vq45n5s", 
