@@ -1583,3 +1583,23 @@ our_final_data <- .df.melt(
   units = our_units)
 return(our_final_data)
 }
+
+#'@export
+.knief.2012 <- function(...){
+  downl_data <- read.csv(
+    suppdata(
+      x = "10.5061/dryad.9vq45n5s", 
+      si = "data_phenotypes.csv")
+    ,as.is = TRUE, header = TRUE, na.strings = c("")) #Reads file from internet
+  our_metadata <- data.frame(downl_data[, 1, 6:7])#Our metadata
+  our_data <- downl_data[, c(2:5, 8:10)] #Our data object
+  colnames(our_data) <- c("sex", "alive", "age", "Inbreeding coefficient", "beak length", "beak depth", "beak width")
+  our_data$species <- "Taeniopygia guttata"
+  our_units <- c("", "", "days", "", "mm", "mm", "mm")
+  our_final_data <- .df.melt(
+    x = our_data, 
+    spp = "species",
+    units = our_units,
+    metadata = our_metadata)
+  return(our_final_data)
+}
