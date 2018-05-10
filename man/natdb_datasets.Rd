@@ -2,7 +2,8 @@
 % Please edit documentation in R/datasets.R
 \name{natdb_datasets}
 \alias{natdb_datasets}
-\title{Get vector of the IDs for all datasets available within NATDB}
+\title{Get vector of the IDs for all datasets available within
+    NATDB}
 \usage{
 natdb_datasets()
 }
@@ -10,7 +11,9 @@ natdb_datasets()
 Vector of dataset IDs
 }
 \description{
-Returns a vector of all IDs for the datasets that NATDB can download. This can be used to identify particular datasets you wish to download using \code{\link{natdb}}.
+Returns a vector of all IDs for the datasets that
+    NATDB can download. This can be used to identify particular
+    datasets you wish to download using \code{\link{natdb}}.
 }
 \examples{
 \dontrun{

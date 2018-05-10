@@ -153,6 +153,7 @@
     data$numeric$variable <- gsub("lwing", "wing_length", data$numeric$variable, fixed=TRUE)
     return(data)
 }
+#' @export
 .bello_bedoy.2015b <- function(...){
     data <- as.data.frame(read_excel(
         suppdata("10.6084/m9.figshare.1190766.v2","mating occurrencePzoe_2010.xls")
@@ -330,6 +331,28 @@
 }
 
 #' @export
+.collar.2016 <- function(...){
+  #read in data
+  data <- read.csv(suppdata(x="10.5061/dryad.2d7km",si="labyrinth_data.csv"), as.is = TRUE)
+  data <- data[,c(-18)]
+  data <- transform(data, species = paste(tolower(data$Genus), data$Species, sep = "_"))
+  #drop old "Species" col
+  data <- data[,!colnames(data) %in% "Species"]
+  ###Create meta data object
+  metadata <- data[, c(1, 2)] 
+  ### Create focal data object
+  data <- data[,c(17, 4:16)] 
+  ### Rename columns
+  colnames(data) <- c("species", "body_height","body_width","head_length","head_height","head_width","n_precaudal_vertebrae","precaudal_vertebrae_length","precaudal_vertebrae_height","precaudal_vertebrae_width","n_caudal_vertebrae","caudal_vertebrae_length","caudal_vertebrae_height","caudal_vertebrae_width")
+  ### Add units column
+  my_units <-c(rep("mm", 5), NA, rep("mm", 3), NA, rep("mm", 3))
+  ### Add df.melt function
+  to_return_data <-.df.melt(x=data,spp="species", units=my_units, metadata=metadata)
+  #output
+  return(to_return_data)
+}
+
+#' @export
 .comeault.2013 <- function(...){
     data <- read.table(suppdata("10.5061/dryad.ck2cm","Tcris_FHA_phenotypes.txt"),header=TRUE)
     data <- data[,-c(1,4)]
@@ -466,6 +489,32 @@
 }
 
 #' @export
+.goncalves.2018 <- function(...){
+  #The functionality of suppdata for ESA articles published in 2018 (at least) seems incompatible. This newer article has no obvious ESA identifier we found to track the supmat
+  #So we created a version that works without suppdata()
+  temp <- tempfile()
+  download.file("https://esajournals.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2Fecy.2106&attachmentId=2172118256", temp)
+  data <- read.csv(unzip(temp, "ATLANTIC_TR_all_data.csv"), as.is = TRUE)
+  #rename binomial column to "species"
+  colnames(data)[colnames(data) %in% 'binomial'] <- 'species'
+  #change upper case letters to lower case letters
+  data$species <- tolower(data$species)
+  #use gsub to add _ between genus and species
+  data$species <- gsub(x = data$species, pattern = " ", replacement = "_")
+  #create metadata
+  metadata <- as.data.frame(data)[,c(1:6,15:19)]
+  colnames(metadata) <- c("ID_register", "species_ID", "group", "order", "family", "genus", "status", "longitude", "latitude", "year", "collector")
+  #create trait data
+  data <- data[,c(7:14)]
+  colnames(data) <- c("species", "body_mass", "body_length", "tail_length", "forearm_length", "age", "sex", "reproductive_stage")
+  #the units
+  my_units <- c("g", rep("mm", 3), NA, NA, NA)
+  #put it all together 
+  return_data <- .df.melt(x = data, spp = "species", units = my_units, metadata = metadata)
+  return(return_data)
+}
+
+#' @export
 .gossner.2015 <- function(...){
     data <- read.delim(suppdata("10.5061/dryad.53ds2", "ArthropodSpeciesTraits.txt"))
     metadata <- data[,c(1:3)]
@@ -510,6 +559,31 @@
     }
     data <- .df.melt(data, "species",units=units, metadata = metadata)
     return(data)
+}
+
+#' @export
+.hadfield.2013 <- function(...){
+  #get data
+  orig_data <- read.csv(suppdata(
+    x = "10.5061/dryad.8qj87/2",
+    si = "tMORPH_dryad.csv"), as.is = TRUE)
+  #select metadata
+  my_metadata <- data.frame(orig_data[, c(4:7, 9:13)]) #metadata subject ID
+  #colnames(my_metadata)<- c("ID")
+  #tidy and rename data
+  tidied_data <- orig_data[c(1:3, 8)]
+  colnames(tidied_data) <- c("tarsus_lenght", "head_bill_lenght", "wing_lenght", "sex")
+  #add species and units
+  tidied_data$species <- "cyanistes_caeruleus"
+  my_units <- c("mm", "mm", "mm", NA)
+  #melt dat
+  final_data <- .df.melt(
+    tidied_data,
+    "species",
+    units = my_units,
+    metadata = my_metadata
+  )
+  return(final_data)
 }
 
 #' @export
@@ -595,6 +669,7 @@
     data <- .df.melt(data, "species", units, metadata)
     return(data)
 }
+#' @export
 .jennings.2016c <- function(...){
     data <- read.csv(suppdata("10.5061/dryad.m23g6", "toads.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
     species <- rep(c("anaxyrus_quercicus"), nrow(data))
@@ -710,6 +785,27 @@
     return(data)
 }
 
+
+#' @export
+.knief.2012 <- function(...){
+    downl_data <- read.csv(
+        suppdata(
+            x = "10.5061/dryad.9vq45n5s", 
+            si = "data_phenotypes.csv")
+       ,as.is = TRUE, header = TRUE, na.strings = c("")) #Reads file from internet
+    our_metadata <- data.frame(downl_data[, 1, 6:7])#Our metadata
+    our_data <- downl_data[, c(2:5, 8:10)] #Our data object
+    colnames(our_data) <- c("sex", "alive", "age", "Inbreeding coefficient", "beak length", "beak depth", "beak width")
+    our_data$species <- "Taeniopygia guttata"
+    our_units <- c("", "", "days", "", "mm", "mm", "mm")
+    our_final_data <- .df.melt(
+        x = our_data, 
+        spp = "species",
+        units = our_units,
+        metadata = our_metadata)
+    return(our_final_data)
+}
+
 #' @export
 .kolbe.2011 <- function(...){
     data <- read.table(suppdata("10.5061/dryad.1d24c","21%20species%20means.txt"),header=TRUE,sep = '\t')
@@ -744,6 +840,8 @@
     data <- .df.melt(data, "Species", units, metadata)
     return(data)
 }
+
+#' @export
 .kuo.2014 <- function(...){
     data <- read.csv(suppdata("10.5061/dryad.p8740","personality_date1.csv"))
     metadata <- data[,5]
@@ -803,6 +901,7 @@
     data <- .df.melt(data, "species", units, metadata)
     return(data)
 }
+#' @export
 .limpens.2014b <- function(...){
     data <- as.data.frame(read_excel(suppdata("doi:10.5061/dryad.926nd", "traitsandsurvival.xlsx"), na = c("","NA")))
     species <- gsub("gla", "picea_glauca", data$Species)
@@ -850,6 +949,7 @@
     names(data)[1] <- "height"
     return(.df.melt(data, "binomial", c("cm","mm","g"), metadata))
 }
+#' @export
 .lu.2016b <- function(...){
     data <- read.csv(unzip(suppdata("10.1002/ecy.1600", 2), "GCReW_Allom_Other_Data.csv"))
     data$binomial <- data$Species
@@ -870,6 +970,7 @@
     names(data)[1] <- "height"
     return(.df.melt(data, "binomial", c("cm","mm","g"), metadata))
 }
+#' @export
 .lu.2016c <- function(...){
     data <- read.csv(unzip(suppdata("10.1002/ecy.1600", 2, cache=FALSE), "GCReW_Allom_SCAM_Data.csv"))
     data$binomial <- "schoenoplectus_americanus "
@@ -880,7 +981,7 @@
     data$Cut_Stem <- as.logical(data$Cut_Stem)
     return(.df.melt(data, "binomial", c("cm","cm","mm","g","g","g",NA), metadata))
 }
-    }
+
 
 #' @export
 .lupold.2013 <- function(...){
@@ -1053,6 +1154,34 @@
     return(data)
 }
 
+#'@export
+.olson.2018 <- function(...){
+    data <- read.csv(suppdata(x="10.5061/dryad.jq344",si="SEAK_Male_SAM_Data.csv"), as.is = TRUE)
+    metadata <- data[, 1, drop=FALSE] 
+    data <- data[,2:3] 
+    names(data) <- c("carapace_length","carapace_width")
+    units <-rep("mm",2)
+    data$species <-"lithodes_aequispinus"
+    return(.df.melt(data, spp="species", units=units, metadata=metadata))
+}
+
+#'@export
+.ord.2015 <- function(...){
+    downl_data <- read.delim(
+        suppdata(
+            x = "10.5061/dryad.f01t1",
+            si = "ORD_TJ-JEB-2015-00382R1_hyoid_data.txt")
+       ,as.is=TRUE) #Read file from internet
+    our_data <- downl_data[, c(1:3)] #Our data object
+    colnames(our_data) <- c("species", "fulcrum_ratio_of_hyoid", "hypohyal_angle_to_ceratobranchial") #Column names for our data
+    our_units <- c("", "degrees") #Units for our data
+    our_final_data <- .df.melt(
+        x = our_data,
+        spp = "species",
+        units = our_units)
+    return(our_final_data)
+}
+
 #' @export
 .paquette.2015 <- function(...){
     # They zipped the zip when they transferred the SI to the new system,
@@ -1081,6 +1210,36 @@
     units <- c(NA, "mm","#","#")
     data <- .df.melt(data, "species", units=units, metadata)
     return(data)
+}
+
+#'@export
+.peel.2016 <- function(...) { 
+    dp_data <- read.csv(suppdata(x="10.5061/dryad.2fp34",si = "Eidolon data 2007_2014_Openaccess.csv"),as.is=TRUE)
+
+    my_metadata <- as.data.frame(dp_data[c(1:12, 23:24, 26, 31, 33)])
+    colnames(my_metadata) <- c("Sample", "SamplingEventID", "Samplers", "Samplingdate", "Birthdate", "MthsSinceBirthdate", "Cont_Island", 
+                               "Country", "Region", "Location","Latitude", "Longitude", "MotherID", "OffspringID", "BandNo", "GeneticsID",
+                               "GenBankAccession")
+
+    my_data <- dp_data[c(13:22, 25, 27:30, 32, 34:69)] 
+
+    colnames(my_data) <- c("BatWt","Sex","Age", "AgeSpecific", "AgeTooth", "TeethCertaintyScore", "TeethAgeRange", "TeethAgeMths", "AgeMths", 
+                           "ReproStatus", "Forearm", "LagosBatVirusScore", "HenipavirusResults", "AchimotaVirus1", "AchimotaVirus2", 
+                           "CytochromeB", "T1AlleleSize", "T2AlleleSize", "S1AlleleSize", "S2AlleleSize", "F1AlleleSize", "F2AlleleSize", 
+                           "W1AlleleSize", "W2AlleleSize", "N1AlleleSize", "N2AlleleSize", "Q1AlleleSize", "Q2AlleleSize","X1AlleleSize", 
+                           "X2AlleleSize", "P1AlleleSize", "P2AlleleSize", "K1AlleleSize", "K2AlleleSize", "Ac1AlleleSize", "Ac2AlleleSize", 
+                           "Af1AlleleSize", "Af2AlleleSize", "Ai1AlleleSize", "Ai2AlleleSize", "Ad1AlleleSize", "Ad2AlleleSize", 
+                           "Y1AlleleSize", "Y2AlleleSize", "Ag1AlleleSize", "Ag2AlleleSize", "Ah1AlleleSize", "Ah2AlleleSize", 
+                           "B1AlleleSize","B2AlleleSize", "M1AlleleSize", "M2AlleleSize")
+
+    my_data$species <- "eidolon_helvum" # species names
+
+    my_units <- c("g", NA, NA, NA, NA, "mo", "mo", NA, "mm", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+                  NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA)
+
+
+    to_return_data <- .df.melt(x = my_data, spp = "species", units = my_units, metadata = my_metadata)
+    return(to_return_data)
 }
 
 #' @export
@@ -1231,6 +1390,25 @@
     return(.df.melt(data,'species', units, metadata))
 }
 
+#'@export
+.sherratt.2018 <- function(...){
+    downl_data <- read.csv(
+        suppdata(
+            x = "10.5061/dryad.48r5h.2",
+            si = "trait data.csv")
+       ,as.is=TRUE, header = TRUE, na.strings = c("")) #Read file from internet
+    our_metadata <- data.frame(downl_data[, 2]) #Our metadata object
+    our_data <- downl_data[, c(1, 3:8)] #Our data object
+    colnames(our_data) <- c("species", "number_specimens_in_girth" , "max_total_length", "relative_girth_at_0.75SVL", "SD_of_relative_girth", "proportion_burrowing", "prey_type") #Column names for our data
+    our_units <- c("", "mm","mm", "", "", "") #Units for our data
+    our_final_data <- .df.melt(
+        x = our_data,
+        spp = "species",
+        units = our_units,
+        metadata = our_metadata)
+    return(our_final_data)
+}
+
 #' @export
 .shibata.2016a <- function(...){
     data <- as.data.frame(read_excel(suppdata("10.5061/dryad.rj480","FEShibataDataForAnalyses.xls")))
@@ -1313,6 +1491,7 @@
     data$numeric$variable <- gsub("BodyMass.Value", "total_mass.Value", data$numeric$variable, fixed=TRUE)
     return(data)
 }
+#' @export
 .wilman.2014b  <- function(...){
     data <- read.delim(suppdata("E095-178", "MamFuncDat.txt", "esa_archives"))
     data <- data[,-1,drop=FALSE]
@@ -1345,6 +1524,26 @@
     data <- data[,-c(2,13)]
     units <- c(NA, NA, rep('um',6), NA, NA, NA)
     return(.df.melt(data,"Species",units=units, metadata))
+}
+
+#' @export
+.zagar.2017 <- function(...){
+  #fetch original dataset
+  data <- read.csv(suppdata(x = "10.5061/dryad.jn14f", si = "data.csv"), as.is = TRUE)
+  #change the species labels to natdb format
+  data$SP <- gsub(pattern = "IHOR", replacement = "iberolacerta_horvathi", x = data$SP)
+  data$SP <- gsub(pattern = "PMUR", replacement = "podarcis_muralis", x = data$SP)
+  #rename species col
+  colnames(data)[colnames(data) %in% "SP"] <- "species"
+  #separate out metadata: There is no metadata
+  #separate out focal data: all cols are focal data
+  colnames(data) <- c("species", "sex", "max_bite_force", "max_run_speed", "max_climb_speed", "snout_vent_length", "trunk_length", "head_length", "pileus_length", "head_width", "head_height", "mouth_opening", "fore_limb_length", "hind_limb_length")
+  #create units object
+  myunits <- c(NA, "N", rep("cm/s", times = 2), rep("mm", times = 9))
+  #summary dataframe
+  data <- .df.melt(x = data, spp = "species", units = myunits)  
+  #output
+  return(data)
 }
 
 #' @export
@@ -1412,196 +1611,4 @@
     output <- list(numeric=data.frame(species=species,metadata=metadata,variable=variable,value=value,units=unit),character=NULL)
     class(output) <- "natdb"
     return(output)
-}
-
-##########New functions added for papers by Temple folks (NAH, NGS, TT)
-
-#' @export
-.zagar.2017 <- function(...){
-  #fetch original dataset
-  data <- read.csv(suppdata(x = "10.5061/dryad.jn14f", si = "data.csv"), as.is = TRUE)
-  #change the species labels to natdb format
-  data$SP <- gsub(pattern = "IHOR", replacement = "iberolacerta_horvathi", x = data$SP)
-  data$SP <- gsub(pattern = "PMUR", replacement = "podarcis_muralis", x = data$SP)
-  #rename species col
-  colnames(data)[colnames(data) %in% "SP"] <- "species"
-  #separate out metadata: There is no metadata
-  #separate out focal data: all cols are focal data
-  colnames(data) <- c("species", "sex", "max_bite_force", "max_run_speed", "max_climb_speed", "snout_vent_length", "trunk_length", "head_length", "pileus_length", "head_width", "head_height", "mouth_opening", "fore_limb_length", "hind_limb_length")
-  #create units object
-  myunits <- c(NA, "N", rep("cm/s", times = 2), rep("mm", times = 9))
-  #summary dataframe
-  data <- .df.melt(x = data, spp = "species", units = myunits)  
-  #output
-  return(data)
-}
-
-#' @export
-.goncalves.2018 <- function(...){
-  #The functionality of suppdata for ESA articles published in 2018 (at least) seems incompatible. This newer article has no obvious ESA identifier we found to track the supmat
-  #So we created a version that works without suppdata()
-  temp <- tempfile()
-  download.file("https://esajournals.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2Fecy.2106&attachmentId=2172118256", temp)
-  data <- read.csv(unzip(temp, "ATLANTIC_TR_all_data.csv"), as.is = TRUE)
-  #rename binomial column to "species"
-  colnames(data)[colnames(data) %in% 'binomial'] <- 'species'
-  #change upper case letters to lower case letters
-  data$species <- tolower(data$species)
-  #use gsub to add _ between genus and species
-  data$species <- gsub(x = data$species, pattern = " ", replacement = "_")
-  #create metadata
-  metadata <- as.data.frame(data)[,c(1:6,15:19)]
-  colnames(metadata) <- c("ID_register", "species_ID", "group", "order", "family", "genus", "status", "longitude", "latitude", "year", "collector")
-  #create trait data
-  data <- data[,c(7:14)]
-  colnames(data) <- c("species", "body_mass", "body_length", "tail_length", "forearm_length", "age", "sex", "reproductive_stage")
-  #the units
-  my_units <- c("g", rep("mm", 3), NA, NA, NA)
-  #put it all together 
-  return_data <- .df.melt(x = data, spp = "species", units = my_units, metadata = metadata)
-  return(return_data)
-}
-
-#' @export
-.collar.2016 <- function(...){
-  #read in data
-  data <- read.csv(suppdata(x="10.5061/dryad.2d7km",si="labyrinth_data.csv"), as.is = TRUE)
-  data <- data[,c(-18)]
-  data <- transform(data, species = paste(tolower(data$Genus), data$Species, sep = "_"))
-  #drop old "Species" col
-  data <- data[,!colnames(data) %in% "Species"]
-  ###Create meta data object
-  metadata <- data[, c(1, 2)] 
-  ### Create focal data object
-  data <- data[,c(17, 4:16)] 
-  ### Rename columns
-  colnames(data) <- c("species", "body_height","body_width","head_length","head_height","head_width","n_precaudal_vertebrae","precaudal_vertebrae_length","precaudal_vertebrae_height","precaudal_vertebrae_width","n_caudal_vertebrae","caudal_vertebrae_length","caudal_vertebrae_height","caudal_vertebrae_width")
-  ### Add units column
-  my_units <-c(rep("mm", 5), NA, rep("mm", 3), NA, rep("mm", 3))
-  ### Add df.melt function
-  to_return_data <-.df.melt(x=data,spp="species", units=my_units, metadata=metadata)
-  #output
-  return(to_return_data)
-}
-
-#' @export
-.hadfield.2013b <- function(...){
-  #get data
-  orig_data <- read.csv(suppdata(
-    x = "10.5061/dryad.8qj87/2",
-    si = "tMORPH_dryad.csv"), as.is = TRUE)
-  #select metadata
-  my_metadata <- data.frame(orig_data[, c(4:7, 9:13)]) #metadata subject ID
-  #colnames(my_metadata)<- c("ID")
-  #tidy and rename data
-  tidied_data <- orig_data[c(1:3, 8)]
-  colnames(tidied_data) <- c("tarsus_lenght", "head_bill_lenght", "wing_lenght", "sex")
-  #add species and units
-  tidied_data$species <- "cyanistes_caeruleus"
-  my_units <- c("mm", "mm", "mm", NA)
-  #melt dat
-  final_data <- .df.melt(
-    tidied_data,
-    "species",
-    units = my_units,
-    metadata = my_metadata
-  )
-  return(final_data)
-}
-                           
-#'@export
-.peel.2016 <- function(...) { 
-dp_data <- read.csv(suppdata(x="10.5061/dryad.2fp34",si = "Eidolon data 2007_2014_Openaccess.csv"),as.is=TRUE)
-###Create meta data object------------------------------------------------------------------------------------------------------
-my_metadata <- as.data.frame(dp_data[c(1:12, 23:24, 26, 31, 33)])
-colnames(my_metadata) <- c("Sample", "SamplingEventID", "Samplers", "Samplingdate", "Birthdate", "MthsSinceBirthdate", "Cont_Island", 
-                           "Country", "Region", "Location","Latitude", "Longitude", "MotherID", "OffspringID", "BandNo", "GeneticsID",
-                           "GenBankAccession")
-### Create data object------------------------------------------------------------------------------------------------------
-my_data <- dp_data[c(13:22, 25, 27:30, 32, 34:69)] 
-### Rename columns ------------------------------------------------------------------------------------------------------
-colnames(my_data) <- c("BatWt","Sex","Age", "AgeSpecific", "AgeTooth", "TeethCertaintyScore", "TeethAgeRange", "TeethAgeMths", "AgeMths", 
-                       "ReproStatus", "Forearm", "LagosBatVirusScore", "HenipavirusResults", "AchimotaVirus1", "AchimotaVirus2", 
-                       "CytochromeB", "T1AlleleSize", "T2AlleleSize", "S1AlleleSize", "S2AlleleSize", "F1AlleleSize", "F2AlleleSize", 
-                       "W1AlleleSize", "W2AlleleSize", "N1AlleleSize", "N2AlleleSize", "Q1AlleleSize", "Q2AlleleSize","X1AlleleSize", 
-                       "X2AlleleSize", "P1AlleleSize", "P2AlleleSize", "K1AlleleSize", "K2AlleleSize", "Ac1AlleleSize", "Ac2AlleleSize", 
-                       "Af1AlleleSize", "Af2AlleleSize", "Ai1AlleleSize", "Ai2AlleleSize", "Ad1AlleleSize", "Ad2AlleleSize", 
-                       "Y1AlleleSize", "Y2AlleleSize", "Ag1AlleleSize", "Ag2AlleleSize", "Ah1AlleleSize", "Ah2AlleleSize", 
-                       "B1AlleleSize","B2AlleleSize", "M1AlleleSize", "M2AlleleSize")
-### Add species name column------------------------------------------------------------------------------------------------------
-my_data$species <- "eidolon_helvum" # species names
-### Add units column ------------------------------------------------------------------------------------------------------
-my_units <- c("g", NA, NA, NA, NA, "mo", "mo", NA, "mm", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-              NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA)
-
-### df.melt ------------------------------------------------------------------
-to_return_data <- .df.melt(x = my_data, spp = "species", units = my_units, metadata = my_metadata)
-return(to_return_data)
-}
-
-#'@export
-.sherratt.2018 <- function(...){
-  downl_data <- read.csv(
-    suppdata(
-      x = "10.5061/dryad.48r5h.2",
-      si = "trait data.csv")
-    ,as.is=TRUE, header = TRUE, na.strings = c("")) #Read file from internet
-  our_metadata <- data.frame(downl_data[, 2]) #Our metadata object
-  our_data <- downl_data[, c(1, 3:8)] #Our data object
-  colnames(our_data) <- c("species", "number_specimens_in_girth" , "max_total_length", "relative_girth_at_0.75SVL", "SD_of_relative_girth", "proportion_burrowing", "prey_type") #Column names for our data
-  our_units <- c("", "mm","mm", "", "", "") #Units for our data
-  our_final_data <- .df.melt(
-    x = our_data,
-    spp = "species",
-    units = our_units,
-    metadata = our_metadata)
-  return(our_final_data)
-}
-
-#'@export
-.ord.2015 <- function(...){
-downl_data <- read.delim(
-  suppdata(
-    x = "10.5061/dryad.f01t1",
-    si = "ORD_TJ-JEB-2015-00382R1_hyoid_data.txt")
-  ,as.is=TRUE) #Read file from internet
-our_data <- downl_data[, c(1:3)] #Our data object
-colnames(our_data) <- c("species", "fulcrum_ratio_of_hyoid", "hypohyal_angle_to_ceratobranchial") #Column names for our data
-our_units <- c("", "degrees") #Units for our data
-our_final_data <- .df.melt(
-  x = our_data,
-  spp = "species",
-  units = our_units)
-return(our_final_data)
-}
-
-#'@export
-.olson.2018 <- function(...){
-    data <- read.csv(suppdata(x="10.5061/dryad.jq344",si="SEAK_Male_SAM_Data.csv"), as.is = TRUE)
-    metadata <- data[, 1, drop=FALSE] 
-    data <- data[,2:3] 
-    names(data) <- c("carapace_length","carapace_width")
-    units <-rep("mm",2)
-    data$species <-"lithodes_aequispinus"
-    return(.df.melt(data, spp="species", units=units, metadata=metadata))
-}
-
-#' @export
-.knief.2012 <- function(...){
-  downl_data <- read.csv(
-    suppdata(
-      x = "10.5061/dryad.9vq45n5s", 
-      si = "data_phenotypes.csv")
-    ,as.is = TRUE, header = TRUE, na.strings = c("")) #Reads file from internet
-  our_metadata <- data.frame(downl_data[, 1, 6:7])#Our metadata
-  our_data <- downl_data[, c(2:5, 8:10)] #Our data object
-  colnames(our_data) <- c("sex", "alive", "age", "Inbreeding coefficient", "beak length", "beak depth", "beak width")
-  our_data$species <- "Taeniopygia guttata"
-  our_units <- c("", "", "days", "", "mm", "mm", "mm")
-  our_final_data <- .df.melt(
-    x = our_data, 
-    spp = "species",
-    units = our_units,
-    metadata = our_metadata)
-  return(our_final_data)
 }
