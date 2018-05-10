@@ -5,4 +5,4 @@ latex: false
 
 r_github_packages:
   - ropensci/testdat
-  - willpearse/suppdata
+  - ropensci/suppdata
