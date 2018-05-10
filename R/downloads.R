@@ -1578,11 +1578,11 @@ return(our_final_data)
 #'@export
 .olson.2018 <- function(...){
     data <- read.csv(suppdata(x="10.5061/dryad.jq344",si="SEAK_Male_SAM_Data.csv"), as.is = TRUE)
-    metadata <- da_data[, 1, drop=FALSE] 
+    metadata <- data[, 1, drop=FALSE] 
     data <- data[,2:3] 
     names(data) <- c("carapace_length","carapace_width")
     units <-rep("mm",2)
-    data3$species <-"lithodes_aequispinus"
+    data$species <-"lithodes_aequispinus"
     return(.df.melt(data, spp="species", units=units, metadata=metadata))
 }
 
