@@ -1584,3 +1584,37 @@ our_final_data <- .df.melt(
   units = our_units)
 return(our_final_data)
 }
+
+#'@export
+.olson.2018 <- function(...){
+da_data <- read.csv(suppdata(x="10.5061/dryad.jq344",si="SEAK_Male_SAM_Data.csv"), as.is = TRUE)
+my_metadata3 <- da_data[, c(1)] 
+my_metadata4 <- as.data.frame(my_metadata3, row.names = NULL, optional = FALSE)
+my_data3 <- da_data[,c(2:3)] 
+colnames(my_data3) <- c("carapace_length","carapace_width")
+my_units3 <-rep("mm",2)
+my_data3$species <-"lithodes_aequispinus"
+to_return_data <-.df.melt(x=my_data4,spp="species", units=my_units3, metadata=my_metadata4)
+view(to_return_data)
+return(to_return_data)
+}
+
+#' @export
+.knief.2012 <- function(...){
+  downl_data <- read.csv(
+    suppdata(
+      x = "10.5061/dryad.9vq45n5s", 
+      si = "data_phenotypes.csv")
+    ,as.is = TRUE, header = TRUE, na.strings = c("")) #Reads file from internet
+  our_metadata <- data.frame(downl_data[, 1, 6:7])#Our metadata
+  our_data <- downl_data[, c(2:5, 8:10)] #Our data object
+  colnames(our_data) <- c("sex", "alive", "age", "Inbreeding coefficient", "beak length", "beak depth", "beak width")
+  our_data$species <- "Taeniopygia guttata"
+  our_units <- c("", "", "days", "", "mm", "mm", "mm")
+  our_final_data <- .df.melt(
+    x = our_data, 
+    spp = "species",
+    units = our_units,
+    metadata = our_metadata)
+  return(our_final_data)
+}
