@@ -26,7 +26,8 @@ user already has access.
 \examples{
 # You almost certainly *don't* want to use these functions on their own
 # - use the function "natdb" to build a database instead
-.pearse.2014()
+crab.data <- .pearse.2014()
+str(crab.data)
 }
 \author{
 William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen,
