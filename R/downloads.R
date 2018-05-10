@@ -1593,7 +1593,7 @@ return(our_final_data)
     names(data) <- c("carapace_length","carapace_width")
     units <-rep("mm",2)
     data3$species <-"lithodes_aequispinus"
-    return(.df.melt(my_data4, spp="species", units=my_units3, metadata=metadata))
+    return(.df.melt(data, spp="species", units=units, metadata=metadata))
 }
 
 #' @export

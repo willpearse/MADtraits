@@ -229,7 +229,7 @@ clean.natdb <- function(x){
 #' # - before using it, clean up the data to remove obvious differences
 #' demo <- clean.natdb(demo)
 #' # Now run a thorough taxonomic check
-#' demo <- lookup.natdb.names(demo, use.cache=FALSE)
+#' demo <- lookup.natdb.names(demo, use.cache=TRUE)
 #' #...in this case with only six species it was fast
 lookup.natdb.names <- function(x, thresh=0.8, use.cache=TRUE){
     # Argument handling
