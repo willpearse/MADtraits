@@ -1,6 +1,9 @@
 #' @name natdb_datasets
-#' @title Get vector of the IDs for all datasets available within NATDB
-#' @description Returns a vector of all IDs for the datasets that NATDB can download. This can be used to identify particular datasets you wish to download using \code{\link{natdb}}.
+#' @title Get vector of the IDs for all datasets available within
+#'     NATDB
+#' @description Returns a vector of all IDs for the datasets that
+#'     NATDB can download. This can be used to identify particular
+#'     datasets you wish to download using \code{\link{natdb}}.
 #' @keywords datasets
 #' @usage natdb_datasets()
 #' @seealso citations natdb
