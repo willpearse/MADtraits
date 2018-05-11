@@ -22,7 +22,8 @@ Depends:
     R (>= 2.10)
 Suggests: 
     testthat (>= 2.0.0),
-    covr (>= 3.0.1)
+    covr (>= 3.0.1),
+    knitr (>= 1.6)
 Imports:
     suppdata,
     testdat (>= 0.2-0),
@@ -34,3 +35,4 @@ Imports:
     taxize (>= 0.8.4),
     convertr (>= 0.1),
     readxl (>= 1.0.0)
+VignetteBuilder: knitr
