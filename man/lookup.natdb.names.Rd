@@ -55,7 +55,7 @@ demo <- convert.natdb.units(demo, units)
 #...you don't have to clean up just one unit
 # - your "units" vector can be as long as you want
 # Grab some example data (you should work with the output from the natdb function)
-demo <- .cavender_bares.2015a()
+demo <- .cavenderbares.2015a()
 # - before using it, clean up the data to remove obvious differences
 demo <- clean.natdb(demo)
 # Now run a thorough taxonomic check

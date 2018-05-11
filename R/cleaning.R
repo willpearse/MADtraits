@@ -13,7 +13,7 @@
 #' @seealso convert.natdb.units lookup.natdb.names
 #' @examples
 #' # Grab some example data (you should work with the output from the natdb function)
-#' demo <- .cavender_bares.2015a()
+#' demo <- .cavenderbares.2015a()
 #' demo <- convert.natdb.units(demo)
 #' @export
 clean.natdb <- function(x){
@@ -225,7 +225,7 @@ clean.natdb <- function(x){
 #' @author Will Pearse and Mallory Hagadorn
 #' @examples
 #' # Grab some example data (you should work with the output from the natdb function)
-#' demo <- .cavender_bares.2015a()
+#' demo <- .cavenderbares.2015a()
 #' # - before using it, clean up the data to remove obvious differences
 #' demo <- clean.natdb(demo)
 #' # Now run a thorough taxonomic check

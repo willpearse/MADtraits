@@ -5,3 +5,4 @@ LICENCE
 ^\.travis\.yml$
 cache/*
 citations.tsv
+codecov.yml

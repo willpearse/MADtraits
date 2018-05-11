@@ -20,6 +20,9 @@ License: MIT + file LICENSE
 RoxygenNote: 6.0.1
 Depends:
     R (>= 2.10)
+Suggests: 
+    testthat (>= 2.0.0),
+    covr (>= 3.0.1)
 Imports:
     suppdata,
     testdat (>= 0.2-0),

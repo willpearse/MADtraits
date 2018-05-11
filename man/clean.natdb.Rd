@@ -25,7 +25,7 @@ See \code{\link{convert.natdb.units}} and
 }
 \examples{
 # Grab some example data (you should work with the output from the natdb function)
-demo <- .cavender_bares.2015a()
+demo <- .cavenderbares.2015a()
 demo <- convert.natdb.units(demo)
 }
 \seealso{
