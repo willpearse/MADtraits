@@ -10,3 +10,6 @@ r_github_packages:
       
 after_success:
   - Rscript -e 'covr::codecov()'
+
+r_build_args: --no-build-vignettes
+r_check_args: --no-build-vignettes
