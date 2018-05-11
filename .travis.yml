@@ -6,3 +6,7 @@ latex: false
 r_github_packages:
   - ropensci/testdat
   - ropensci/suppdata
+  - r-lib/covr
+      
+after_success:
+  - Rscript -e 'covr::codecov()'
