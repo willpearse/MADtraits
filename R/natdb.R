@@ -57,6 +57,11 @@ natdb <- function(cache, datasets, delay=5){
         missing <- setdiff(datasets, ls.funs())
         stop("Error: ", paste(missing, collapse=", "), "not in natdb")
     }
+
+    .warn.func <- function(x){
+        warning("Could not download from ", datasets[i], "; ignoring")
+        return(NULL)
+    }
     
     #Do work and return
     cat("Downloading/loading data\n")
@@ -69,12 +74,18 @@ natdb <- function(cache, datasets, delay=5){
             if(file.exists(path)){
                 output[[i]] <- readRDS(path)
             } else {
-                capture.output(output[[i]] <- eval(as.name(datasets[i]))())
-                saveRDS(output[[i]], path)
+                capture.output(output[[i]] <- tryCatch(
+                                   eval(as.name(datasets[i]))()),
+                               error=.warn.func)
+                if(!is.null(output[[i]]))
+                    saveRDS(output[[i]], path)
+                print(output[[i]])
                 Sys.sleep(delay)
             }
         } else {
-            capture.output(output[[i]] <- eval(as.name(datasets[i]))())
+            capture.output(output[[i]] <- tryCatch(
+                                   eval(as.name(datasets[i]))()),
+                           error=.warn.func)
             Sys.sleep(delay)
         }
         
