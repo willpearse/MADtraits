@@ -1,5 +1,5 @@
-% \VignetteIndexEntry{pez-intro}
-%\VignettePackage{pez}
+% \VignetteIndexEntry{natdb-intro}
+%\VignettePackage{natdb}
 %\VignetteEngine{knitr::knitr}
 \documentclass[12pt]{article}
 \usepackage{amssymb,amsmath}
@@ -29,9 +29,9 @@ options(width=40)
 @ 
 \section{Preamble}
 Currently, installing \natdb has two steps: run
-\texttt{devtools::install_github("willpearse/fulltext")} and then
+\texttt{devtools::install_github("ropensci/suppdata")} and then
 \texttt{devtools::install_github("willpearse/natdb")}. Once the \natdb
-manuscript is accepted somewhere, a new version of \texttt{fulltext}
+manuscript is accepted somewhere, a new version of \texttt{suppdata}
 and a version of \texttt{natdb} will be uploaded to CRAN, and you will
 be able to install by simply running
 \texttt{install.packages("natdb")}.
@@ -46,7 +46,7 @@ welcome!
 
 While \emph{natdb} contains much novel code, it relies heavily on the
 \emph{R} ecosystem. In the development of \emph{natdb} we wrote a
-great deal of code to help with \emph{fulltext} as well.
+great deal of code to help with \emph{suppdata} as well.
 
 \section{Using \natdb}
 \natdb is Not A DataBase. Instead, \natdb is a set of code that will
@@ -62,7 +62,7 @@ simple.
 
 <<>>=
 library(natdb)                                # 1
-data <- natdb(cache="~/Code/natdb/cache")     # 2
+data <- natdb(cache="~/natdb/cache")          # 2
 clean.data <- clean.natdb(data)               # 3
 clean.data
 @
@@ -151,11 +151,11 @@ you'll be multiplying apples by oranges!
 \section{Examples of what you can do with \natdb}
 \subsection*{Calculating phylogenetic signal}
 First of all, let's download a phylogeny of all mammals (using
-\texttt{fulltext}):
+\texttt{suppdata}):
 
 <<>>=
-library(fulltext)
-tree <- read.nexus(ft_get_si("10.1111/j.1461-0248.2009.01307.x", 1))[[1]]
+library(suppdata)
+tree <- read.nexus(suppdata("10.1111/j.1461-0248.2009.01307.x", 1))[[1]]
 @ 
 
 ...pretty cool, huh? Anyway, now we've got that, let's grab data on
@@ -187,7 +187,7 @@ Great, we've got a phylogeny and some body mass data for mammals. Now
 let's look at the distribution of body mass in some mammal
 assemblages---this is a common sort of thing to do in community
 ecological analysis. First of all, let's grab some mammal community
-data (again using \texttt{fulltext}):
+data (again using \texttt{suppdata}):
 
 <<>>=
 # Download the community data and then neaten it up a bit
@@ -227,8 +227,8 @@ an email) with all of the above.
 <<>>=
 # Give the function the right name
 .pearse.2014 <- function(...){
-    # Load the data using fulltext
-    data <- read.csv(ft_get_si("10.6084/m9.figshare.979288", 4), sep = ",", na.strings = c("","NA"))
+    # Load the data using suppdata
+    data <- read.csv(suppdata("10.6084/m9.figshare.979288", 4), sep = ",", na.strings = c("","NA"))
     
     # Get the data into the right format
     species <- rep(c("Carcinus_maenas"), nrow(data))
@@ -252,10 +252,10 @@ that author that year, then add \texttt{a}, \texttt{b}, \texttt{c},
 etc., after the function name (\emph{e.g.}, \texttt{.pearse.2014a}).
 
 The second part is loading the data. Please, please, please use
-\texttt{ft_get_si} from \texttt{fulltext}---all it requires is the DOI
+\texttt{suppdata} from \texttt{suppdata}---all it requires is the DOI
 of the journal where the paper was published, and either the name of
 the supplement or its number where the data is published, to download
-that data. I maintain that function in \texttt{fulltext}, so if it's
+that data. I maintain that function in \texttt{suppdata}, so if it's
 not possible to download data from the journal you prefer \emph{send
   me an email (\url{will.pearse@usu.edu}) or make an issue on the
   \natdb GitHub (see below) and I will fix this for you}.

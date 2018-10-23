@@ -23,7 +23,10 @@ Depends:
 Suggests: 
     testthat (>= 2.0.0),
     covr (>= 3.0.1),
-    knitr (>= 1.6)
+    knitr (>= 1.6),
+    pez (>= 1.1-1),
+    suppdata (>= 1.0-0),
+    phytools (>= 0.6-44)
 Imports:
     suppdata,
     testdat (>= 0.2-0),
