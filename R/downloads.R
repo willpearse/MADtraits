@@ -56,11 +56,13 @@
 }
 
 #' @export
-.anderson.2015 <- function (...){
+.reese.2016 <- function (...){
+  # Updating function name to reese.2016 (from original: .anderson.2015)
     data<-read.csv(suppdata("10.1371/journal.pone.0166714",2))
     metadata<-data[,c(2:4,44:46)]
     data<-data[,-c(2:4,44:46)]
-    units<-c("cm","g","cm^2",rep("?",4),rep("cm^2",7),"?",rep("g",7),rep("mg/g",7),rep("cm^2/g",7),rep("g",4))
+    # Updating units to set "Leaf1.LDMC" variable to have units of g (instead of ?)
+    units<-c("cm","g","cm^2",rep("?",4),rep("cm^2",7),rep("g",7),rep("mg/g",7),rep("cm^2/g",7),rep("g",4))
     data<-.df.melt(data,"Species",units=units,metadata=metadata)
     return(data)
 }
@@ -80,28 +82,32 @@
 .artacho.2015 <- function(...){
     data <- read.csv2(suppdata("10.5061/dryad.qg062", "phenotypictraits.csv"), sep=';')
     metadata <- data[,c(2:3,5)]
-    data <- data[,-c(1:5,10)]
-    data$species <- 'zootoca_vivipara'
+    # Updating data columns to data[,c(6:9,11:13)]. Previous columns captured incorrect variable values
+    data <- data[,c(6:9,11:13)]
     units <- c('mm', 'mm', 'g','C', 'J/h', 'cm/sec','cm/sec')
     data$SVL <- as.numeric(data$SVL)
     data$TTL <- as.numeric(data$TTL)
-    data$weight <- as.numeric(data$weight)
-    data$PBT <- as.numeric(data$PBT)
-    data$RMR <- as.numeric(data$RMR)
-    colnames(data) <- c('snout_vent_length', 'total_length','body_mass', 'prefered_body_temperature','resting_metabolic_rate','maximum_sprint_speed_intercept','maximum_sprint_speed_slope','species')
-    data$maximum_sprint_speed_intercept <- as.numeric(data$maximum_sprint_speed_intercept)
-    data$maximum_sprint_speed_slope <- as.numeric(data$maximum_sprint_speed_slope)
+    # Updating capture of columns that import as factors rather than integers...
+    data$weight <- as.numeric(as.character(data$weight))
+    data$PBT <- as.numeric(as.character(data$PBT))
+    data$RMR <- as.numeric(as.character(data$RMR))
+    data$MSS_intercept <- as.numeric(as.character(data$MSS_intercept))
+    data$MSS_slope <- as.numeric(as.character(data$MSS_slope))
+    data$species <- 'zootoca_vivipara'
+    names(data) <- c('snout_vent_length', 'total_length','body_mass', 'prefered_body_temperature','resting_metabolic_rate','maximum_sprint_speed_intercept','maximum_sprint_speed_slope','species')
     return(.df.melt(data, "species", units=units, metadata))
 }
 
 #' @export
 .aubret.2012a <- function(...){
+  #browser()
     data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), sheet=1))
     data$species <- "notechis_scutatus"
     metadata <- data.frame(data$POPULATION, data$DATE)
     data$POPULATION <- NULL
     data$DATE <- NULL
-    names(data) <- c("sex", "body_mass", "body_mass", "snout_vent_length", "snout_vent_length", "species")
+    # Updating variable names to indicate which ones are log values
+    names(data) <- c("sex", "body_mass", "log_body_mass", "snout_vent_length", "log_snout_vent_length", "species")
     units <- c(NA, "g", "log10(g)", "cm", "log10(cm)")
     return(.df.melt(data, "species", units, metadata))
 }
