@@ -100,7 +100,6 @@
 
 #' @export
 .aubret.2012a <- function(...){
-  #browser()
     data <- as.data.frame(read_excel(suppdata("10.5061/dryad.14cr5345", "Aubret%2053172.xlsx"), sheet=1))
     data$species <- "notechis_scutatus"
     metadata <- data.frame(data$POPULATION, data$DATE)
@@ -153,7 +152,8 @@
     data$species <- "hetaerina_americana"
     metadata <- data.frame(id=data$id)
     data$id <- NULL
-    data <- .df.melt(data, "species", c(NA, "#", "mm^2 ", "mm^2", "mm"), metadata)
+    # Updating to remove NA unit to correct units for all variables
+    data <- .df.melt(data, "species", c("#", "mm^2 ", "mm^2", "mm"), metadata)
     data$numeric$variable <- gsub("aspot", "wing_spot_area", data$numeric$variable, fixed=TRUE)
     data$numeric$variable <- gsub("awing", "wing_area", data$numeric$variable, fixed=TRUE)
     data$numeric$variable <- gsub("matings", "mating_events", data$numeric$variable, fixed=TRUE)
@@ -169,7 +169,8 @@
     metadata <- data.frame(data$Individual)
     data$Individual <- data$Estatus <- NULL
     levels(data$Status) <- c("satellite.male", "territorial.male")
-    return(.df.melt(data, "species", c(NA, NA, "mm", "mm", "?", "?", "log10(?)"), metadata))
+    # Updating units used for variables (changing ? to NA)
+    return(.df.melt(data, "species", c(NA, NA, "mm", "mm", "#", "NA", "NA"), metadata))
 }
 
 #' @export
