@@ -201,11 +201,14 @@
     as.is = TRUE
   )
   meta_data <- dl_data[,c(1,3:5)]
-  my_data <-  dl_data[, c(2, 6:13)]                 
+  my_data <-  dl_data[, c(2, 6:13)]
+  # Updating typo in specific_root_length variable
   colnames(my_data) <- c("species", "avg_leaf_area", "specific_leaf_area",
                          "shoot_mass", "root_mass", "total_mass", 
-                         "root-shoot_ratio", "avg_root_diameter", "specific_root_lenght")
+                         "root-shoot_ratio", "avg_root_diameter", "specific_root_length")
   my_units <- c("mm^2", "cm^2/g", "g", "g", "g", "NA", "mm", "cm/g")
+  # Updating capture of shoot_mass variable to be numeric (instead of character)
+  my_data$shoot_mass <- as.numeric(my_data$shoot_mass)
   final_data <-  .df.melt(                    
     x = my_data,
     spp = "species",
@@ -213,7 +216,6 @@
     metadata = meta_data)
   return(final_data)
 }
-
 
 #' @export
 .broeckhoven.2016 <- function(...){
@@ -247,11 +249,13 @@
 
 #' @export
 .cariveau.2016 <- function(...){
+  #browser()
     data <- as.data.frame(read_xlsx(suppdata("10.1371/journal.pone.0151482", 3), sheet="TableS1_v2"))
     metadata <- data[,c(1:3,6)]
     data$species <- with(data, tolower(paste(genus, species, sep="_")))
     data <- data[-c(1:4,6)]
-    data <- .df.melt(data, "species", units=c(rep(NA, 9), "mm","mm","mm","mm", NA, NA), metadata)
+    # Updating units to reduce number of NAs
+    data <- .df.melt(data, "species", units=c(rep(NA, 4), "mm","mm","mm","mm", NA, NA), metadata)
     return(data)
 }
 
@@ -262,7 +266,8 @@
     data$binomial <- names.data[,2][match(data$Species, names.data[,1])]
     metadata <- data[,1:3]
     data <- data[,-1:-3]
-    units <- c(NA, rep("cm",10), rep("mm^2",10), rep("mm^2/mg",10))
+    # Updating units to remove NA value, which sets off all other units to their appropriate variable by 1
+    units <- c(rep("cm",10), rep("mm^2",10), rep("mm^2/mg",10))
     data <- .df.melt(data, "binomial", units, metadata)
     data$numeric$variable <- gsub("Height[0-9]*", "height", data$numeric$variable)
     data$numeric$variable <- gsub("LeafArea[0-9]*", "leaf_area", data$numeric$variable)
@@ -319,6 +324,8 @@
         names[,1] <- gsub(p[i], r[i], names[,1])
     }
     units <- c("mm^2", 'mm^2','C','C','%','%',rep('C',7),rep('mm',3),'NA',rep('mm',4), 'C', 'C', '%', 'NA', rep('C',7), rep('mm',3), 'NA', rep('mm',4))
+    # Including line to pass names onto "Species" list within data object
+    data["Species"] <- names[,1]
     return(.df.melt(data,"Species",units=units, metadata))
 }
 
@@ -368,7 +375,8 @@
     data$species <- 'timema_cristinae'
     metadata <- data[,c(1:2)]
     data <- data[,-c(1:2)]
-    units <- c(rep(NA,8),rep('cm',4),rep(NA,2))
+    # Updating units
+    units <- c(rep(NA,9),rep('cm',3),rep(NA,1))
     return(.df.melt(data, "species",units,metadata))
 }
 
@@ -387,7 +395,7 @@
 .deraison.2014 <- function(...){
     data <- as.data.frame(read_excel(suppdata("10.5061/dryad.5q33h","Plant traits.xls"), sheet = 2))
     name.data <- as.data.frame(read_excel(suppdata("10.5061/dryad.5q33h","Plant traits.xls"), sheet = 1))
-    data$Plant.species <- name.data$Species.name[1:22]
+    data$'Plant species' <- name.data$'Species name'[1:22]
     names(data) <- c("species","leaf_dry_matter", "leaf_nitrogen_content", "leaf_carbon_content", "leaf_carbon_nitrogen_ratio", "leaf_thickness", "leaf_area", "perimeter_leaf_length_ratio")
     data <- data[,1:8]
     units <- c("%", rep("% g",2), NA, "mm", "cm^2", NA)
@@ -526,6 +534,7 @@
     metadata <- data[,c(1,3)]
     data <- data[,-c(1,3)]
     units <- c(rep('mm',4), rep('g',2), rep('cm^2',2), 'cm^3', '1/cm', rep('g/cm^3',2), "%", "cm^2/g", rep("%",4), 'NA', rep('s',4), 'NA', 'NA')
+    # Species names for this are truncated. Full names can be found in the 4th sheet of this Excel file ("species list"), but getting it into data might take a few lines.
     data <- .df.melt(data, "species", units, metadata)
     return(data)
 }
@@ -563,7 +572,8 @@
   #colnames(my_metadata)<- c("ID")
   #tidy and rename data
   tidied_data <- orig_data[c(1:3, 8)]
-  colnames(tidied_data) <- c("tarsus_lenght", "head_bill_lenght", "wing_lenght", "sex")
+  # Updating head_bill_length, wing_length variable names
+  colnames(tidied_data) <- c("tarsus_lenght", "head_bill_length", "wing_length", "sex")
   #add species and units
   tidied_data$species <- "cyanistes_caeruleus"
   my_units <- c("mm", "mm", "mm", NA)
@@ -591,13 +601,15 @@
     data$Temp.Nex.rt <- gsub(",",".",gsub(" ", "", data$Temp.Nex.rt))
     data$P.phosphate.ex.rt.ug.ind <- gsub(",",".",gsub(" ", "", data$P.phosphate.ex.rt.ug.ind))
     data$Min.NP.ex <- gsub(",",".",gsub(" ", "", data$Min.NP.ex))
+    # Note: this units here for ratios are : ....not sure if that makes sense; other functions just use NA
     units <- c(NA, NA, "mm", "mm", "mm","mg", "mg", "mg", "%", "%", "%", "mg", "%", "%", "%", "mg", "%","%", "%", "mg", ":", ":", ":", "%", "%", "%", "%", "%", "%", "ul O2 ind-1 h-1", "ul O2 mgDM -1 h-1","ul O2 mgDM -1 h-1", "ul O2 mgDM -1 h-1", "degC", "degC", "degC", "ug N-NH4+ ind-1 h-1", "ug N-NH4+ mgDM-1 h-1", "ug N-NH4+ mgDM-1 h-1", "ug N-NH4+ mgDM-1 h-1", "nmol N-NH4+ mg DM-1 h-1", "nmol N-NH4+ ind-1 h-1", "nmol N-NH4+ ind-1 h-1", "nmol N-NH4+ ind-1 h-1", "degC", "degC", "degC", "ug P-PO43- ind-1 h-1", "ug P-PO43- mg DM-1 h-1", "ug P-PO43- mg DM-1 h-1", "ug P-PO43- mg DM-1 h-1", "nmol P-PO43- mg DM-1 h-1", "nmol P-PO43- ind-1 h-1", "nmol P-PO43- ind-1 h-1", "nmol P-PO43- ind-1 h-1", "degC", "degC", "degC", ":", ":", ":")
     return(.df.melt(data, "binomial", units, metadata))
 }
 
 #' @export
 .hintze.2013 <- function(...){
-    data <- read.csv("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S1433831913000218/1-s2.0-S1433831913000218-mmc1.txt/273233/html/S1433831913000218/6bd947d6c0ccb7edd11cd8bf73648447/mmc1.txt", sep=";", as.is=TRUE, dec=",")
+    # Updating website for this function--old link went dead
+    data <- read.csv("https://ars.els-cdn.com/content/image/1-s2.0-S1433831913000218-mmc1.txt", sep=";", as.is=TRUE, dec=",")
     data$metadata <- seq_len(nrow(data))
     data$name <- sapply(strsplit(tolower(sanitize_text(data$name)),split=" "), function(x) paste(x[1:2], collapse="_"))
     data <- data[,!names(data) %in% c("comment","family","citation_total","citation_prop_ane","citation_prop_dyso","citation_prop_endo","citation_prop_epi","citation_prop_hem","citation_prop_hydro","citation_prop_other")]
@@ -634,7 +646,8 @@
     data <- read.csv(suppdata("E096-226", "SIA_N_C_Atlantic_marine_fishes_squids_20150105_v1.csv", "esa_archives"))
     metadata <- data[,c("record", "year", "DOY", "latitude", "longitude", "sea")]
     data <- data[,!names(data) %in% names(metadata)]
-    units <- c(NA, "g", "%", "%", "?", "?")
+    # Updating units to remove NA unit for mass variable
+    units <- c("g", "%", "%", "?", "?")
     return(.df.melt(data, "species", units, metadata))
 }
 
@@ -680,9 +693,9 @@
     metadata <- data[,c("MSW05_Order","MSW05_Family","MSW05_Genus","MSW05_Species","References")]
     data <- data[,!names(data) %in% names(metadata)]
     names(data) <- c("MSW05_Binomial", "X1.activity_cycle", "mass", "forearm_length", "head_body_length", "age_eye_open", "age_birth", "basal_metabolic_rate", "basal_metabolic_rate", "diet_breadth", "dispersal_age", "gestation_length", "habitat_breadth", "home_range", "individual_home_range", "interbirth_interval", "litter_size", "litters_per_year", "max_longevity", "neonate_mass", "neonate_body_length", "population_denisty", "population_group_size", "sexual_maturity_age", "social_group_size", "teat_number", "terrestrial", "trophic_level", "weaning_age", "weaning_mass", "weaning_body_length", "mass", "litters_per_year", "neonate_mass", "weaning_mass", "global_range_area", "max_latitude", "min_latitude", "mid_latitude", "max_longitude", "min_longitude", "mid_longitude", "min_human_population_density", "mean_human_population_density", "human_population_5p_n", "human_population_density_change", "mean_precipitation", "mean_temperature", "mean_actual_evapotranspiration", "mean_potential_evapostranspiration")
-    units <- c(NA, "g", "mm", "mm", "days", "days", "mL/hour", "g", NA, "days", "days", NA, "km^2", "km^2", "days", "#", "#/year", "months", "g", "mm", "km^2", "#", "days", "#", "#", NA, NA, "days", "g", "mm", "g", "#", "g", "g", "km^2", "?", "?", "", "?", "?", "?", "n/km^2", "#/km^2", "#/km^2", ":", "mm", "0.1degC", "mm", "mm")
+    # Updating units
+    units <- c(NA, "g", "mm", "mm", "days", "days", "mL/hour", NA, "days", "days", NA, "km^2", "km^2", "days", "#", "#/year", "months", "g", "mm", "#/km^2", "#", "days", "#", "#", NA, NA, "days", "g", "mm", "km^2", "dd", "dd", "dd", "dd", "dd", "dd", "#/km^2", "#/km^2", "#/km^2", "NA", "mm", "0.1degC", "mm", "mm")
     data <- .df.melt(data, "MSW05_Binomial", units=units)
-    
     data$character$species <- tolower(gsub(" ","_", data$character$species))
     data$numeric$species <- tolower(gsub(" ","_", data$numeric$species))
     return(data)
@@ -691,14 +704,14 @@
 #' @export
 .kamath.2016 <- function(...){
     data <- read.csv(suppdata("10.5061/dryad.9vk07","KamathLososEvol_AnolissagreiMorphAvg.csv"))
-    data <- data[,-c(1)]
+    # Updating metadata to capture ID, and data to capture sex (as a character variable)
     data$species <- 'anolis_sagrei'
-    metadata <- data[,c(1)]
+    metadata <- data[,1]
     metadata <- as.data.frame(metadata)
-    colnames(metadata) <- 'sex'
+    colnames(metadata) <- 'ID'
     data <- data[,-c(1)]
-    colnames(data) <- c('snout_vent_length','average_lamellae_count','toepad_area','limb_length','species')
-    units <- c('mm','NA','mm^2','mm',NA)
+    colnames(data) <- c('sex','snout_vent_length','average_lamellae_count','toepad_area','limb_length','species')
+    units <- c(NA,'mm',NA,'mm^2','mm',NA)
     return(.df.melt(data, "species", units, metadata))
 }
 
@@ -734,6 +747,9 @@
     data$species <- tolower(gsub(" ","_", data$species))
     metadata <- data[,c(1, 6, 9, 12:13)]
     data <- data[,-c(1, 6, 9, 12:13)]
+    # Updating columns with only numbers to be captured as numeric
+    data[,c(2,5,6,7,8)] <- sapply(data[,c(2,5,6,7,8)],as.numeric)
+    # Article doesn't appear to give units for mass and shore_height variables
     units <- c("?",NA,"?", "?","?","?","?",NA)
     data <- .df.melt(data, "species", units, metadata)
     return(data)
@@ -788,7 +804,8 @@
     our_data <- downl_data[, c(2:5, 8:10)] #Our data object
     colnames(our_data) <- c("sex", "alive", "age", "Inbreeding coefficient", "beak length", "beak depth", "beak width")
     our_data$species <- "Taeniopygia guttata"
-    our_units <- c("", "", "days", "", "mm", "mm", "mm")
+    # Updating absent units to NA (following the format of other functions...)
+    our_units <- c(NA, NA, "days", NA, "mm", "mm", "mm")
     our_final_data <- .df.melt(
         x = our_data, 
         spp = "species",
