@@ -56,18 +56,6 @@
 }
 
 #' @export
-.reese.2016 <- function (...){
-  # Updating function name to reese.2016 (from original: .anderson.2015)
-    data<-read.csv(suppdata("10.1371/journal.pone.0166714",2))
-    metadata<-data[,c(2:4,44:46)]
-    data<-data[,-c(2:4,44:46)]
-    # Updating units to set "Leaf1.LDMC" variable to have units of g (instead of ?)
-    units<-c("cm","g","cm^2",rep("?",4),rep("cm^2",7),rep("g",7),rep("mg/g",7),rep("cm^2/g",7),rep("g",4))
-    data<-.df.melt(data,"Species",units=units,metadata=metadata)
-    return(data)
-}
-
-#' @export
 .arnold.2016 <- function(...){
     data <- as.data.frame(read_excel(suppdata("10.5061/dryad.t3d52", "Arnold_etal_2016_functecol_dataset.xlsx"), skip = 3))
     species <- rep(c("Tribolium_castaneum"), nrow(data))
@@ -208,7 +196,7 @@
                          "root-shoot_ratio", "avg_root_diameter", "specific_root_length")
   my_units <- c("mm^2", "cm^2/g", "g", "g", "g", "NA", "mm", "cm/g")
   # Updating capture of shoot_mass variable to be numeric (instead of character)
-  my_data$shoot_mass <- as.numeric(my_data$shoot_mass)
+  my_data$shoot_mass <- suppressWarnings(as.numeric(my_data$shoot_mass)) 
   final_data <-  .df.melt(                    
     x = my_data,
     spp = "species",
@@ -249,7 +237,6 @@
 
 #' @export
 .cariveau.2016 <- function(...){
-  #browser()
     data <- as.data.frame(read_xlsx(suppdata("10.1371/journal.pone.0151482", 3), sheet="TableS1_v2"))
     metadata <- data[,c(1:3,6)]
     data$species <- with(data, tolower(paste(genus, species, sep="_")))
@@ -1353,6 +1340,18 @@
     data <- data[,-c(1:7,11,12,15,16,19,20)]
     units <- c('log10','log10','log10',NA,'mm^2',NA,'mm^2','log10','um')
     return(.df.melt(data,"Species",units=units, metadata))
+}
+
+#' @export
+.reese.2016 <- function (...){
+  # Updating function name to reese.2016 (from original: .anderson.2015), and moving to alphabetatical location in file
+  data<-read.csv(suppdata("10.1371/journal.pone.0166714",2))
+  metadata<-data[,c(2:4,44:46)]
+  data<-data[,-c(2:4,44:46)]
+  # Updating units to set "Leaf1.LDMC" variable to have units of g (instead of ?)
+  units<-c("cm","g","cm^2",rep("?",4),rep("cm^2",7),rep("g",7),rep("mg/g",7),rep("cm^2/g",7),rep("g",4))
+  data<-.df.melt(data,"Species",units=units,metadata=metadata)
+  return(data)
 }
 
 #' @export
