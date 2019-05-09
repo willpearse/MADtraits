@@ -10,28 +10,12 @@ test_that(".albouy.2015", {
     expect_equal(length(unique(data$character$variable)),  17)
 })
 
-test_that('.anderson.2015', {
-    data <- .anderson.2015()
-    expect_equal(nrow(data$numeric), 8387 )
-    expect_equal(length(unique(data$numeric$variable)), 39 )
-    expect_equal(nrow(data$character), NULL)
-    expect_equal(length(unique(data$character$variable)), 0 )
-})
-
 test_that(".ameztegui.2016", {
     data <- .ameztegui.2016()
     expect_equal(nrow(data$numeric),  430)
     expect_equal(length(unique(data$numeric$variable)),  9)
     expect_equal(nrow(data$character), 192)
     expect_equal(length(unique(data$character$variable)),  4)
-})
-
-test_that(".anderson.2015", {
-    data <- .anderson.2015()
-    expect_equal(nrow(data$numeric),  8387)
-    expect_equal(length(unique(data$numeric$variable)),  39)
-    expect_equal(nrow(data$character), NULL)
-    expect_equal(length(unique(data$character$variable)),  0)
 })
 
 test_that(".arnold.2016", {
@@ -117,10 +101,11 @@ test_that(".bengtsson.2016", {
 
 test_that('.bennett.2016', {
     data <- .bennett.2016()
-    expect_equal(nrow(data$numeric), 3401 )
-    expect_equal(length(unique(data$numeric$variable)), 7 )
-    expect_equal(nrow(data$character), 725 )
-    expect_equal(length(unique(data$character$variable)), 1 )
+    # Updating numeric and character values, now that shoot_mass variableis being captured as numeric
+    expect_equal(nrow(data$numeric), 4124 )
+    expect_equal(length(unique(data$numeric$variable)), 8 )
+    expect_equal(nrow(data$character), NULL )
+    expect_equal(length(unique(data$character$variable)), 0 )
 })
 
 test_that(".broeckhoven.2016", {
@@ -333,20 +318,20 @@ test_that(".grootemaat.2015", {
     expect_equal(length(unique(data$character$variable)),  0)
 })
 
+test_that(".grutters.2017", {
+  data <- .grutters.2017()
+  expect_equal(nrow(data$numeric),  451)
+  expect_equal(length(unique(data$numeric$variable)),  11)
+  expect_equal(nrow(data$character), NULL)
+  expect_equal(length(unique(data$character$variable)),  0)
+})
+
 test_that('.hadfield.2013', {
     data <- .hadfield.2013()
     expect_equal(nrow(data$numeric), 5227 )
     expect_equal(length(unique(data$numeric$variable)), 3 )
     expect_equal(nrow(data$character), 1593 )
     expect_equal(length(unique(data$character$variable)), 1 )
-})
-
-test_that(".grutters.2017", {
-    data <- .grutters.2017()
-    expect_equal(nrow(data$numeric),  451)
-    expect_equal(length(unique(data$numeric$variable)),  11)
-    expect_equal(nrow(data$character), NULL)
-    expect_equal(length(unique(data$character$variable)),  0)
 })
 
 test_that('.hebert.2016', {
@@ -421,8 +406,9 @@ test_that('.kamath.2016', {
     data <- .kamath.2016()
     expect_equal(nrow(data$numeric), 152 )
     expect_equal(length(unique(data$numeric$variable)), 4 )
-    expect_equal(nrow(data$character), NULL)
-    expect_equal(length(unique(data$character$variable)), 0 )
+    # Updating expected character data, to accomodate capture of sex (which is no longer captured as metadata)
+    expect_equal(nrow(data$character), 38)
+    expect_equal(length(unique(data$character$variable)), 1 )
 })
 
 test_that('.kamilar.2015', {
@@ -435,10 +421,11 @@ test_that('.kamilar.2015', {
 
 test_that('.kefi.2016', {
     data <- .kefi.2016()
-    expect_equal(nrow(data$numeric), NULL)
-    expect_equal(length(unique(data$numeric$variable)), 0)
-    expect_equal(nrow(data$character), 854)
-    expect_equal(length(unique(data$character$variable)), 8)
+    # Updating expected numeric and character data, to reflect capture of 5 different variables as numeric
+    expect_equal(nrow(data$numeric), 152)
+    expect_equal(length(unique(data$numeric$variable)), 4)
+    expect_equal(nrow(data$character), 38)
+    expect_equal(length(unique(data$character$variable)), 1)
 })
 
 test_that('.kelt.2015', {
@@ -457,6 +444,30 @@ test_that('.kissling.2014', {
     expect_equal(length(unique(data$character$variable)), 1 )
 })
 
+test_that('.klomp.2016', {
+  data <- .klomp.2016()
+  expect_equal(nrow(data$numeric), 151 )
+  expect_equal(length(unique(data$numeric$variable)), 12 )
+  expect_equal(nrow(data$character), NULL)
+  expect_equal(length(unique(data$character$variable)), 0 )
+})
+
+test_that('.knief.2012', {
+  data <- .knief.2012()
+  expect_equal(nrow(data$numeric), 15568 )
+  expect_equal(length(unique(data$numeric$variable)), 7 )
+  expect_equal(nrow(data$character), NULL)
+  expect_equal(length(unique(data$character$variable)), 0 )
+})
+
+test_that('.kolbe.2011', {
+  data <- .kolbe.2011()
+  expect_equal(nrow(data$numeric), 315 )
+  expect_equal(length(unique(data$numeric$variable)), 15 )
+  expect_equal(nrow(data$character), NULL)
+  expect_equal(length(unique(data$character$variable)), 0 )
+})
+
 test_that('.kraft.2015 family', {
     data <- .kraft.2015a()
     expect_equal(nrow(data$numeric), 2324 )
@@ -466,30 +477,6 @@ test_that('.kraft.2015 family', {
 
     data <- .kraft.2015b()
     expect_equal(nrow(data$numeric), 1980 )
-    expect_equal(length(unique(data$numeric$variable)), 15 )
-    expect_equal(nrow(data$character), NULL)
-    expect_equal(length(unique(data$character$variable)), 0 )
-})
-
-test_that('.klomp.2016', {
-    data <- .klomp.2016()
-    expect_equal(nrow(data$numeric), 151 )
-    expect_equal(length(unique(data$numeric$variable)), 12 )
-    expect_equal(nrow(data$character), NULL)
-    expect_equal(length(unique(data$character$variable)), 0 )
-})
-
-test_that('.knief.2012', {
-    data <- .knief.2012()
-    expect_equal(nrow(data$numeric), 15568 )
-    expect_equal(length(unique(data$numeric$variable)), 7 )
-    expect_equal(nrow(data$character), NULL)
-    expect_equal(length(unique(data$character$variable)), 0 )
-})
-
-test_that('.kolbe.2011', {
-    data <- .kolbe.2011()
-    expect_equal(nrow(data$numeric), 315 )
     expect_equal(length(unique(data$numeric$variable)), 15 )
     expect_equal(nrow(data$character), NULL)
     expect_equal(length(unique(data$character$variable)), 0 )
@@ -783,6 +770,15 @@ test_that('.rahman.2013', {
     expect_equal(length(unique(data$numeric$variable)), 9 )
     expect_equal(nrow(data$character), NULL)
     expect_equal(length(unique(data$character$variable)), 0 )
+})
+
+# Updating .anderson.2015 to .reese.2016 and moving to alphabetical location in file
+test_that(".reese.2016", {
+  data <- .reese.2016()
+  expect_equal(nrow(data$numeric),  8387)
+  expect_equal(length(unique(data$numeric$variable)),  39)
+  expect_equal(nrow(data$character), NULL)
+  expect_equal(length(unique(data$character$variable)),  0)
 })
 
 test_that('.rojas.2013', {
