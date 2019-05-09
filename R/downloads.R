@@ -590,7 +590,7 @@
 
 #' @export
 .hintze.2013 <- function(...){
-    data <- read.csv("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S1433831913000218/1-s2.0-S1433831913000218-mmc1.txt/273233/html/S1433831913000218/6bd947d6c0ccb7edd11cd8bf73648447/mmc1.txt", sep=";", as.is=TRUE, dec=",")
+    data <- read.csv("https://ars.els-cdn.com/content/image/1-s2.0-S1433831913000218-mmc1.txt", sep=";", as.is=TRUE, dec=",")
     data$metadata <- seq_len(nrow(data))
     data$name <- sapply(strsplit(tolower(sanitize_text(data$name)),split=" "), function(x) paste(x[1:2], collapse="_"))
     data <- data[,!names(data) %in% c("comment","family","citation_total","citation_prop_ane","citation_prop_dyso","citation_prop_endo","citation_prop_epi","citation_prop_hem","citation_prop_hydro","citation_prop_other")]
@@ -1057,7 +1057,7 @@
 #' @export
 .mccullough.2015<-function(...){
     file<-tempfile()
-    download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file, quiet=TRUE)
+    download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx",file, quiet=TRUE)
     data<-as.data.frame(read_xlsx(file))
     units<-c("mm","mm")
     data<-.df.melt(data,"Species",units=units)
