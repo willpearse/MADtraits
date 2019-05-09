@@ -3,6 +3,11 @@ language: r
 cache: packages
 latex: false
 
+addons:
+  apt:
+    packages:
+      libmagick++-dev
+
 r_github_packages:
   - ropensci/testdat
   - ropensci/suppdata

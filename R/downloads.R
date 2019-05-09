@@ -1068,7 +1068,7 @@
 #' @export
 .mccullough.2015<-function(...){
     file<-tempfile()
-    download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx/272524/html/S0003347215003103/0bb76368c8bbec26cf11858140abe3e8/mmc1.xlsx",file, quiet=TRUE)
+    download.file("http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0003347215003103/1-s2.0-S0003347215003103-mmc1.xlsx",file, quiet=TRUE)
     data<-as.data.frame(read_xlsx(file))
     units<-c("mm","mm")
     data<-.df.melt(data,"Species",units=units)
