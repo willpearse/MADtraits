@@ -75,17 +75,16 @@ natdb <- function(cache, datasets, delay=5){
                 output[[i]] <- readRDS(path)
             } else {
                 capture.output(output[[i]] <- tryCatch(
-                                   eval(as.name(datasets[i]))()),
-                               error=.warn.func)
+                                   eval(as.name(datasets[i]))(),
+                                   error=.warn.func))
                 if(!is.null(output[[i]]))
                     saveRDS(output[[i]], path)
-                print(output[[i]])
                 Sys.sleep(delay)
             }
         } else {
             capture.output(output[[i]] <- tryCatch(
-                                   eval(as.name(datasets[i]))()),
-                           error=.warn.func)
+                               eval(as.name(datasets[i]))(),
+                               error.warn.func))
             Sys.sleep(delay)
         }
         
