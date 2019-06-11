@@ -10,7 +10,7 @@
 #' @param ... Optional arguments that can be specified to a function
 #'     at run-time. Currently, all arguments passed to any of these
 #'     functions are ignored.
-#' @return \code{\link{MADtraits}} object
+#' @return \code{MADtraits} object
 #' @author William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen,
 #'     Mallory A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian,
 #'     Ryan McCleary, Anne E. McManis, Alexandre Rego, & Kathryn M
@@ -19,7 +19,7 @@
 #' @name datasets
 #' @examples
 #' # You almost certainly *don't* want to use these functions on their own
-#' # - use the function "natdb" to build a database instead
+#' # - use the function "MADtraits" to build a database instead
 #' crab.data <- .pearse.2014()
 #' str(crab.data)
 #' @export
