@@ -829,8 +829,8 @@
     data <- read.csv(suppdata("10.5061/dryad.69ph0", "Kraft_et_al%20data.csv"), sep = ",", as.is = TRUE, na.strings = c("","NA"))
     data <-  data[1:166,-19]
     data$Species <- tolower(gsub(" ", "_", data$Species, ignore.case = TRUE))
-    metadata <- data[,c(2:3)]
-    data <- data[,-c(2:3)]
+    metadata <- data[,c(2:3,15)]
+    data <- data[,-c(2:3,15)]
     units <- c(rep("mm",3), "mm^3", rep("mm",3), rep("J/m^2",2), "%", "%", "#", "m", "#", "density", NA, NA)
     data <- .df.melt(data, "Species", units, metadata)
     return(data)
@@ -875,7 +875,7 @@
     data <- read.delim(suppdata("10.5061/dryad.t897q", "hummer_traits_Lessard.txt"), sep = " ", row.names = NULL)
     species <- tolower(data[,1])
     data <- data.frame(species, data[,-c(1)])
-    units <- c("g", "mm", "degC", "?", "range")
+    units <- c("g", "mm", "degC", "?", "?")
     return(.df.melt(data, "species", units))
 }
 
@@ -918,7 +918,8 @@
 .lislevand.2006 <- function(...){
     data("shorebird", package="caper", envir=environment())
     names(shorebird.data) <- c("species","body_mass_male","body_mass_female","egg_mass","clutch_size","mating_system")
-    units <- c("g","g","f",NA,NA)
+    units <- c("g","g","#",NA,NA)
+    levels(shorebird.data$mating_system) <- c("monogamous", "polygynous", "polyandrous")
     shorebird.data$species <- tolower(gsub(" ", "_", (shorebird.data$species)))
     return(.df.melt(shorebird.data, "species", units=units))
 }
@@ -1029,8 +1030,8 @@
     # dcast is turning numerics into characters
     for(i in seq_len(ncol(data)))
         data[,i] <- type.convert(data[,i], as.is=TRUE)
-    data <- .df.melt(data, "species", units=units)
-    return(data)
+    units[76] <- "g cm^-3"
+    return(.df.melt(data, "species", units=units))
 }
 
 #' @export
@@ -1039,7 +1040,7 @@
     metadata <- data[,c(1:3,7:9)]
     data <- data[,-c(1:3,7:9)]
     units <- c('cm','kg','kg')
-    data$Species <- 'O_canadensis'
+    data$Species <- 'Ovis_canadensis'
     return(.df.melt(data,"Species",units=units, metadata))
 }
 
@@ -1059,8 +1060,8 @@
 #' @export
 .marx.2016 <- function(...){
     data <- read.csv(suppdata("10.5061/dryad.m88g7","DRYAD2_SJtraits.csv"))
-    names(data)[3:7] <- c("Seed.Mass","Maximum.Height","","Leaf.Size","Leaf.Nitrogen")
-    units <- c(NA,"mg","m","cm^2/g","cm^2","specific_leaf_area")
+    names(data)[3:7] <- c("Seed.Mass","Maximum.Height","specific_leaf_area","Leaf.Size","Leaf.Nitrogen")
+    units <- c(NA,"mg","m","cm^2/g","cm^2","%")
     metadata <- data[,2,drop=FALSE]
     return(.df.melt(data, "Species", units=units, metadata=metadata))
 }
