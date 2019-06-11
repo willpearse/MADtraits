@@ -3,7 +3,7 @@
 \name{datasets}
 \alias{datasets}
 \alias{.albouy.2015}
-\title{Internal dataset wrappers used by NATDB}
+\title{Internal dataset wrappers used by MADtraits}
 \usage{
 .albouy.2015(...)
 }
@@ -13,15 +13,15 @@ at run-time. Currently, all arguments passed to any of these
 functions are ignored.}
 }
 \value{
-\code{\link{natdb}} object
+\code{\link{MADtraits}} object
 }
 \description{
 Each of these functions downloads a dataset from a published
 dataset that (to the best of the authors' knowledge) has been
 released for public use. Please note that it is *impossible* for
-NATDB to download a dataset that has not been released to the user;
-NATDB is Not A DataBase; these functions download data to which the
-user already has access.
+MADtraits to download a dataset that has not been released to the
+user; MADtraits Makes a Database of Traits; these functions
+download data to which the user already has access.
 }
 \examples{
 # You almost certainly *don't* want to use these functions on their own

@@ -1,21 +1,20 @@
-Package: natdb
+Package: MADtraits
 Type: Package
-Title: Not A Trait DataBase
+Title: Make A Database of traits
 Version: 1.0-0
 Author: William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen, Mallory
     A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian, Ryan McCleary,
     Anne E. McManis, Alexandre Rego, & Kathryn M Welglarz
 Maintainer: Will Pearse <will.pearse@usu.edu>
-Description: Automates the download and assembly of species'
-    trait data from published sources. It emphatically is *not* a
-    trait database (the clue is in the name): it assembles data that
-    are already available for the user, but this is a software package
-    that builds a database, not the database itself. Those who have
-    contributed trait data that is downloaded should, of course, be
-    appropriately referenced when their data are used (tools are
-    available within this package to aid that). Some basic data
-    checking, and functions to perform data checking, are included
-    within this package.
+Description: Automates the download and assembly of species' trait
+    data from published sources. This package is not a database, but
+    rather Makes A Database of traits from published, existing
+    sources. Those who have contributed trait data that is downloaded
+    should, of course, be appropriately referenced when their data are
+    used (tools are available within this package to aid that). Some
+    basic data checking, and functions to perform data checking, are
+    included within this package, but the user should check their data
+    before serious use.
 License: MIT + file LICENSE
 RoxygenNote: 6.1.1
 Depends:
@@ -29,7 +28,6 @@ Suggests:
     phytools (>= 0.6-44)
 Imports:
     suppdata,
-    testdat (>= 0.2-0),
     gdata (>= 2.17.0),
     reshape2 (>= 1.4.2),
     httr (>= 1.2.1),

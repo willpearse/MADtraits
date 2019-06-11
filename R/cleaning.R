@@ -171,7 +171,7 @@ clean.natdb <- function(x){
     if(!is.null(x$categorical)){
         x$categorical$variable <- tolower(x$categorical$variable)
         x$categorical$variable <- gsub(" |\\.", "_", x$categorical$variable)
-        x$categorical$species <- tolower(gsub(" ", "_", sanitize_text(x$categorical$species), perl=TRUE, useBytes=TRUE))
+        x$categorical$species <- tolower(gsub(" ", "_", .sanitize.text(x$categorical$species), perl=TRUE, useBytes=TRUE))
     }
     
     return(x)

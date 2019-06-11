@@ -65,3 +65,18 @@ prog.bar <- function(x, y){
                 tryCatch(if(z[1] < 1) if((length(z) %% 10)==0) cat("|") else cat("."), error=function(z) cat("."))
         }
 }
+# This is testdat::santize_text; taken so that this package can be uploaded to CRAN
+.sanitize.text <- function(input_text) {
+    assert_that(is.character(input_text))
+    sanitize.each.element <- function(elem) {
+        if (Encoding(elem) == "unknown")
+            enc <- "ASCII"
+        else
+            enc <- Encoding(elem)
+
+        iconv(elem, from=enc, to="ASCII", sub="")
+    }
+    input_text <- sapply(input_text, sanitize.each.element)
+    names(input_text) <- NULL
+    input_text
+}

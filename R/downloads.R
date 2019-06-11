@@ -1,16 +1,16 @@
-#' Internal dataset wrappers used by NATDB
+#' Internal dataset wrappers used by MADtraits
 #'
 #' Each of these functions downloads a dataset from a published
 #' dataset that (to the best of the authors' knowledge) has been
 #' released for public use. Please note that it is *impossible* for
-#' NATDB to download a dataset that has not been released to the user;
-#' NATDB is Not A DataBase; these functions download data to which the
-#' user already has access.
+#' MADtraits to download a dataset that has not been released to the
+#' user; MADtraits Makes a Database of Traits; these functions
+#' download data to which the user already has access.
 #' 
 #' @param ... Optional arguments that can be specified to a function
 #'     at run-time. Currently, all arguments passed to any of these
 #'     functions are ignored.
-#' @return \code{\link{natdb}} object
+#' @return \code{\link{MADtraits}} object
 #' @author William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen,
 #'     Mallory A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian,
 #'     Ryan McCleary, Anne E. McManis, Alexandre Rego, & Kathryn M
@@ -27,7 +27,6 @@
 #' @importFrom suppdata suppdata
 #' @importFrom readxl read_excel read_xls read_xlsx
 #' @importFrom utils read.csv read.csv2 read.delim read.table unzip
-#' @importFrom testdat sanitize_text
 #' @importFrom tidyr unite
 #' @importFrom caper pgls
 #' @importFrom utils type.convert data download.file unzip
@@ -587,7 +586,7 @@
 .hintze.2013 <- function(...){
     data <- read.csv("https://ars.els-cdn.com/content/image/1-s2.0-S1433831913000218-mmc1.txt", sep=";", as.is=TRUE, dec=",")
     data$metadata <- seq_len(nrow(data))
-    data$name <- sapply(strsplit(tolower(sanitize_text(data$name)),split=" "), function(x) paste(x[1:2], collapse="_"))
+    data$name <- sapply(strsplit(tolower(.sanitize.text(data$name)),split=" "), function(x) paste(x[1:2], collapse="_"))
     data <- data[,!names(data) %in% c("comment","family","citation_total","citation_prop_ane","citation_prop_dyso","citation_prop_endo","citation_prop_epi","citation_prop_hem","citation_prop_hydro","citation_prop_other")]
     return(.df.melt(data, "name"))
 }
@@ -1441,7 +1440,7 @@
     meta <- data[,"ParasiteTraitsCitation",drop=FALSE]
     data <- data[,names(data)!="ParasiteTraitsCitation"]
     units <- rep(NA,4)
-    data$species <- tolower(gsub(" ","_", sanitize_text(data$species)))
+    data$species <- tolower(gsub(" ","_", .sanitize.text(data$species)))
     return(.df.melt(data, "species", units=units, metadata=meta))
 }
 
@@ -1561,7 +1560,7 @@
                                                "evergreen_deciduous","blank4","leaf_type")
     ))
     data$species <- gsub("\xa0", " ", data$species)
-    data$species <- sanitize_text(data$species)
+    data$species <- .sanitize.text(data$species)
     data$species <- sapply(strsplit(data$species, " "), function(x) paste(x[1:2], collapse="_"))
     data <- data[,!grepl("blank", names(data))]
     metadata <- data.frame(site=data$site, family=data$family)

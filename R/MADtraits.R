@@ -1,8 +1,8 @@
-#' Builds a trait database
+#' Make A Database of Traits
 #'
-#' The key function of the natdb package. When run with defaults, it
-#' will download and build a database of species' traits from all the
-#' manuscript sources in the package. This totals XXX
+#' The key function of the MADtraits package. When run with defaults,
+#' it will download and build a database of species' traits from all
+#' the manuscript sources in the package. This totals XXX
 #' manuscripts/databases, XXX species, and XXX traits. *Please* make
 #' use the the \code{cache} feature, as it will massively speed and
 #' ease your use of the package.
@@ -22,14 +22,14 @@
 #'     over-stretch servers. Keeping servers happy is good for you
 #'     (they won't reject you!) and good for them (they can help
 #'     everyone).
-#' @return natdb.data object. XXX
+#' @return MADtraits.data object. XXX
 #' @author Will Pearse; USU Biology Nerd Group (XXX)
 #' @examples
 #' \dontrun{
-#' # Download all NATDB data, and cache (save) it on your hard-drive for use later
-#' data <- natdb(cache="Documents/natdb/cache")
+#' # Download all MADtraits data, and cache (save) it on your hard-drive for use later
+#' data <- MADtraits(cache="Documents/MADtraits/cache")
 #' # Perform basic checks and cleaning on that data
-#' clean.data <- clean.natdb(data)
+#' clean.data <- clean.MADtraits(data)
 #'
 #' # Subset data down to the traits you want (notice the comma position)
 #' subset.data <- clean.data[,c("specific_leaf_area","height")]
@@ -41,21 +41,21 @@
 #' # Convert that into a data.frame for use in an analysis
 #' neat.data <- as.data.frame(clean.data)
 #' }
-#' @seealso clean.natdb convert.natdb.units lookup.natdb.species
+#' @seealso clean.MADtraits convert.MADtraits.units lookup.MADtraits.species
 #' @export
 #' @importFrom gdata ls.funs
 #' @importFrom utils capture.output
-natdb <- function(cache, datasets, delay=5){
+MADtraits <- function(cache, datasets, delay=5){
     #Check datasets
     if(missing(datasets)){
-        datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:natdb", all.names=TRUE))
+        datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:MADtraits", all.names=TRUE))
     } else {
         datasets <- paste0(".", tolower(datasets))
         datasets <- gsub("..", ".", datasets, fixed=TRUE)
     }
     if(!all(datasets %in% datasets)){
         missing <- setdiff(datasets, ls.funs())
-        stop("Error: ", paste(missing, collapse=", "), "not in natdb")
+        stop("Error: ", paste(missing, collapse=", "), "not in MADtraits")
     }
 
     .warn.func <- function(x){
@@ -100,15 +100,15 @@ natdb <- function(cache, datasets, delay=5){
                            lapply(Filter(function(y) !is.null(y[[2]]), output), function(x) x[[2]])
                            )
     output <- list(numeric=numeric, categorical=categorical)
-    class(output) <- "natdb"
+    class(output) <- "MADtraits"
     cat("\n")
     return(output)
 }
 
-print.natdb <- function(x, ...){
+print.MADtraits <- function(x, ...){
     # Argument handling
-    if(!inherits(x, "natdb"))
-        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
+    if(!inherits(x, "MADtraits"))
+        stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
     
     # Do main summary
     output <- matrix(0, 3, 3, dimnames=list(c("Numeric","Categorical","Total"),c("Species","Traits","Data-points:")))
@@ -134,14 +134,14 @@ print.natdb <- function(x, ...){
     invisible(output)
 }
 
-summary.natdb <- function(x, ...){
-    print.natdb(x, ...)
+summary.MADtraits <- function(x, ...){
+    print.MADtraits(x, ...)
 }
 
-"[.natdb" <- function(x, spp, traits){
+"[.MADtraits" <- function(x, spp, traits){
     # Argument handling
-    if(!inherits(x, "natdb"))
-        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
+    if(!inherits(x, "MADtraits"))
+        stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
 
     # Species
     if(!missing(spp)){
@@ -164,23 +164,23 @@ summary.natdb <- function(x, ...){
     }
 
     output <- list(categorical=x$categorical, numeric=x$numeric)
-    class(output) <- "natdb"
+    class(output) <- "MADtraits"
     return(output)
 }
 
 species <- function(x, ...){
-    if(!inherits(x, "natdb"))
-        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
+    if(!inherits(x, "MADtraits"))
+        stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
     return(unique(c(x$numeric$species,x$categorical$species)))
 }
 
 traits <- function(x, ...){
-    if(!inherits(x, "natdb"))
-        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")
+    if(!inherits(x, "MADtraits"))
+        stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
     return(unique(c(x$numeric$variable,x$categorical$variable)))
 }
 
-#' @param x \code{natdb} object to be printed
+#' @param x \code{MADtraits} object to be printed
 #' @param num.func To summarise data at the species level (which is
 #'     done by default), a function is needed to summarise the
 #'     continuous data at the species level. This argument specifies
@@ -196,7 +196,7 @@ traits <- function(x, ...){
 #'     numeric, the top \code{data} variables with the most data will
 #'     be summarised (default: top ten variables). You can also
 #'     specify variable names if you wish. Note: there are over a
-#'     thousand variables and over 100,000 species in NATDB - you *do
+#'     thousand variables and over 100,000 species in MADTRAITS - you *do
 #'     not* want to turn all of this data into a single
 #'     \code{data.frame}, as it will be unmanageable. Subset your data
 #'     down first to your species or traits of interest (see
@@ -204,13 +204,13 @@ traits <- function(x, ...){
 #' @param row.names Ignored
 #' @param optional Ignored
 #' @param ... ignored
-#' @rdname natdb
-#' @method as.data.frame natdb
+#' @rdname MADtraits
+#' @method as.data.frame MADtraits
 #' @export
-as.data.frame.natdb <- function(x, row.names, optional, num.func=mean, cat.func=function(x) names(which.max(table(x))), data=10, ...){
+as.data.frame.MADtraits <- function(x, row.names, optional, num.func=mean, cat.func=function(x) names(which.max(table(x))), data=10, ...){
     # Argument handling
-    if(!inherits(x, "natdb"))
-        stop("'", deparse(substitute(x)), "' must be of type 'natdb'")    
+    if(!inherits(x, "MADtraits"))
+        stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")    
     if(!is.function(num.func))
         stop("'", deparse(substitute(num.func)), "' must be a function to summarise data")
     if(!is.function(cat.func))
