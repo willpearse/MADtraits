@@ -85,7 +85,7 @@ MADtraits <- function(cache, datasets, delay=5){
         } else {
             capture.output(output[[i]] <- tryCatch(
                                eval(as.name(datasets[i]))(),
-                               .warn.func))
+                               error=.warn.func))
             Sys.sleep(delay)
         }
         

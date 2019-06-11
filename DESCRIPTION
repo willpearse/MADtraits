@@ -2,7 +2,7 @@ Package: MADtraits
 Type: Package
 Title: Make A Database of traits
 Version: 1.0-0
-Author: William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen, Mallory
+Author: William D. Pearse, Maxwell J. Farrell, Konrad C. Hafen, Mallory
     A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian, Ryan McCleary,
     Anne E. McManis, Alexandre Rego, & Kathryn M Welglarz
 Maintainer: Will Pearse <will.pearse@usu.edu>
@@ -22,9 +22,7 @@ Depends:
 Suggests: 
     testthat (>= 2.0.0),
     covr (>= 3.0.1),
-    knitr (>= 1.6),
-    pez (>= 1.1-1),
-    phytools (>= 0.6-44)
+    knitr (>= 1.6)
 Imports:
     suppdata (>= 1.1-1),
     gdata (>= 2.17.0),
