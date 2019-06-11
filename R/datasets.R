@@ -1,22 +1,22 @@
-#' @name natdb_datasets
+#' @name MADtraits_datasets
 #' @title Get vector of the IDs for all datasets available within
-#'     NATDB
+#'     MADTRAITS
 #' @description Returns a vector of all IDs for the datasets that
-#'     NATDB can download. This can be used to identify particular
-#'     datasets you wish to download using \code{\link{natdb}}.
+#'     MADTRAITS can download. This can be used to identify particular
+#'     datasets you wish to download using \code{\link{MADtraits}}.
 #' @keywords datasets
-#' @usage natdb_datasets()
-#' @seealso citations natdb
+#' @usage MADtraits_datasets()
+#' @seealso citations MADtraits
 #' @return Vector of dataset IDs
 #' @author Will Pearse; Matthew Helmus
 #' @examples
 #' \dontrun{
-#' datasets <- natdb_datasets()
-#' data <- natdb(datasets = datasets[1:2])
+#' datasets <- MADtraits_datasets()
+#' data <- MADtraits(datasets = datasets[1:2])
 #' }
 #' 
 #' @export
-natdb_datasets <- function(){
-    datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:natdb", all.names=TRUE))
+MADtraits_datasets <- function(){
+    datasets <- Filter(Negate(is.function), ls(pattern="^\\.[a-z]*\\.[0-9]+", name="package:MADtraits", all.names=TRUE))
   return(datasets)
 } 

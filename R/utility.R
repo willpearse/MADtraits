@@ -54,7 +54,7 @@
 
     #Cleanup and return
     output <- list(numeric=numeric,character=character)
-    class(output) <- "natdb"
+    class(output) <- "MADtraits"
     return(output)
 }
 prog.bar <- function(x, y){
@@ -66,6 +66,7 @@ prog.bar <- function(x, y){
         }
 }
 # This is testdat::santize_text; taken so that this package can be uploaded to CRAN
+#' @importFrom assertthat assert_that
 .sanitize.text <- function(input_text) {
     assert_that(is.character(input_text))
     sanitize.each.element <- function(elem) {

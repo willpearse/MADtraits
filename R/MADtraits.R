@@ -45,6 +45,7 @@
 #' @export
 #' @importFrom gdata ls.funs
 #' @importFrom utils capture.output
+#' @rdname MADtraits
 MADtraits <- function(cache, datasets, delay=5){
     #Check datasets
     if(missing(datasets)){
@@ -84,7 +85,7 @@ MADtraits <- function(cache, datasets, delay=5){
         } else {
             capture.output(output[[i]] <- tryCatch(
                                eval(as.name(datasets[i]))(),
-                               error.warn.func))
+                               .warn.func))
             Sys.sleep(delay)
         }
         
@@ -104,7 +105,9 @@ MADtraits <- function(cache, datasets, delay=5){
     cat("\n")
     return(output)
 }
-
+#' @export
+#' @rdname MADtraits
+#' @method print MADtraits
 print.MADtraits <- function(x, ...){
     # Argument handling
     if(!inherits(x, "MADtraits"))
@@ -133,11 +136,19 @@ print.MADtraits <- function(x, ...){
         cat("\n")
     invisible(output)
 }
-
-summary.MADtraits <- function(x, ...){
-    print.MADtraits(x, ...)
-}
-
+#' @export
+#' @rdname MADtraits
+#' @method summary MADtraits
+#' @param object \code{MADtraits} object to be summarised
+summary.MADtraits <- function(object, ...){ print.MADtraits(object,
+...)  }
+#' @export
+#' @rdname MADtraits
+#' @method [ MADtraits
+#' @param spp \code{character} vector of species to subset the
+#'     \code{MADtraits} object down to
+#' @param traits \code{character} vector of traits to subset the
+#'     \code{MADtraits} object down to
 "[.MADtraits" <- function(x, spp, traits){
     # Argument handling
     if(!inherits(x, "MADtraits"))
@@ -167,19 +178,23 @@ summary.MADtraits <- function(x, ...){
     class(output) <- "MADtraits"
     return(output)
 }
-
+#' List of species in MADtrait object
+#' @export
+#' @rdname MADtraits
 species <- function(x, ...){
     if(!inherits(x, "MADtraits"))
         stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
     return(unique(c(x$numeric$species,x$categorical$species)))
 }
-
+#' List of species in MADtrait object
+#' @export
+#' @rdname MADtraits
 traits <- function(x, ...){
     if(!inherits(x, "MADtraits"))
         stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
     return(unique(c(x$numeric$variable,x$categorical$variable)))
 }
-
+#' @export
 #' @param x \code{MADtraits} object to be printed
 #' @param num.func To summarise data at the species level (which is
 #'     done by default), a function is needed to summarise the
@@ -218,18 +233,25 @@ as.data.frame.MADtraits <- function(x, row.names, optional, num.func=mean, cat.f
 
     # Subset data
     if(is.numeric(data))
-        data <- names(sort(table(c(x$numeric$variable,x$categorical$variable)), decreasing=TRUE)[seq_len(data)])
+        data <- names(sort(table(c(x$numeric$variable,x$categorical$variable)), decreasing=TRUE)[seq(from=1, to=data)])
     if(!is.character(data))
         stop("Either too few/many variables requested, or data not requested by name")
     x <- x[,data]
 
     # Average data
-    numeric <- with(x$numeric, as.data.frame(tapply(value, list(species,variable), num.func, ...)))
-    categorical <- with(x$categorical, as.data.frame(tapply(value, list(species,variable), cat.func, ...)))
+    if(!is.null(x$numeric)){
+        numeric <- with(x$numeric, as.data.frame(tapply(value, list(species,variable), num.func, ...)))
+        numeric$species <- rownames(numeric)
+    }
+    if(!is.null(x$categorical)){
+        categorical <- with(x$categorical, as.data.frame(tapply(value, list(species,variable), cat.func, ...)))
+        categorical$species <- rownames(categorical)
+    }
 
-    # Cleanup and return
-    numeric$species <- rownames(numeric)
-    categorical$species <- rownames(categorical)
-    output <- merge(categorical, numeric, by="species")
-    return(output)
+    # Merge (if possible; return the only data left if not) and return
+    if(is.null(x$numeric))
+        return(categorical)
+    if(is.null(x$categorical))
+        return(numeric)    
+    return(merge(categorical, numeric, by="species"))
 }

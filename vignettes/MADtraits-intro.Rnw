@@ -1,0 +1,209 @@
+% \VignetteIndexEntry{MADtraits-intro}
+%\VignettePackage{MADtraits}
+%\VignetteEngine{knitr::knitr}
+\documentclass[12pt]{article}
+\usepackage{amssymb,amsmath}
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{natbib}
+\usepackage{color} \definecolor{dark-gray}{gray}{0.3}
+\usepackage[colorlinks=true,urlcolor=dark-gray,breaklinks,citecolor=black,linkcolor=black]{hyperref}
+\bibliographystyle{besjournals}
+\usepackage{xspace}
+\newcommand{\R}{\texttt{R}\xspace}
+\newcommand{\MADtraits}{MAD\emph{traits}\xspace}
+\title{An introduction to \MADtraits}
+\author{William D. Pearse, Maxwell J.Farrell, Konrad C. Hafen, Mallory
+    A. Hagadorn, Spencer B. Hudson, Sylvia P. Kinosian, Ryan McCleary,
+    Anne E. McManis, Alexandre Rego, \& Kathryn M Welglarz}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+<<preamble, include=FALSE>>=
+library(MADtraits)
+options(width=40)
+@ 
+\section{Preamble}
+Currently, installing you can install \MADtraits by running
+\texttt{devtools::install\_github("willpearse/MADtraits")}. Once the \MADtraits
+manuscript is accepted somewhere, a new version of \texttt{suppdata}
+and a version of \texttt{MADtraits} will be uploaded to CRAN, and you will
+be able to install by simply running
+\texttt{install.packages("MADtraits")}.
+
+You can get a listing of the functions in the package by typing
+\texttt{library(help=MADtraits)}. If you find any bugs, or have any
+feature requests for the package, please use
+\href{http://github.com/willpearse/MADtraits/issues}{the online
+  tracker}. Indeed, please contribute to the package using at its
+\href{http://github.com/MADtraits/MADtraits}{GitHub site}---help is always
+welcome!
+
+While \emph{MADtraits} contains much novel code, it relies heavily on the
+\emph{R} ecosystem. In the development of \emph{MADtraits} we wrote a
+great deal of code to help with \emph{suppdata} as well.
+
+\section{Using \MADtraits}
+\MADtraits is Not A DataBase. Instead, \MADtraits is a set of code that will
+download and collate data to which you already have access, and build
+it into a database for you. The distinction is important: it means
+that we are not, through \MADtraits, distributing other people's data, and
+so you must cite the original data authors when using the data
+(indeed, we would rather you did so at the expense of citing \MADtraits,
+if you are forced to choose).
+
+While that might sound like a lot, getting the data is actually pretty
+simple.
+
+<<load_data>>=
+library(MADtraits)                                  # 1
+data <- MADtraits(cache="~/Code/MADtraits/cache")   # 2
+clean.data <- clean.MADtraits(data)                 # 3
+clean.data
+@
+
+The first line loads the \MADtraits library into your \R session. The
+second line does the work of downloading all the data (currently over
+110 datasets!) and sorting them into a single \R object for you to
+work with. There's something \emph{very important} to note about that
+second line: the use of the \texttt{cache}. By specifying an existing
+folder for \MADtraits to use as a cache, \MADtraits downloads all the datasets
+to that folder for you. You don't have to use the same location that I
+use (\texttt{~/Code/MADtraits/cache}), but by using a location of some
+sort you ensure that you only have to download all the data once. You
+want to do this, because it can take a very long time to download
+allthe data. The third line performs a bit of `cleaning' on the
+data---neatening up variable and species names that are obviously
+intended to be the same thing but are called slightly different things
+in different datasets. \MADtraits doesn't do this by default so that you
+can, if you want, check to see whether the decisions we make are the
+same that you might make (and, if it's your own data you're
+downloading, so that you can disagree with us!). However, you will
+almost certainly find that you want to use the `cleaned' version of
+\MADtraits. If you disagree with some of our decisions, let us know by
+following the instructions in the section ``\emph{Contributing data
+  and/or code to \MADtraits}''.
+
+<<str_data>>=
+str(clean.data)
+@ 
+
+Internally, \MADtraits stores your data in two \texttt{data.frame}s: one
+devoted to the numerical (continuous) data, and the other to the
+categorical (discrete) data. You can see those two kinds of data in
+the code snippet above, which shows the \texttt{str}ucture of the
+data. \MADtraits stores information about the species, variable, value (of
+the trait), and meta-data associated with that data (in the format
+\texttt{type of metadata:value}) in a reasonably straightforward way
+that you can just look at for yourself.
+
+<<subset_data>>=
+subset.data <- clean.data[
+    c("quercus_robur","quercus_ilex","quercus_rubra"),
+    c("specific_leaf_area","seed_mass")
+]
+data.frame <- as.data.frame(subset.data)
+head(data.frame)
+@ 
+
+That format of data isn't the most useful for working with the data,
+so \MADtraits comes with a convenience function to summarise your data
+into a \texttt{data.frame} where each row represents a single species,
+and each column a single trait value. If you look at the help file for
+\texttt{as.data.frame.MADtraits} you'll see that it's possible to
+summarise your data using whatever kind of summary function you wish
+(it doesn't have to be the mean of the numeric data and the modal
+value for the categorical data). If you're familiar with functions
+like \texttt{reshape}, you have probably guessed that you can work
+with the data as stored in the \texttt{MADtraits} object itself as
+well---this is totally fine. This is, in fact, the reason we haven't
+written a convenience function to work with the meta-data stored
+within \texttt{MADtraits}: we can't think of a good way to summraise
+meta-data collected over lots of different datasets into a single,
+useful value that all users would like, and even if we could it would
+only work for the default values of \texttt{as.data.frame.MADtraits}. If
+you have any better ideas, please let us know!
+
+Notice that, in the snippet above, we subset our data, using the
+\texttt{[species\_names , trait\_names]} syntax, down to some species
+and traits that we were interested in. This is important, because
+there are over three-and-a-half million datapoints within \MADtraits. If
+you turn the entire dataset into a \texttt{data.frame}, it'll be too
+big for you to do very much that's useful with it. You can use the
+\texttt{species} and \texttt{traits} functions to figure out what's in
+\MADtraits if you want.
+
+<<clean_data>>=
+clean.data <- convert.MADtraits.units(subset.data)
+clean.data <- lookup.MADtraits.names(subset.data)
+@ 
+
+If you've worked with large datasets before, you've probably noticed
+that unit and species names can vary across them. The convenience
+functions \texttt{convert.MADtraits.units} and
+\texttt{lookup.MADtraits.names} help with `cleaning up' units and
+taxonomic names within \MADtraits. Give these a try---in particular,
+you will likely not want to work with data whose units you haven't
+made the same throughout as otherwise you'll be multiplying apples by
+oranges!
+
+\section{Contributing data and/or code to \MADtraits}
+\subsection{Contributing data}
+Have you just published some data? Or know of some published data that
+others should be using? Great! To get that data into \MADtraits, you need
+to do three things: write a function that loads that data, get the
+citation information for that data, and make a pull request (or send
+an email) with all of the above.
+\subsubsection{Write a function that loads that data}
+<<demo_function>>=
+# Give the function the right name
+.pearse.2014 <- function(...){
+    # Load the data using suppdata
+    data <- read.csv(
+        suppdata("10.6084/m9.figshare.979288", 4), 
+        sep = ",", na.strings = c("","NA")
+    )
+    
+    # Get the data into the right format
+    species <- rep(c("Carcinus_maenas"), nrow(data))
+    data <- data.frame(species, data)
+    metadata <- data[,c(2:3,8:15)]
+    data <- data[,-c(2:3,8:15)]
+    units <- c(NA, "mm","#","#")
+    
+    # Return the output from .df.melt
+    return(.df.melt(data, "species", units=units, metadata=metadata))
+}
+@ 
+
+This is the hardest part (sorry!) and it has four parts. The first is
+giving the function that will download the data the correct name: a
+\texttt{.}, then the first author's surname (\texttt{-} should be
+written as a \texttt{\_}), a \texttt{.}, and then the year of
+publication. If that function name is already taken, either because
+there are multiple datasets to be loaded or multiple publications by
+that author that year, then add \texttt{a}, \texttt{b}, \texttt{c},
+etc., after the function name (\emph{e.g.}, \texttt{.pearse.2014a}).
+
+The second part is loading the data. Please, please, please use
+\texttt{suppdata} from \texttt{suppdata}---all it requires is the DOI
+of the journal where the paper was published, and either the name of
+the supplement or its number where the data is published, to download
+that data. I maintain that function in \texttt{suppdata}, so if it's
+not possible to download data from the journal you prefer \emph{send
+  me an email (\url{will.pearse@usu.edu}) or make an issue on the
+  \MADtraits GitHub (see below) and I will fix this for you}.
+
+The third part is getting the data into the right format. You need to
+make a \texttt{data.frame} that contains all the data (the traits), a
+column with species names, and nothing else. You should also make a
+separate \texttt{data.frame} that contains the meta-data for your
+dataset (and nothing else), with a column for each separate piece of
+meta-data. Finally, you should make a vector that contains the units
+
+\end{document}

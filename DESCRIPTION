@@ -18,16 +18,15 @@ Description: Automates the download and assembly of species' trait
 License: MIT + file LICENSE
 RoxygenNote: 6.1.1
 Depends:
-    R (>= 2.10)
+    R (>= 3.5.0)
 Suggests: 
     testthat (>= 2.0.0),
     covr (>= 3.0.1),
     knitr (>= 1.6),
     pez (>= 1.1-1),
-    suppdata (>= 1.0-0),
     phytools (>= 0.6-44)
 Imports:
-    suppdata,
+    suppdata (>= 1.1-1),
     gdata (>= 2.17.0),
     reshape2 (>= 1.4.2),
     httr (>= 1.2.1),
@@ -35,5 +34,6 @@ Imports:
     tidyr (>= 0.6.1),
     taxize (>= 0.8.4),
     convertr (>= 0.1),
-    readxl (>= 1.0.0)
+    readxl (>= 1.0.0),
+    assertthat (>= 0.2.1)
 VignetteBuilder: knitr

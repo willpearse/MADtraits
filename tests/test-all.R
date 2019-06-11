@@ -1,2 +1,2 @@
 library("testthat")
-test_check("natdb")
+test_check("MADtraits")
