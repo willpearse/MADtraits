@@ -1,8 +1,7 @@
 context("downloads.R")
 
-#.zagar.2017
-
 test_that(".albouy.2015", {
+    skip_on_cran()
     expect_warning(data <- .albouy.2015(), "attributes are not identical across measure variables; they will be dropped")
     expect_equal(nrow(data$numeric),  3147)
     expect_equal(length(unique(data$numeric$variable)),  5)
@@ -11,6 +10,7 @@ test_that(".albouy.2015", {
 })
 
 test_that(".ameztegui.2016", {
+    skip_on_cran()
     data <- .ameztegui.2016()
     expect_equal(nrow(data$numeric),  430)
     expect_equal(length(unique(data$numeric$variable)),  9)
@@ -19,6 +19,7 @@ test_that(".ameztegui.2016", {
 })
 
 test_that(".arnold.2016", {
+    skip_on_cran()
     data <- .arnold.2016()
     expect_equal(nrow(data$numeric), 4350)
     expect_equal(length(unique(data$numeric$variable)),  15)
@@ -27,6 +28,7 @@ test_that(".arnold.2016", {
 })
 
 test_that(".artacho.2015", {
+    skip_on_cran()
     data <- .artacho.2015()
     expect_equal(nrow(data$numeric),  1332)
     expect_equal(length(unique(data$numeric$variable)),  7)
@@ -35,6 +37,7 @@ test_that(".artacho.2015", {
 })
 
 test_that(".aubret.2012 family", {
+    skip_on_cran()
     data <- .aubret.2012a()
     expect_equal(nrow(data$numeric),  2278)
     expect_equal(length(unique(data$numeric$variable)),  4)
@@ -55,6 +58,7 @@ test_that(".aubret.2012 family", {
 })
 
 test_that(".augspurger.2016 family", {
+    skip_on_cran()
     data <- .augspurger.2016a()
     expect_equal(nrow(data$numeric),  720)
     expect_equal(length(unique(data$numeric$variable)),  4)
@@ -69,6 +73,7 @@ test_that(".augspurger.2016 family", {
 })
 
 test_that(".bellobedoy.2015 family", {
+    skip_on_cran()
     data <- .bellobedoy.2015a()
     expect_equal(nrow(data$numeric),  808)
     expect_equal(length(unique(data$numeric$variable)),  4)
@@ -84,6 +89,7 @@ test_that(".bellobedoy.2015 family", {
 })
 
 test_that(".benesh.2017", {
+    skip_on_cran()
     expect_warning(data <- .benesh.2017(), "attributes are not identical across measure variables; they will be dropped")
     expect_equal(nrow(data$numeric),  39941)
     expect_equal(length(unique(data$numeric$variable)),  8)
@@ -92,6 +98,7 @@ test_that(".benesh.2017", {
 })
 
 test_that(".bengtsson.2016", {
+    skip_on_cran()
     data <- .bengtsson.2016()
     expect_equal(nrow(data$numeric),  3679)
     expect_equal(length(unique(data$numeric$variable)),  27)
@@ -109,6 +116,7 @@ test_that('.bennett.2016', {
 })
 
 test_that(".broeckhoven.2016", {
+    skip_on_cran()
     data <- .broeckhoven.2016()
     expect_equal(nrow(data$numeric),  2520)
     expect_equal(length(unique(data$numeric$variable)),  21)
@@ -117,6 +125,7 @@ test_that(".broeckhoven.2016", {
 })
 
 test_that(".brown.2015", {
+    skip_on_cran()
     data <- .brown.2015()
     expect_equal(nrow(data$numeric),  4920)
     expect_equal(length(unique(data$numeric$variable)),  6)
@@ -125,6 +134,7 @@ test_that(".brown.2015", {
 })
 
 test_that(".buzzard.2015", {
+    skip_on_cran()
     data <- .buzzard.2015()
     expect_equal(nrow(data$numeric),  1038)
     expect_equal(length(unique(data$numeric$variable)),  6)
@@ -133,6 +143,7 @@ test_that(".buzzard.2015", {
 })
 
 test_that(".cariveau.2016", {
+    skip_on_cran()
     data <- .cariveau.2016()
     expect_equal(nrow(data$numeric),  700)
     expect_equal(length(unique(data$numeric$variable)),  7)
@@ -141,6 +152,7 @@ test_that(".cariveau.2016", {
 })
 
 test_that(".carmona.2014", {
+    skip_on_cran()
     data <- .carmona.2014()
     expect_equal(nrow(data$numeric),  7414)
     expect_equal(length(unique(data$numeric$variable)),  3)
@@ -149,6 +161,7 @@ test_that(".carmona.2014", {
 })
 
 test_that(".case.2016", {
+    skip_on_cran()
     expect_warning(data <- .case.2016(), "attributes are not identical across measure variables; they will be dropped")
     expect_equal(nrow(data$numeric),  1454)
     expect_equal(length(unique(data$numeric$variable)),  13)
@@ -157,6 +170,7 @@ test_that(".case.2016", {
 })
 
 test_that(".castillo.2016", {
+    skip_on_cran()
     data <- .castillo.2016()
     expect_equal(nrow(data$numeric),  1027)
     expect_equal(length(unique(data$numeric$variable)),  5)
@@ -165,6 +179,7 @@ test_that(".castillo.2016", {
 })
 
 test_that(".cavenderbares.2015 family", {
+    skip_on_cran()
     data <- .cavenderbares.2015a()
     expect_equal(nrow(data$numeric),  3032)
     expect_equal(length(unique(data$numeric$variable)),  4)
@@ -201,6 +216,7 @@ test_that('.collar.2016', {
 })
 
 test_that(".comeault.2013", {
+    skip_on_cran()
     data <- .comeault.2013()
     expect_equal(nrow(data$numeric),  4147)
     expect_equal(length(unique(data$numeric$variable)),  13)
@@ -217,6 +233,7 @@ test_that('.delariva.2015', {
 })
 
 test_that(".deraison.2014", {
+    skip_on_cran()
     data <- .deraison.2014()
     expect_equal(nrow(data$numeric),  154)
     expect_equal(length(unique(data$numeric$variable)),  7)
@@ -225,6 +242,7 @@ test_that(".deraison.2014", {
 })
 
 test_that(".dmitriew.2014", {
+    skip_on_cran()
     data <- .dmitriew.2014()
     expect_equal(nrow(data$numeric),  5331)
     expect_equal(length(unique(data$numeric$variable)),  3)
@@ -233,6 +251,7 @@ test_that(".dmitriew.2014", {
 })
 
 test_that(".edwards.2015 family", {
+    skip_on_cran()
     expect_warning(data <- .edwards.2015a(), "attributes are not identical across measure variables; they will be dropped")
     expect_equal(nrow(data$numeric),  2762)
     expect_equal(length(unique(data$numeric$variable)),  35)
@@ -247,6 +266,7 @@ test_that(".edwards.2015 family", {
 })
 
 test_that(".engemann.2016", {
+    skip_on_cran()
     expect_warning(data <- .engemann.2016(), "attributes are not identical across measure variables; they will be dropped")
     expect_equal(nrow(data$numeric),  NULL)
     expect_equal(length(unique(data$numeric$variable)),  0)
@@ -255,6 +275,7 @@ test_that(".engemann.2016", {
 })
 
 test_that(".enriquezurzelai.2015", {
+    skip_on_cran()
     data <- .enriquezurzelai.2015()
     expect_equal(nrow(data$numeric),  657)
     expect_equal(length(unique(data$numeric$variable)),  3)
@@ -263,6 +284,7 @@ test_that(".enriquezurzelai.2015", {
 })
 
 test_that(".falster.2015", {
+    skip_on_cran()
     expect_warning(data <- .falster.2015(), "attributes are not identical across measure variables; they will be dropped")
     expect_equal(nrow(data$numeric),  252916)
     expect_equal(length(unique(data$numeric$variable)),  47)
@@ -271,6 +293,7 @@ test_that(".falster.2015", {
 })
 
 test_that(".fargevieille.2017", {
+    skip_on_cran()
     data <- .fargevieille.2017()
     expect_equal(nrow(data$numeric),  16065)
     expect_equal(length(unique(data$numeric$variable)),  10)
@@ -279,6 +302,7 @@ test_that(".fargevieille.2017", {
 })
 
 test_that(".friedman.2014", {
+    skip_on_cran()
     data <- .friedman.2014()
     expect_equal(nrow(data$numeric),  8791)
     expect_equal(length(unique(data$numeric$variable)),  11)
@@ -287,6 +311,7 @@ test_that(".friedman.2014", {
 })
 
 test_that(".fitzgerald.2017", {
+    skip_on_cran()
     data <- .fitzgerald.2017()
     expect_equal(nrow(data$numeric),  5275)
     expect_equal(length(unique(data$numeric$variable)),  40)
@@ -295,6 +320,7 @@ test_that(".fitzgerald.2017", {
 })
 
 test_that(".goncalves.2018", {
+    skip_on_cran()
     data <- .goncalves.2018()
     expect_equal(nrow(data$numeric),  82866)
     expect_equal(length(unique(data$numeric$variable)),  4)
@@ -303,6 +329,7 @@ test_that(".goncalves.2018", {
 })
 
 test_that(".gossner.2015", {
+    skip_on_cran()
     expect_warning(data <- .gossner.2015(), "attributes are not identical across measure variables; they will be dropped")
     expect_equal(nrow(data$numeric),  2460)
     expect_equal(length(unique(data$numeric$variable)),  2)
@@ -311,6 +338,7 @@ test_that(".gossner.2015", {
 })
 
 test_that(".grootemaat.2015", {
+    skip_on_cran()
     data <- .grootemaat.2015()
     expect_equal(nrow(data$numeric),  22150)
     expect_equal(length(unique(data$numeric$variable)),  23)
@@ -319,11 +347,12 @@ test_that(".grootemaat.2015", {
 })
 
 test_that(".grutters.2017", {
-  data <- .grutters.2017()
-  expect_equal(nrow(data$numeric),  451)
-  expect_equal(length(unique(data$numeric$variable)),  11)
-  expect_equal(nrow(data$character), NULL)
-  expect_equal(length(unique(data$character$variable)),  0)
+    skip_on_cran()
+    data <- .grutters.2017()
+    expect_equal(nrow(data$numeric),  451)
+    expect_equal(length(unique(data$numeric$variable)),  11)
+    expect_equal(nrow(data$character), NULL)
+    expect_equal(length(unique(data$character$variable)),  0)
 })
 
 test_that('.hadfield.2013', {
@@ -445,27 +474,27 @@ test_that('.kissling.2014', {
 })
 
 test_that('.klomp.2016', {
-  data <- .klomp.2016()
-  expect_equal(nrow(data$numeric), 151 )
-  expect_equal(length(unique(data$numeric$variable)), 12 )
-  expect_equal(nrow(data$character), NULL)
-  expect_equal(length(unique(data$character$variable)), 0 )
+    data <- .klomp.2016()
+    expect_equal(nrow(data$numeric), 151 )
+    expect_equal(length(unique(data$numeric$variable)), 12 )
+    expect_equal(nrow(data$character), NULL)
+    expect_equal(length(unique(data$character$variable)), 0 )
 })
 
 test_that('.knief.2012', {
-  data <- .knief.2012()
-  expect_equal(nrow(data$numeric), 15568 )
-  expect_equal(length(unique(data$numeric$variable)), 7 )
-  expect_equal(nrow(data$character), NULL)
-  expect_equal(length(unique(data$character$variable)), 0 )
+    data <- .knief.2012()
+    expect_equal(nrow(data$numeric), 15568 )
+    expect_equal(length(unique(data$numeric$variable)), 7 )
+    expect_equal(nrow(data$character), NULL)
+    expect_equal(length(unique(data$character$variable)), 0 )
 })
 
 test_that('.kolbe.2011', {
-  data <- .kolbe.2011()
-  expect_equal(nrow(data$numeric), 315 )
-  expect_equal(length(unique(data$numeric$variable)), 15 )
-  expect_equal(nrow(data$character), NULL)
-  expect_equal(length(unique(data$character$variable)), 0 )
+    data <- .kolbe.2011()
+    expect_equal(nrow(data$numeric), 315 )
+    expect_equal(length(unique(data$numeric$variable)), 15 )
+    expect_equal(nrow(data$character), NULL)
+    expect_equal(length(unique(data$character$variable)), 0 )
 })
 
 test_that('.kraft.2015 family', {
@@ -628,6 +657,14 @@ test_that('.mccullough.2015', {
     expect_equal(length(unique(data$character$variable)), 0 )
 })
 
+test_that('.maire.2016', {
+    data <- .maire.2016()
+    expect_equal(nrow(data$numeric), 132515 )
+    expect_equal(length(unique(data$numeric$variable)), 59 )
+    expect_equal(nrow(data$character), 16576 )
+    expect_equal(length(unique(data$character$variable)), 7 )
+})
+
 test_that('.mesquita.2016', {
     data <- .mesquita.2016()
     expect_equal(nrow(data$numeric), 4565 )
@@ -665,6 +702,14 @@ test_that('.nandy.2013', {
     expect_equal(nrow(data$numeric), 81 )
     expect_equal(length(unique(data$numeric$variable)), 1 )
     expect_equal(nrow(data$character), NULL)
+    expect_equal(length(unique(data$character$variable)), 0 )
+})
+
+test_that('.neuheimer.2016', {
+    data <- .neuheimer.2016()
+    expect_equal(nrow(data$numeric), 8916 )
+    expect_equal(length(unique(data$numeric$variable)), 2 )
+    expect_equal(nrow(data$character), )
     expect_equal(length(unique(data$character$variable)), 0 )
 })
 
@@ -774,11 +819,12 @@ test_that('.rahman.2013', {
 
 # Updating .anderson.2015 to .reese.2016 and moving to alphabetical location in file
 test_that(".reese.2016", {
-  data <- .reese.2016()
-  expect_equal(nrow(data$numeric),  8387)
-  expect_equal(length(unique(data$numeric$variable)),  39)
-  expect_equal(nrow(data$character), NULL)
-  expect_equal(length(unique(data$character$variable)),  0)
+    skip_on_cran()
+    data <- .reese.2016()
+    expect_equal(nrow(data$numeric),  8387)
+    expect_equal(length(unique(data$numeric$variable)),  39)
+    expect_equal(nrow(data$character), NULL)
+    expect_equal(length(unique(data$character$variable)),  0)
 })
 
 test_that('.rojas.2013', {
@@ -803,6 +849,14 @@ test_that('.sherratt.2013', {
     expect_equal(length(unique(data$numeric$variable)), 3 )
     expect_equal(nrow(data$character), NULL)
     expect_equal(length(unique(data$character$variable)), 0 )
+})
+
+test_that('.sherratt.2018', {
+    data <- .sherratt.2018()
+    expect_equal(nrow(data$numeric), 231 )
+    expect_equal(length(unique(data$numeric$variable)), 5 )
+    expect_equal(nrow(data$character), 17 )
+    expect_equal(length(unique(data$character$variable)), 1 )
 })
 
 test_that('.shibata.2016 family', {
@@ -841,6 +895,14 @@ test_that('.stephens.2017', {
     expect_equal(length(unique(data$numeric$variable)), 4 )
     expect_equal(nrow(data$character), NULL)
     expect_equal(length(unique(data$character$variable)), 0 )
+})
+
+test_that('.tian.2016', {
+    data <- .tian.2016()
+    expect_equal(nrow(data$numeric), 99 )
+    expect_equal(length(unique(data$numeric$variable)), 1 )
+    expect_equal(nrow(data$character), 1098 )
+    expect_equal(length(unique(data$character$variable)), 11 )
 })
 
 test_that('.vanier.2013', {
@@ -908,6 +970,7 @@ test_that('.zhang.2014', {
 test <- function(x){
     val <- x()
     cat("test_that('",deparse(substitute(x)),"', {\n", sep="")
+    cat("    skip_on_cran()")
     cat("    data <- ",deparse(substitute(x)), "()\n", sep="")
     cat("    expect_equal(nrow(data$numeric),", nrow(val$numeric), ")\n")
     cat("    expect_equal(length(unique(data$numeric$variable)),", length(unique(val$numeric$variable)), ")\n")

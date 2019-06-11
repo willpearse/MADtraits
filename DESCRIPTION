@@ -17,7 +17,7 @@ Description: Automates the download and assembly of species'
     checking, and functions to perform data checking, are included
     within this package.
 License: MIT + file LICENSE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Depends:
     R (>= 2.10)
 Suggests: 
