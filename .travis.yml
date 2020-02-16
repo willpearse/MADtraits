@@ -1,6 +1,6 @@
 sudo: false
 language: r
-latex: true
+latex: false
 
 cache:
   - packages
