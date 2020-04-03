@@ -2,7 +2,7 @@
 % Please edit documentation in R/cleaning.R
 \name{clean.MADtraits}
 \alias{clean.MADtraits}
-\title{Cleaning MADTRAITS objects}
+\title{Cleaning MADtraits objects}
 \usage{
 clean.MADtraits(x)
 }
@@ -14,22 +14,22 @@ clean.MADtraits(x)
 }
 \description{
 A quick method that looks for obvious issues (capitalisation, known
-mis-spellings, etc.) within the raw data that MADTRAITS downloads. This
+mis-spellings, etc.) within the raw data that MADtraits downloads. This
 is a *strongly* recommend secibd step for anyone working with the
-output from MADTRAITS.
+output from MADtraits.
 }
 \note{
-See \code{\link{convert.MADtraits.units}} and
-    \code{\link{lookup.MADtraits.names}} for functions to match
+See \code{\link{convertunits.MADtraits}} and
+    \code{\link{taxonlookup.MADtraits}} for functions to match
     variable units and taxonomic names in more sophisticated ways
 }
 \examples{
 # Grab some example data (you should work with the output from the MADtraits function)
 demo <- .cavenderbares.2015a()
-demo <- convert.MADtraits.units(demo)
+demo <- clean.MADtraits(demo)
 }
 \seealso{
-convert.MADtraits.units lookup.MADtraits.names
+convertunits.MADtraits taxonlookup.MADtraits
 }
 \author{
 Will Pearse

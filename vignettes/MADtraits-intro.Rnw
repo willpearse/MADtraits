@@ -139,8 +139,8 @@ big for you to do very much that's useful with it. You can use the
 \MADtraits if you want.
 
 <<clean_data>>=
-clean.data <- convert.MADtraits.units(subset.data)
-clean.data <- lookup.MADtraits.names(subset.data)
+clean.data <- convertunits.MADtraits(subset.data)
+clean.data <- taxonlookup.MADtraits(subset.data)
 @ 
 
 If you've worked with large datasets before, you've probably noticed

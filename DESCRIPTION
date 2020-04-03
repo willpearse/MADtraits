@@ -16,7 +16,7 @@ Description: Automates the download and assembly of species' trait
     included within this package, but the user should check their data
     before serious use.
 License: MIT + file LICENSE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Depends:
     R (>= 3.5.0)
 Suggests: 
@@ -33,5 +33,6 @@ Imports:
     taxize (>= 0.8.4),
     convertr (>= 0.1),
     readxl (>= 1.0.0),
-    assertthat (>= 0.2.1)
+    assertthat (>= 0.2.1),
+    handlr (>= 0.2.0)
 VignetteBuilder: knitr

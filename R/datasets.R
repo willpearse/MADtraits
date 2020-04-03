@@ -1,8 +1,8 @@
 #' @name MADtraits_datasets
 #' @title Get vector of the IDs for all datasets available within
-#'     MADTRAITS
+#'     MADtraits
 #' @description Returns a vector of all IDs for the datasets that
-#'     MADTRAITS can download. This can be used to identify particular
+#'     MADtraits can download. This can be used to identify particular
 #'     datasets you wish to download using \code{\link{MADtraits}}.
 #' @keywords datasets
 #' @usage MADtraits_datasets()

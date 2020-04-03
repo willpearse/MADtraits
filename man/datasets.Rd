@@ -13,7 +13,7 @@ at run-time. Currently, all arguments passed to any of these
 functions are ignored.}
 }
 \value{
-\code{\link{MADtraits}} object
+\code{MADtraits} object
 }
 \description{
 Each of these functions downloads a dataset from a published
@@ -25,7 +25,7 @@ download data to which the user already has access.
 }
 \examples{
 # You almost certainly *don't* want to use these functions on their own
-# - use the function "natdb" to build a database instead
+# - use the function "MADtraits" to build a database instead
 crab.data <- .pearse.2014()
 str(crab.data)
 }

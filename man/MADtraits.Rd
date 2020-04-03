@@ -22,9 +22,15 @@ species(x, ...)
 
 traits(x, ...)
 
-\method{as.data.frame}{MADtraits}(x, row.names, optional,
-  num.func = mean, cat.func = function(x) names(which.max(table(x))),
-  data = 10, ...)
+\method{as.data.frame}{MADtraits}(
+  x,
+  row.names,
+  optional,
+  num.func = mean,
+  cat.func = function(x) names(which.max(table(x))),
+  data = 10,
+  ...
+)
 }
 \arguments{
 \item{cache}{Specify an existing directory/folder where datasets
@@ -85,13 +91,12 @@ down first to your species or traits of interest (see
 "examples")}
 }
 \value{
-MADtraits.data object. XXX
+MADtraits.data object.
 }
 \description{
 The key function of the MADtraits package. When run with defaults,
 it will download and build a database of species' traits from all
-the manuscript sources in the package. This totals XXX
-manuscripts/databases, XXX species, and XXX traits. *Please* make
+the manuscript sources in the package. *Please* make
 use the the \code{cache} feature, as it will massively speed and
 ease your use of the package.
 }
@@ -117,5 +122,5 @@ neat.data <- as.data.frame(clean.data)
 clean.MADtraits convert.MADtraits.units lookup.MADtraits.species
 }
 \author{
-Will Pearse; USU Biology Nerd Group (XXX)
+Will Pearse
 }

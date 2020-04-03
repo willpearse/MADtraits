@@ -2,8 +2,7 @@
 #'
 #' The key function of the MADtraits package. When run with defaults,
 #' it will download and build a database of species' traits from all
-#' the manuscript sources in the package. This totals XXX
-#' manuscripts/databases, XXX species, and XXX traits. *Please* make
+#' the manuscript sources in the package. *Please* make
 #' use the the \code{cache} feature, as it will massively speed and
 #' ease your use of the package.
 #' 
@@ -22,8 +21,8 @@
 #'     over-stretch servers. Keeping servers happy is good for you
 #'     (they won't reject you!) and good for them (they can help
 #'     everyone).
-#' @return MADtraits.data object. XXX
-#' @author Will Pearse; USU Biology Nerd Group (XXX)
+#' @return MADtraits.data object.
+#' @author Will Pearse
 #' @examples
 #' \dontrun{
 #' # Download all MADtraits data, and cache (save) it on your hard-drive for use later
