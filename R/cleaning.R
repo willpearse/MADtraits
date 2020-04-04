@@ -1,26 +1,79 @@
 #' Cleaning MADtraits objects
 #'
-#' A quick method that looks for obvious issues (capitalisation, known
-#' mis-spellings, etc.) within the raw data that MADtraits downloads. This
-#' is a *strongly* recommend secibd step for anyone working with the
-#' output from MADtraits.
-#' @note See \code{\link{convertunits.MADtraits}} and
-#'     \code{\link{taxonlookup.MADtraits}} for functions to match
-#'     variable units and taxonomic names in more sophisticated ways
+#' A very useful, and very much recommended, function for 'cleaning'
+#' MADtraits data before serious use! It provides three kinds of
+#' potential cleaning: of the trait names (e.g., harmonising datasets
+#' so that "sla" and "specific_leaf_area" are recognised as the same
+#' trait), of species' names (correcting some typos and name changes
+#' using 'taxize'), and of trait units (e.g., harmonising across
+#' datasets such that masses are all in the same unit). It is
+#' *strongly recommended* that you perform some kind of cleaning of
+#' MADtrait data before using it. The logic of the MADworld is to make
+#' it easy for you to get data, and then transparent how that data has
+#' been cleaned and managed downstream. We make no guarantee that the
+#' decisions we have made in terms of cleaning are the "best" - please
+#' feel free to use this code as a starting point, and improve from
+#' there!
+#' 
 #' @param x \code{\link{MADtraits}} object
+#' @param option What cleaning to perform: focusing on trait variable
+#'     naes (DEFAULT; "traits"), species' taxonomic names ("species"),
+#'     data units ("units"), or all three at once ("everything").
+#' @param taxon.cache Whether to use MADtraits' internal cache of
+#'     taxonomic lookup information for cleaning species' names
+#'     (default: \code{TRUE}) or to build one from scratch at run-time
+#'     using \code{taxize} (set as \code{FALSE}). Building from
+#'     scratch is a very slow process! You can also pass a 'lookup'
+#'     character vector that contains species' current (messy) names
+#'     as the \code{names} element, and the clean (correct) names as
+#'     the main entries. If you look at the code (which is short),
+#'     this allows \code{clean.MADtraits} to run the equivalent of
+#'     \code{lookup[raw_names]} to get the new, 'clean' names.
+#' @param taxon.thresh Threshold of certainty to be used as a minimum
+#'     when assigning new names to a species when building a lookup
+#'     from scratch (see \code{taxon.cache}). The default, of 0.8, has
+#'     not been chosen with any particular intelligence.
+#' @param unit.choices Named vector of units, where the names are
+#'     variables and the values are the units you would like that unit
+#'     in. See examples - this isn't as confusing as it sounds. Units
+#'     should be given in standard scientific notation - see
+#'     \code{\link[convertr]{convert}} for more details.
 #' @return \code{\link{MADtraits}} object
 #' @author Will Pearse
 #' @seealso convertunits.MADtraits taxonlookup.MADtraits
 #' @examples
-#' # Grab some example data (you should work with the output from the MADtraits function)
+#' # Grab some example data
+#' # - note that you should work with the output from the MADtraits function
+#' # - since "cleaning" a single dataset doesn't achieve very much!
 #' demo <- .cavenderbares.2015a()
-#' demo <- clean.MADtraits(demo)
+#' MADtraits(datasets=c)
+#' # Clean trait names (the default)
+#' clean.MADtraits(demo)
+#' # Clean species' names
+#' clean.MADtraits(demo, "species")
+#' # Clean units
+#' clean.MADtraits(demo, "units")
+#' # Clean it all!
+#' clean.MADtraits(demo, "everything")
 #' @export
-clean.MADtraits <- function(x){
+clean.MADtraits <- function(x, option=c("traits","species","units","everything"), taxon.cache=TRUE, taxon.thresh=0.8, unit.choices=NA){
     # Argument handling
     if(!inherits(x, "MADtraits"))
         stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
+    option <- match.arg(option)
 
+    # Do work
+    if(option=="traits" | option=="everything")
+        x <- .clean.trait.names(x)
+    if(option=="species" | option=="everything")
+        x <- .clean.taxonomy(x, taxon.thresh, taxon.cache)
+    if(option=="units" | option=="everything")
+        x <- .unit.conversion(x, unit.choices)
+    
+    return(x)
+}
+
+.clean.trait.names <- function(x){
     if(!is.null(x$numeric)){
         x$numeric <- x$numeric[x$numeric$variable != "",]
         x$numeric$variable <- tolower(x$numeric$variable)
@@ -177,128 +230,36 @@ clean.MADtraits <- function(x){
     return(x)
 }
 
-#' Harmonising taxonomic names within a MADtraits object
-#'
-#' A *very* light wrapper around \code{\link[taxize]{gnr_resolve}} to
-#' harmonise taxonomic names across datasets. Taxonomy is a difficult
-#' thing to get right, and many would argue it is philosophically
-#' impossible to get right unless you verify the taxonomy of specimens
-#' with vouchers. A bit of careful checking of the original values
-#' *before* doing taxonomic cleaning is often beneficial.
-#'
-#' @note *Please* run your data through \code{\link{clean.MADtraits}}
-#'     before running this, as it will neaten up obvious mistakes in
-#'     the input data's species names.
-#'
-#' *Please* consider using the built-in taxonomic lookup table, or
-#' subsetting your data to the groups/traits of interest before
-#' running the lookup. It can take a *tremendously* long time to
-#' lookup and resolve all ~110,000 species for which MADtraits downloads
-#' data, and you're not going to enjoy the process of waiting!
-#' @param x \code{\link{MADtraits}} object
-#' @param thresh Threshold of certainty to be used as a minimum when
-#'     assigning new names to a species. The default, of 0.8, has not
-#'     been chosen with any particular intelligence.
-#' @param use.cache whether to use the internal cache of species names
-#'     that MADtraits ships with. This is generated by Will Pearse on an
-#'     ad hoc basis; it's probably right, but please don't sue me if
-#'     it isn't! :D
-#' @return \code{\link{MADtraits}} object
-#' @author Will Pearse and Kathryn M. Welglarz
-#' @examples
-#' # Grab some example data (you should work with the output from the MADtraits function)
-#' demo <- .pearse.2014()
-#' # Convert all the units to the most common type
-#' # - (a bit silly here as they're all standardised anyway!)
-#' demo <- convertunits.MADtraits(demo)
-#' # Now convert the "diameter" from millimeters to meters
-#' units <- setNames("m", "diameter")
-#' # (this is the same as the following)
-#' units <- "m"
-#' names(units) <- "diameter"
-#' demo <- convertunits.MADtraits(demo, units)
-#' #...you don't have to clean up just one unit
-#' # - your "units" vector can be as long as you want
-#' @export
-#' @importFrom taxize gnr_resolve
-#' @seealso clean.MADtraits convertunits.MADtraits
-#' @author Will Pearse and Mallory Hagadorn
-#' @examples
-#' # Grab some example data (you should work with the output from the MADtraits function)
-#' demo <- .cavenderbares.2015a()
-#' # - before using it, clean up the data to remove obvious differences
-#' demo <- clean.MADtraits(demo)
-#' # Now run a thorough taxonomic check
-#' demo <- taxonlookup.MADtraits(demo, use.cache=TRUE)
-#' #...in this case with only six species it was fast
-taxonlookup.MADtraits <- function(x, thresh=0.8, use.cache=TRUE){
-    # Argument handling
-    if(!inherits(x, "MADtraits"))
-        stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
-
+.clean.taxonomy <- function(x, thresh=0.8, use.cache=TRUE){
     # Download / use cache
-    if(use.cache==TRUE){
-        lookup <- MADtraits_taxonomy
-    } else  {
+    if(is.character(use.cache)){
+        if(is.null(names(use.cache)))
+            stop("'", deparse(substitute(use.cache)), "' must be a named vector for lookup (consider just using the internal cache or no pre-cached lookup)")
+        lookup <- use.cache
+    } else {
+        if(use.cache==TRUE){
+            lookup <- MADtraits_taxonomy
+        } else  {
         warning("It can take an *exceedingly* long time to download taxonomic data for the entire dataset, and a server error in the middle of this may mess everything up. Please read the help file for advice on this!")
         spp <- unique(c(unique(x$numeric$species), unique(x$categorical$species)))
         dwn.spp <- gnr_resolve(spp, resolve_once=TRUE, best_match_only=TRUE)
         dwn.spp <- dwn.spp[!duplicated(dwn.spp$user_supplied_name),]
         dwn.spp$matched_name <- tolower(sapply(strsplit(dwn.spp$matched_name, " "), function(x) paste(x[1:2],collapse="_")))
         
-    if(!missing(thresh))
         dwn.spp <- dwn.spp[dwn.spp$score >= thresh,]
-    lookup <- with(dwn.spp, setNames(matched_name, user_supplied_name))
+        lookup <- with(dwn.spp, setNames(matched_name, user_supplied_name))
+        }
     }
-
+    
     # Lookup and return
     x$numeric$species <- lookup[x$numeric$species]
     x$categorical$species <- lookup[x$categorical$species]
     return(x)
 }
 
-#' Harmonising variable units to match within MADtraits
-#'
-#' A light wrapper around \code{\link[convertr]{convert}} to match
-#' units across different variables. Using the \code{matches}
-#' argument, you can changethe options for how each trait's units
-#' should be converted. We advise caution when converting (and working
-#' with) units, and suggest that (as with all datasets) users perform
-#' sense checks first to ensure that the orders of magnitude over
-#' which their data vary make sense.
-#'
-#' @note *Please* run your data through \code{\link{clean.MADtraits}}
-#'     before running this, as it will neaten up obvious mistakes in
-#'     the input data's unit names. This will make the mathematical
-#'     unit conversion a lot more straightforward and error-free.
-#' @param x \code{\link{MADtraits}} object
-#' @param choices Named vector of units, where the names are variables
-#'     and the values are the units you would like that unit in. See
-#'     examples - this isn't as confusing as it sounds. Units should
-#'     be given in standard scientific notation - see
-#'     \code{\link[convertr]{convert}} for more details.
-#' @return \code{\link{MADtraits}} object
-#' @author Will Pearse and Kathryn M. Welglarz
-#' @seealso clean.MADtraits taxonlookup.MADtraits
-#' @examples
-#' # Grab some example data (you should work with the output from the MADtraits function)
-#' demo <- .pearse.2014()
-#' # Convert all the units to the most common type
-#' # - (a bit silly here as they're all standardised anyway!)
-#' demo <- convertunits.MADtraits(demo)
-#' # Now convert the "diameter" from millimeters to meters
-#' units <- setNames("m", "diameter")
-#' demo <- convertunits.MADtraits(demo, units)
-#' #...you don't have to clean up just one unit
-#' #   (your "units" vector can be as long as you want)
-#' @export
 #' @importFrom convertr convert
-convertunits.MADtraits <- function(x, choices){
-    # Argument handling
-    if(!inherits(x, "MADtraits"))
-        stop("'", deparse(substitute(x)), "' must be of type 'MADtraits'")
-
-    if(missing(choices)){
+.unit.conversion <- function(x, choices=NA){
+    if(is.na(choices)){
         choices <- tapply(x$numeric$units, x$numeric$variable, function(y) names(sort(table(y),decreasing=TRUE)[1]))
         choices <- Filter(Negate(is.null), choices)
     }

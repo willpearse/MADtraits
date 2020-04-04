@@ -139,18 +139,18 @@ big for you to do very much that's useful with it. You can use the
 \MADtraits if you want.
 
 <<clean_data>>=
-clean.data <- convertunits.MADtraits(subset.data)
-clean.data <- taxonlookup.MADtraits(subset.data)
+clean.MADtraits(subset.data, "units")
+clean.MADtraits(subset.data, "species")
 @ 
 
 If you've worked with large datasets before, you've probably noticed
 that unit and species names can vary across them. The convenience
-functions \texttt{convert.MADtraits.units} and
-\texttt{lookup.MADtraits.names} help with `cleaning up' units and
-taxonomic names within \MADtraits. Give these a try---in particular,
-you will likely not want to work with data whose units you haven't
-made the same throughout as otherwise you'll be multiplying apples by
-oranges!
+function \texttt{clean.MADtraits} helps with `cleaning up' trait
+names, units, and taxonomy within \MADtraits (and can do all three at
+once with the option \texttt{everything}). Give ut a try---in
+particular, you will likely not want to work with data whose units you
+haven't made the same throughout as otherwise you'll be multiplying
+apples by oranges!
 
 \section{Contributing data and/or code to \MADtraits}
 \subsection{Contributing data}

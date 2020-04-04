@@ -4,29 +4,76 @@
 \alias{clean.MADtraits}
 \title{Cleaning MADtraits objects}
 \usage{
-clean.MADtraits(x)
+clean.MADtraits(
+  x,
+  option = c("traits", "species", "units", "everything"),
+  taxon.cache = TRUE,
+  taxon.thresh = 0.8,
+  unit.choices = NA
+)
 }
 \arguments{
 \item{x}{\code{\link{MADtraits}} object}
+
+\item{option}{What cleaning to perform: focusing on trait variable
+naes (DEFAULT; "traits"), species' taxonomic names ("species"),
+data units ("units"), or all three at once ("everything").}
+
+\item{taxon.cache}{Whether to use MADtraits' internal cache of
+taxonomic lookup information for cleaning species' names
+(default: \code{TRUE}) or to build one from scratch at run-time
+using \code{taxize} (set as \code{FALSE}). Building from
+scratch is a very slow process! You can also pass a 'lookup'
+character vector that contains species' current (messy) names
+as the \code{names} element, and the clean (correct) names as
+the main entries. If you look at the code (which is short),
+this allows \code{clean.MADtraits} to run the equivalent of
+\code{lookup[raw_names]} to get the new, 'clean' names.}
+
+\item{taxon.thresh}{Threshold of certainty to be used as a minimum
+when assigning new names to a species when building a lookup
+from scratch (see \code{taxon.cache}). The default, of 0.8, has
+not been chosen with any particular intelligence.}
+
+\item{unit.choices}{Named vector of units, where the names are
+variables and the values are the units you would like that unit
+in. See examples - this isn't as confusing as it sounds. Units
+should be given in standard scientific notation - see
+\code{\link[convertr]{convert}} for more details.}
 }
 \value{
 \code{\link{MADtraits}} object
 }
 \description{
-A quick method that looks for obvious issues (capitalisation, known
-mis-spellings, etc.) within the raw data that MADtraits downloads. This
-is a *strongly* recommend secibd step for anyone working with the
-output from MADtraits.
-}
-\note{
-See \code{\link{convertunits.MADtraits}} and
-    \code{\link{taxonlookup.MADtraits}} for functions to match
-    variable units and taxonomic names in more sophisticated ways
+A very useful, and very much recommended, function for 'cleaning'
+MADtraits data before serious use! It provides three kinds of
+potential cleaning: of the trait names (e.g., harmonising datasets
+so that "sla" and "specific_leaf_area" are recognised as the same
+trait), of species' names (correcting some typos and name changes
+using 'taxize'), and of trait units (e.g., harmonising across
+datasets such that masses are all in the same unit). It is
+*strongly recommended* that you perform some kind of cleaning of
+MADtrait data before using it. The logic of the MADworld is to make
+it easy for you to get data, and then transparent how that data has
+been cleaned and managed downstream. We make no guarantee that the
+decisions we have made in terms of cleaning are the "best" - please
+feel free to use this code as a starting point, and improve from
+there!
 }
 \examples{
-# Grab some example data (you should work with the output from the MADtraits function)
+# Grab some example data
+# - note that you should work with the output from the MADtraits function
+# - since "cleaning" a single dataset doesn't achieve very much!
 demo <- .cavenderbares.2015a()
-demo <- clean.MADtraits(demo)
+MADtraits(datasets=c)
+# Clean trait names (the default)
+clean.MADtraits(demo)
+# Clean species' names
+clean.MADtraits(demo, "species")
+# Clean units
+clean.MADtraits(demo, "units")
+# Clean it all!
+clean.MADtraits(demo, "everything")
 }
 \seealso{
 convertunits.MADtraits taxonlookup.MADtraits
